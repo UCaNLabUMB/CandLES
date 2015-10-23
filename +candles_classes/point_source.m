@@ -51,6 +51,18 @@ classdef point_source
             obj.y = y; % Set X location (m)
             obj.z = z; % Set X location (m)
         end
+        % Set the X location of the point source object
+        function obj = set_x(obj,x)
+            obj.x = x; % Set X location (m)
+        end
+        % Set the Y location of the point source object
+        function obj = set_y(obj,y)
+            obj.y = y; % Set Y location (m)
+        end
+        % Set the Z location of the point source object
+        function obj = set_z(obj,z)
+            obj.z = z; % Set Z location (m)
+        end
         
         % Set the rotation angles (radians)
         function obj = set_rotation(obj,az,el)

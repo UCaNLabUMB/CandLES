@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 09-Oct-2015 16:30:42
+% Last Modified by GUIDE v2.5 23-Oct-2015 10:59:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,7 +78,10 @@ setappdata(0, 'h_GUI_CandlesTxSet', hObject);
 % that it can be edited without modifying the main environment until saved.
 mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
 txSetEnv  = mainEnv;
+TX_SELECT = 1;
 setappdata(hObject, 'txSetEnv', txSetEnv);
+setappdata(hObject, 'TX_SELECT', TX_SELECT);
+set_values(); % Set the values and display environment
 
 
 % --- Outputs from this function are returned to the command line.
@@ -112,26 +115,104 @@ rmappdata(0, 'h_GUI_CandlesTxSet');
 delete(hObject);
 
 
-function edit_RmHeight_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_RmHeight (see GCBO)
+% --- Executes on selection change in popup_tx_select.
+function popup_tx_select_Callback(hObject, eventdata, handles)
+% hObject    handle to popup_tx_select (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT = get(hObject,'Value');
+setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+set_values(); % Set the values and display room with selected TX
 
-% Hints: get(hObject,'String') returns contents of edit_RmHeight as text
-%        str2double(get(hObject,'String')) returns contents of edit_RmHeight as a double
 
-% --- Executes during object creation, after setting all properties.
-function edit_RmHeight_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_RmHeight (see GCBO)
+function edit_Tx_x_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Tx_x (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    set(hObject,'String',txSetEnv.txs(TX_SELECT).x);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,txSetEnv.rm.length);
+    
+    % Set the correct value in txSetEnv, save to handle, and update GUI
+    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_x(temp);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values();
 end
 
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-set(hObject,'string',num2str(mainEnv.rm.height));
+function edit_Tx_y_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Tx_y (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    set(hObject,'String',txSetEnv.txs(TX_SELECT).y);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,txSetEnv.rm.width);
+    
+    % Set the correct value in txSetEnv, save to handle, and update GUI
+    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_y(temp);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values();
+end
+
+function edit_Tx_z_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Tx_z (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    set(hObject,'String',txSetEnv.txs(TX_SELECT).z);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,txSetEnv.rm.height);
+    
+    % Set the correct value in txSetEnv, save to handle, and update GUI
+    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_z(temp);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values();
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set the values within the GUI
+% --------------------------------------------------------------------
+function set_values()
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    handles            = guidata(h_GUI_CandlesTxSet);
+    
+    % Display room with selected Tx
+    SYS_display_room(handles.axes_room, txSetEnv, 1, TX_SELECT);
+    
+    set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x));
+    set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y));
+    set(handles.edit_Tx_z,'string',num2str(txSetEnv.txs(TX_SELECT).z));
+
+    set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
+    set(handles.popup_tx_select,'Value',TX_SELECT);
+
+
