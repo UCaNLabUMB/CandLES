@@ -150,16 +150,18 @@ function menu_Load_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [FileName, PathName] = uigetfile('*.mat');
-load([PathName FileName])
- 
-% FIXME: Should validate the content of the loaded mainEnv
-if exist('mainEnv','var')
-    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-    set_values();
-else
-    warndlg('Invalid .mat file. CandLES Environment does not exist');
+if FileName ~= 0
+    load([PathName FileName])
+    % FIXME: Should validate the content of the loaded mainEnv
+    if exist('mainEnv','var')
+        h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+        setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+        set_values();
+    else
+        warndlg('Invalid .mat file. CandLES Environment does not exist');
+    end
 end
+ 
 
 
 % --------------------------------------------------------------------
