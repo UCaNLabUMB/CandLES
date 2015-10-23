@@ -31,7 +31,7 @@ function varargout = CandLES_RxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_RxSet
 
-% Last Modified by GUIDE v2.5 23-Oct-2015 13:06:16
+% Last Modified by GUIDE v2.5 23-Oct-2015 13:59:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -115,7 +115,58 @@ rmappdata(0, 'h_GUI_CandlesRxSet');
 delete(hObject);
 
 
-% --- Executes on selection change in popup_rx_select.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% RX MENU FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------------------
+function menu_File_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_File (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menu_addRx_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addRx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+
+my_rxs = rxSetEnv.rxs;
+my_rxs(length(my_rxs)+1) = candles_classes.rx_ps();
+% FIXME: Check room bounds to make sure the new RX is in the room
+
+RX_SELECT    = length(my_rxs);
+rxSetEnv.rxs = my_rxs;
+setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
+setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+set_values(); % Set the values and display room with selected RX
+
+% --------------------------------------------------------------------
+function menu_deleteRx_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_deleteRx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+
+my_rxs = rxSetEnv.rxs;
+if(length(my_rxs) == 1)
+    errordlg('CandLES environment must contain a Rx.','Rx Delete');
+else
+    my_rxs(RX_SELECT) = [];
+    RX_SELECT = min(RX_SELECT, length(my_rxs));
+    rxSetEnv.rxs = my_rxs;
+    setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
+    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+    set_values(); % Set the values and display room with selected RX
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% RX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function popup_rx_select_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_rx_select (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB

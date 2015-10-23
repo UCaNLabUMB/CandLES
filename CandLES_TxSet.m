@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 23-Oct-2015 12:15:15
+% Last Modified by GUIDE v2.5 23-Oct-2015 13:24:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -115,7 +115,58 @@ rmappdata(0, 'h_GUI_CandlesTxSet');
 delete(hObject);
 
 
-% --- Executes on selection change in popup_tx_select.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% TX MENU FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------------------
+function menu_File_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_File (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menu_addTx_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addTx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+my_txs = txSetEnv.txs;
+my_txs(length(my_txs)+1) = candles_classes.tx_ps();
+% FIXME: Check room bounds to make sure the new TX is in the room
+
+TX_SELECT    = length(my_txs);
+txSetEnv.txs = my_txs;
+setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+set_values(); % Set the values and display room with selected TX
+
+% --------------------------------------------------------------------
+function menu_deleteTx_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_deleteTx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+my_txs = txSetEnv.txs;
+if(length(my_txs) == 1)
+    errordlg('CandLES environment must contain a Tx.','Tx Delete');
+else
+    my_txs(TX_SELECT) = [];
+    TX_SELECT = min(TX_SELECT, length(my_txs));
+    txSetEnv.txs = my_txs;
+    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% TX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function popup_tx_select_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_tx_select (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -221,7 +272,6 @@ else
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     set_values();
 end
-
 
 function edit_Tx_el_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_el (see GCBO)
