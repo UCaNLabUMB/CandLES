@@ -77,6 +77,28 @@ classdef point_source
             obj.y_hat = 1*cosd(el)*sind(az);
             obj.z_hat = 1*sind(el);
         end
+        % Set the azimuth of the point source object
+        function obj = set_az(obj,az)
+            obj.az = az; % Set Azimuth Angle (rad)
+            
+            % Convert to degrees for exact calculation using sind and cosd.
+            az = (180/pi)*az;
+            % Calculate unit vector for az, el
+            obj.x_hat = 1*cosd(obj.el)*cosd(az);
+            obj.y_hat = 1*cosd(obj.el)*sind(az);
+            obj.z_hat = 1*sind(obj.el);
+        end
+        % Set the azimuth of the point source object
+        function obj = set_el(obj,el)
+            obj.el = el; % Set Elevation Angle (rad)
+            
+            % Convert to degrees for exact calculation using sind and cosd.
+            el = (180/pi)*el;
+            % Calculate unit vector for az, el
+            obj.x_hat = 1*cosd(el)*cosd(obj.az);
+            obj.y_hat = 1*cosd(el)*sind(obj.az);
+            obj.z_hat = 1*sind(el);
+        end
         
         %% Get property values
         % get azimuth and elevation angles in radians

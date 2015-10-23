@@ -31,7 +31,7 @@ function varargout = CandLES_RxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_RxSet
 
-% Last Modified by GUIDE v2.5 23-Oct-2015 11:48:17
+% Last Modified by GUIDE v2.5 23-Oct-2015 13:06:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -126,6 +126,9 @@ setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
 set_values(); % Set the values and display room with selected RX
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% RX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function edit_Rx_x_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Rx_x (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -142,7 +145,7 @@ else
     temp = max(temp, 0);
     temp = min(temp,rxSetEnv.rm.length);
     
-    % Set the correct value in txSetEnv, save to handle, and update GUI
+    % Set the correct value in rxSetEnv, save to handle, and update GUI
     rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_x(temp);
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
     set_values();
@@ -164,7 +167,7 @@ else
     temp = max(temp, 0);
     temp = min(temp,rxSetEnv.rm.width);
     
-    % Set the correct value in txSetEnv, save to handle, and update GUI
+    % Set the correct value in rxSetEnv, save to handle, and update GUI
     rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_y(temp);
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
     set_values();
@@ -186,11 +189,62 @@ else
     temp = max(temp, 0);
     temp = min(temp,rxSetEnv.rm.height);
     
-    % Set the correct value in txSetEnv, save to handle, and update GUI
+    % Set the correct value in rxSetEnv, save to handle, and update GUI
     rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_z(temp);
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
     set_values();
 end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% RX ROTATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function edit_Rx_az_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Rx_az (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    [my_az,~] = rxSetEnv.rxs(RX_SELECT).get_angle_deg();
+    set(hObject,'String',my_az);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,360);
+    
+    % Set the correct value in rxSetEnv, save to handle, and update GUI
+    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_az(temp*pi/180);
+    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+    set_values();
+end
+
+function edit_Rx_el_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Rx_el (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    [~,my_el] = rxSetEnv.rxs(RX_SELECT).get_angle_deg();
+    set(hObject,'String',my_el);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,360);
+    
+    % Set the correct value in rxSetEnv, save to handle, and update GUI
+    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_el(temp*pi/180);
+    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+    set_values();
+end
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -207,11 +261,17 @@ function set_values()
     % Display room with selected Rx
     SYS_display_room(handles.axes_room, rxSetEnv, 2, RX_SELECT);
     
+    % Set Location boxes
     set(handles.edit_Rx_x,'string',num2str(rxSetEnv.rxs(RX_SELECT).x));
     set(handles.edit_Rx_y,'string',num2str(rxSetEnv.rxs(RX_SELECT).y));
     set(handles.edit_Rx_z,'string',num2str(rxSetEnv.rxs(RX_SELECT).z));
 
+    % Set Rotation boxes
+    [my_az,my_el] = rxSetEnv.rxs(RX_SELECT).get_angle_deg();
+    set(handles.edit_Rx_az,'string',num2str(my_az));
+    set(handles.edit_Rx_el,'string',num2str(my_el));
+
+    % Set Rx Selection box
     set(handles.popup_rx_select,'String',1:1:length(rxSetEnv.rxs));
     set(handles.popup_rx_select,'Value',RX_SELECT);
-
 

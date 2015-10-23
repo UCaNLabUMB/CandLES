@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 23-Oct-2015 10:59:09
+% Last Modified by GUIDE v2.5 23-Oct-2015 12:15:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -126,6 +126,9 @@ setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
 set_values(); % Set the values and display room with selected TX
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% TX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function edit_Tx_x_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_x (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -194,6 +197,57 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% TX ROTATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function edit_Tx_az_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Tx_az (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    [my_az,~] = txSetEnv.txs(TX_SELECT).get_angle_deg();
+    set(hObject,'String',my_az);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,360);
+    
+    % Set the correct value in txSetEnv, save to handle, and update GUI
+    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_az(temp*pi/180);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values();
+end
+
+
+function edit_Tx_el_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Tx_el (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if isnan(temp)
+    [~,my_el] = txSetEnv.txs(TX_SELECT).get_angle_deg();
+    set(hObject,'String',my_el);
+else
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,360);
+    
+    % Set the correct value in txSetEnv, save to handle, and update GUI
+    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_el(temp*pi/180);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values();
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -208,11 +262,18 @@ function set_values()
     % Display room with selected Tx
     SYS_display_room(handles.axes_room, txSetEnv, 1, TX_SELECT);
     
+    % Set Location boxes
     set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x));
     set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y));
     set(handles.edit_Tx_z,'string',num2str(txSetEnv.txs(TX_SELECT).z));
 
+    % Set Rotation boxes
+    [my_az,my_el] = txSetEnv.txs(TX_SELECT).get_angle_deg();
+    set(handles.edit_Tx_az,'string',num2str(my_az));
+    set(handles.edit_Tx_el,'string',num2str(my_el));
+
+    % Set Tx Selection box
     set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
     set(handles.popup_tx_select,'Value',TX_SELECT);
 
-
+    
