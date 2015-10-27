@@ -75,17 +75,6 @@ setappdata(0, 'h_GUI_CandlesMain', hObject);
 
 % Generate default environment, store in the GUI handle, and setup GUI
 mainEnv = candles_classes.candlesEnv();
-% Test Box Display... 
-% mainEnv.boxes(1:3) = candles_classes.box(1,1,0,0.5,3,2);
-% mainEnv.boxes(2).x = 2;
-% mainEnv.boxes(3).x = 3;
-% mainEnv.txs(1:3) = candles_classes.tx_ps(1.5,2,2.5);
-% mainEnv.txs(2)   = mainEnv.txs(2).set_location(2.5,2,2.5);
-% mainEnv.txs(3)   = mainEnv.txs(3).set_location(3.5,2,2.5);
-% mainEnv.rxs(1:3) = candles_classes.rx_ps(1.5,2,1);
-% mainEnv.rxs(2)   = mainEnv.rxs(2).set_location(2.5,2,1);
-% mainEnv.rxs(3)   = mainEnv.rxs(3).set_location(3.5,2,1);
-
 setappdata(hObject, 'mainEnv', mainEnv);
 set_values();
 

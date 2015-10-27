@@ -57,7 +57,40 @@ classdef box
                 error('Invalid number of arguments');
             end
         end
+        
+        %% Set property values
+        % Set the X,Y,Z location of the box
+        function obj = set_location(obj,x,y,z)
+            obj.x = x; % Set X location (m)
+            obj.y = y; % Set X location (m)
+            obj.z = z; % Set X location (m)
+        end
+        % Set the X location of the box
+        function obj = set_x(obj,x)
+            obj.x = x; % Set X location (m)
+        end
+        % Set the Y location of the box
+        function obj = set_y(obj,y)
+            obj.y = y; % Set Y location (m)
+        end
+        % Set the Z location of the box
+        function obj = set_z(obj,z)
+            obj.z = z; % Set Z location (m)
+        end
+        
+        % Set the length of the box
+        function obj = set_length(obj,length)
+            obj.length = length; % Set length (m)
+        end
+        % Set the width of the box
+        function obj = set_width(obj,width)
+            obj.width = width; % Set width (m)
+        end
+        % Set the height of the box
+        function obj = set_height(obj,height)
+            obj.height = height; % Set height (m)
+        end        
+        
     end
-    
 end
 

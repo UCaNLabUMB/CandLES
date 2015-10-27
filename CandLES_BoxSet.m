@@ -31,7 +31,7 @@ function varargout = CandLES_BoxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_BoxSet
 
-% Last Modified by GUIDE v2.5 09-Oct-2015 17:52:29
+% Last Modified by GUIDE v2.5 27-Oct-2015 12:47:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,7 +78,14 @@ setappdata(0, 'h_GUI_CandlesBoxSet', hObject);
 % that it can be edited without modifying the main environment until saved.
 mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
 boxSetEnv  = mainEnv;
+if isempty(boxSetEnv.boxes)
+    BOX_SELECT = 0; % Set BOX_SELECT to 0 when no boxes exist.
+else
+    BOX_SELECT = 1;
+end    
 setappdata(hObject, 'boxSetEnv', boxSetEnv);
+setappdata(hObject, 'BOX_SELECT', BOX_SELECT);
+set_values(); % Set the values and display environment
 
 
 % --- Outputs from this function are returned to the command line.
@@ -112,26 +119,246 @@ rmappdata(0, 'h_GUI_CandlesBoxSet');
 delete(hObject);
 
 
-function edit_RmHeight_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_RmHeight (see GCBO)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% BOX MENU FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------------------
+function menu_File_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_File (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit_RmHeight as text
-%        str2double(get(hObject,'String')) returns contents of edit_RmHeight as a double
-
-% --- Executes during object creation, after setting all properties.
-function edit_RmHeight_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_RmHeight (see GCBO)
+% --------------------------------------------------------------------
+function menu_addBox_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+my_boxes = boxSetEnv.boxes;
+my_boxes(length(my_boxes)+1) = candles_classes.box();
+% FIXME: Check room bounds to make sure the new box is in the room
+
+BOX_SELECT      = length(my_boxes);
+boxSetEnv.boxes = my_boxes;
+setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+set_values(); % Set the values and display room with selected box
+
+% --------------------------------------------------------------------
+function menu_deleteBox_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_deleteBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+my_boxes = boxSetEnv.boxes;
+if(~isempty(my_boxes))
+    my_boxes(BOX_SELECT) = [];
+    BOX_SELECT = min(BOX_SELECT, length(my_boxes));
+    boxSetEnv.boxes = my_boxes;
+    setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    set_values(); % Set the values and display room with selected TX
 end
 
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-set(hObject,'string',num2str(mainEnv.rm.height));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% BOX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function popup_box_select_Callback(hObject, eventdata, handles)
+% hObject    handle to popup_box_select (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT           = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+if (BOX_SELECT > 0)
+    BOX_SELECT = get(hObject,'Value');
+    setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+    set_values(); % Set the values and display room with selected TX
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% BOX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function edit_box_x_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_box_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,boxSetEnv.rm.length ...
+                     - boxSetEnv.boxes(BOX_SELECT).length);
+
+    % Set the correct value in txSetEnv and save to handle
+    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_x(temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_box_y_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_box_y (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,boxSetEnv.rm.width ...
+                     - boxSetEnv.boxes(BOX_SELECT).width);
+
+    % Set the correct value in txSetEnv and save to handle
+    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_y(temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_box_z_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_box_z (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0);
+    temp = min(temp,boxSetEnv.rm.height ...
+                     - boxSetEnv.boxes(BOX_SELECT).height);
+
+    % Set the correct value in txSetEnv and save to handle
+    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_z(temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% BOX SIZE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function edit_box_length_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_box_length (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0.1);
+    temp = min(temp,boxSetEnv.rm.length ...
+                     - boxSetEnv.boxes(BOX_SELECT).x);
+
+    % Set the correct value in txSetEnv and save to handle 
+    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_length(temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_box_width_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_box_width (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0.1);
+    temp = min(temp,boxSetEnv.rm.width ...
+                     - boxSetEnv.boxes(BOX_SELECT).y);
+
+    % Set the correct value in txSetEnv and save to handle 
+    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_width(temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_box_height_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_box_height (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+
+temp = str2double(get(hObject,'String'));
+if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
+    % FIXME: Add warning dialog boxes for out of range
+    temp = max(temp, 0.1);
+    temp = min(temp,boxSetEnv.rm.height ...
+                     - boxSetEnv.boxes(BOX_SELECT).z);
+
+    % Set the correct value in txSetEnv and save to handle 
+    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_height(temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set the values within the GUI
+% --------------------------------------------------------------------
+function set_values()
+    h_GUI_CandlesBoxSet  = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT           = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv            = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    handles              = guidata(h_GUI_CandlesBoxSet);
+    
+    if (BOX_SELECT > 0)
+        % Display room with selected Box
+        SYS_display_room(handles.axes_room, boxSetEnv, 3, BOX_SELECT);
+
+        % Set Location boxes
+        set(handles.edit_box_x,'string',num2str(boxSetEnv.boxes(BOX_SELECT).x));
+        set(handles.edit_box_y,'string',num2str(boxSetEnv.boxes(BOX_SELECT).y));
+        set(handles.edit_box_z,'string',num2str(boxSetEnv.boxes(BOX_SELECT).z));
+
+        % Set Size boxes
+        set(handles.edit_box_length,'string',num2str(boxSetEnv.boxes(BOX_SELECT).length));
+        set(handles.edit_box_width ,'string',num2str(boxSetEnv.boxes(BOX_SELECT).width));
+        set(handles.edit_box_height,'string',num2str(boxSetEnv.boxes(BOX_SELECT).height));
+
+        % Set Box Selection box
+        set(handles.popup_box_select,'String',1:1:length(boxSetEnv.boxes));
+        set(handles.popup_box_select,'Value',BOX_SELECT);
+    else
+        % Display room with selected Box
+        SYS_display_room(handles.axes_room, boxSetEnv, 0);
+
+        % Set Location boxes
+        set(handles.edit_box_x,'string','--');
+        set(handles.edit_box_y,'string','--');
+        set(handles.edit_box_z,'string','--');
+
+        % Set Size boxes
+        set(handles.edit_box_length,'string','--');
+        set(handles.edit_box_width ,'string','--');
+        set(handles.edit_box_height,'string','--');
+
+        % Set Box Selection box
+        set(handles.popup_box_select,'String','BOX SELECT');
+        set(handles.popup_box_select,'Value',1);
+    end
+

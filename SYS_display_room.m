@@ -20,9 +20,10 @@ function SYS_display_room(my_axes, env, disp_type, arg)
   cla;
   if ~exist('disp_type', 'var')
       disp_type = 0;
+  end
+  if (disp_type == 0)
       arg       = 0;
   end
-
   
   %%%% Boxes %%%
   if (~isempty(env.boxes))
