@@ -39,6 +39,16 @@ classdef room
                 error('Invalid number of arguments');
             end
         end
+        
+        function obj = setLength(obj, temp)
+            obj.length = temp;
+        end
+        function obj = setWidth(obj, temp)
+            obj.width = temp;
+        end
+        function obj = setHeight(obj, temp)
+            obj.height = temp;
+        end
     end
     
 end

@@ -81,7 +81,6 @@ set_values();
 % Store functions to be called externally
 setappdata(hObject,  'fhLoadImages', @load_images);
 setappdata(hObject,   'fhSetValues', @set_values );
-setappdata(hObject, 'fhMinRoomDims', @min_room_dims );
 
 
 % --- Executes when user attempts to close figure1.
@@ -264,31 +263,15 @@ function edit_RmLength_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(handles.edit_RmLength,'String'));
 
-temp = str2double(get(handles.edit_RmLength,'String'));
-if isnan(temp)
-    set(handles.edit_RmLength,'String',mainEnv.rm.length);
-else
-    % Do not make dimensions such that objects are outside the room.
-    % For now, cap  room length at 10m. For computational speed, resolution 
-    % needs to be lowered when increasing room size.
-    % FIXME: Add warning dialog boxes for invalid entry cases
-    [x,~,~] = min_room_dims(mainEnv);
-    temp = max(temp,x);
-    temp = min(temp,10);
-%     warndlg(['Dimensions must be set such that all transmitters,' ...
-%              'receivers, and objects remain within the room.'], 'Warning');
-%     warndlg('CandLES currently limits room dimensions to 10m.', 'Warning');
-    
-    % Set the correct value in mainEnv and update the GUI
-    mainEnv.rm.length = temp;
-    set(handles.edit_RmLength,'String',temp);
-
-    % Update the room image and save mainEnv back to the GUI handle.
-    SYS_display_room(handles.axes_room, mainEnv);
+[mainEnv, ERR] = mainEnv.setRoomDim('length',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
+    
 % Room Width
 % --------------------------------------------------------------------
 function edit_RmWidth_Callback(hObject, eventdata, handles)
@@ -297,30 +280,14 @@ function edit_RmWidth_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(handles.edit_RmWidth,'String'));
 
-temp = str2double(get(handles.edit_RmWidth,'String'));
-if isnan(temp)
-    set(handles.edit_RmWidth,'String',mainEnv.rm.width);
-else
-    % Do not make dimensions such that objects are outside the room.
-    % For now, cap  room width at 10m. For computational speed, resolution 
-    % needs to be lowered when increasing room size.
-    % FIXME: Add warning dialog boxes for invalid entry cases
-    [~,y,~] = min_room_dims(mainEnv);
-    temp = max(temp,y);
-    temp = min(temp,10);
-%     warndlg(['Dimensions must be set such that all transmitters,' ...
-%              'receivers, and objects remain within the room.'], 'Warning');
-%     warndlg('CandLES currently limits room dimensions to 10m.', 'Warning');
-    
-    % Set the correct value in mainEnv and update the GUI
-    mainEnv.rm.width = temp;
-    set(handles.edit_RmWidth,'String',temp);
-
-    % Update the room image and save mainEnv back to the GUI handle.
-    SYS_display_room(handles.axes_room, mainEnv);
+[mainEnv, ERR] = mainEnv.setRoomDim('width',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
+set_values();
 
 % Room Height
 % --------------------------------------------------------------------
@@ -330,31 +297,14 @@ function edit_RmHeight_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(handles.edit_RmHeight,'String'));
 
-temp = str2double(get(handles.edit_RmHeight,'String'));
-if isnan(temp)
-    set(handles.edit_RmHeight,'String',mainEnv.rm.height);
-else
-    % Do not make dimensions such that objects are outside the room.
-    % For now, cap  room height at 10m. For computational speed, resolution 
-    % needs to be lowered when increasing room size.
-    % FIXME: Add warning dialog boxes for invalid entry cases
-    [~,~,z] = min_room_dims(mainEnv);
-    temp = max(temp,z);
-    temp = min(temp,10);
-%     warndlg(['Dimensions must be set such that all transmitters,' ...
-%              'receivers, and objects remain within the room.'], 'Warning');
-%     warndlg('CandLES currently limits room dimensions to 10m.', 'Warning');
-    
-    % Set the correct value in mainEnv and update the GUI
-    mainEnv.rm.height = temp;
-    set(handles.edit_RmHeight,'String',temp);
-
-    % Update the room image and save mainEnv back to the GUI handle.
-    SYS_display_room(handles.axes_room, mainEnv);
+[mainEnv, ERR] = mainEnv.setRoomDim('height',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 % Room Reflections: North
 % --------------------------------------------------------------------
@@ -627,30 +577,3 @@ function set_values()
     set(handles.slider_RefTop,   'value', mainEnv.rm.ref(3,1));
     set(handles.slider_RefBottom,'value', mainEnv.rm.ref(3,2));
 
-% Get the maximum dimensions of boxes, txs, or rxs
-% --------------------------------------------------------------------
-function [min_x,min_y,min_z] = min_room_dims(env)
-
-    % Minimum bounding box for txs and rxs
-    txrx_max_x = max(max([env.txs.x]),max([env.rxs.x]));
-    txrx_max_y = max(max([env.txs.y]),max([env.rxs.y]));
-    txrx_max_z = max(max([env.txs.z]),max([env.rxs.z]));
-    
-    if (isempty(env.boxes))
-        min_x = txrx_max_x;
-        min_y = txrx_max_y;
-        min_z = txrx_max_z;
-        
-    else
-        % Minimum bounding box for boxes
-        box_max_x = max(max([env.boxes.x] + [env.boxes.length]));
-        box_max_y = max(max([env.boxes.y] + [env.boxes.width]));
-        box_max_z = max(max([env.boxes.z] + [env.boxes.height]));
-
-        % Minimum room dimensions to containt txs, rxs, and boxes
-        min_x = max(txrx_max_x, box_max_x);
-        min_y = max(txrx_max_y, box_max_y);
-        min_z = max(txrx_max_z, box_max_z);
-    end   
-    
-    
