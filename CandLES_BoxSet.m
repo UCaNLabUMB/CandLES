@@ -31,7 +31,7 @@ function varargout = CandLES_BoxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_BoxSet
 
-% Last Modified by GUIDE v2.5 27-Oct-2015 12:47:27
+% Last Modified by GUIDE v2.5 28-Oct-2015 10:48:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -314,6 +314,239 @@ if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
 end
 set_values(); % update GUI
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%% BOX REFLECTION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Box Reflections: North
+% --------------------------------------------------------------------
+function slider_RefNorth_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_RefNorth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = get(hObject,'value'); % Get new val
+
+if (BOX_SELECT > 0)
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(1,1) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_RefNorth_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_RefNorth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = str2double(get(hObject,'String'));
+
+if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
+    ref = max(ref,0);
+    ref = min(ref,1);
+    
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(1,1) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+% Box Reflections: South
+% --------------------------------------------------------------------
+function slider_RefSouth_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_RefSouth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = get(hObject,'value'); % Get new val
+    
+if (BOX_SELECT > 0)
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(1,2) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_RefSouth_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_RefSouth (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = str2double(get(hObject,'String'));
+
+if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
+    ref = max(ref,0);
+    ref = min(ref,1);
+    
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(1,2) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+
+% Box Reflections: East
+% --------------------------------------------------------------------
+function slider_RefEast_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_RefEast (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = get(hObject,'value'); % Get new val
+    
+if (BOX_SELECT > 0)
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(2,1) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_RefEast_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_RefEast (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = str2double(get(hObject,'String'));
+
+if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
+    ref = max(ref,0);
+    ref = min(ref,1);
+    
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(2,1) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+
+% Box Reflections: West
+% --------------------------------------------------------------------
+function slider_RefWest_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_RefWest (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = get(hObject,'value'); % Get new val
+    
+if (BOX_SELECT > 0)
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(2,2) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_RefWest_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_RefWest (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = str2double(get(hObject,'String'));
+
+if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
+    ref = max(ref,0);
+    ref = min(ref,1);
+    
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(2,2) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+
+
+% Box Reflections: Top
+% --------------------------------------------------------------------
+function slider_RefTop_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_RefTop (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = get(hObject,'value'); % Get new val
+    
+if (BOX_SELECT > 0)
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(3,1) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_RefTop_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_RefTop (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = str2double(get(hObject,'String'));
+
+if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
+    ref = max(ref,0);
+    ref = min(ref,1);
+    
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(3,1) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+
+% Box Reflections: Bottom
+% --------------------------------------------------------------------
+function slider_RefBottom_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_RefBottom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = get(hObject,'value'); % Get new val
+    
+if (BOX_SELECT > 0)
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(3,2) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+function edit_RefBottom_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_RefBottom (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+ref                 = str2double(get(hObject,'String'));
+
+if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
+    ref = max(ref,0);
+    ref = min(ref,1);
+    
+    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
+    boxSetEnv.boxes(BOX_SELECT).ref(3,2) = ref;
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+end
+set_values(); % update GUI
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -329,16 +562,32 @@ function set_values()
     if (BOX_SELECT > 0)
         % Display room with selected Box
         SYS_display_room(handles.axes_room, boxSetEnv, 3, BOX_SELECT);
+        my_box = boxSetEnv.boxes(BOX_SELECT);
 
         % Set Location boxes
-        set(handles.edit_box_x,'string',num2str(boxSetEnv.boxes(BOX_SELECT).x));
-        set(handles.edit_box_y,'string',num2str(boxSetEnv.boxes(BOX_SELECT).y));
-        set(handles.edit_box_z,'string',num2str(boxSetEnv.boxes(BOX_SELECT).z));
+        set(handles.edit_box_x,      'string',       num2str(my_box.x));
+        set(handles.edit_box_y,      'string',       num2str(my_box.y));
+        set(handles.edit_box_z,      'string',       num2str(my_box.z));
 
         % Set Size boxes
-        set(handles.edit_box_length,'string',num2str(boxSetEnv.boxes(BOX_SELECT).length));
-        set(handles.edit_box_width ,'string',num2str(boxSetEnv.boxes(BOX_SELECT).width));
-        set(handles.edit_box_height,'string',num2str(boxSetEnv.boxes(BOX_SELECT).height));
+        set(handles.edit_box_length, 'string',  num2str(my_box.length));
+        set(handles.edit_box_width , 'string',   num2str(my_box.width));
+        set(handles.edit_box_height, 'string',  num2str(my_box.height));
+
+        % Set Box Reflectivities
+        set(handles.edit_RefNorth,   'string',         my_box.ref(1,1));
+        set(handles.edit_RefSouth,   'string',         my_box.ref(1,2)); 
+        set(handles.edit_RefEast,    'string',         my_box.ref(2,1));
+        set(handles.edit_RefWest,    'string',         my_box.ref(2,2));
+        set(handles.edit_RefTop,     'string',         my_box.ref(3,1));
+        set(handles.edit_RefBottom,  'string',         my_box.ref(3,2));
+
+        set(handles.slider_RefNorth,  'value',         my_box.ref(1,1));
+        set(handles.slider_RefSouth,  'value',         my_box.ref(1,2));
+        set(handles.slider_RefEast,   'value',         my_box.ref(2,1));
+        set(handles.slider_RefWest,   'value',         my_box.ref(2,2));
+        set(handles.slider_RefTop,    'value',         my_box.ref(3,1));
+        set(handles.slider_RefBottom, 'value',         my_box.ref(3,2));
 
         % Set Box Selection box
         set(handles.popup_box_select,'String',1:1:length(boxSetEnv.boxes));
@@ -348,17 +597,34 @@ function set_values()
         SYS_display_room(handles.axes_room, boxSetEnv, 0);
 
         % Set Location boxes
-        set(handles.edit_box_x,'string','--');
-        set(handles.edit_box_y,'string','--');
-        set(handles.edit_box_z,'string','--');
+        set(handles.edit_box_x,      'string', '--');
+        set(handles.edit_box_y,      'string', '--');
+        set(handles.edit_box_z,      'string', '--');
 
         % Set Size boxes
-        set(handles.edit_box_length,'string','--');
-        set(handles.edit_box_width ,'string','--');
-        set(handles.edit_box_height,'string','--');
+        set(handles.edit_box_length, 'string', '--');
+        set(handles.edit_box_width , 'string', '--');
+        set(handles.edit_box_height, 'string', '--');
+        
+        % Set box Reflectivities
+        set(handles.edit_RefNorth,   'string', '--');
+        set(handles.edit_RefSouth,   'string', '--');
+        set(handles.edit_RefEast,    'string', '--');
+        set(handles.edit_RefWest,    'string', '--');
+        set(handles.edit_RefTop,     'string', '--');
+        set(handles.edit_RefBottom,  'string', '--');
 
+        set(handles.slider_RefNorth, 'value',     1);
+        set(handles.slider_RefSouth, 'value',     1);
+        set(handles.slider_RefEast,  'value',     1);
+        set(handles.slider_RefWest,  'value',     1);
+        set(handles.slider_RefTop,   'value',     1);
+        set(handles.slider_RefBottom,'value',     1);        
+        
         % Set Box Selection box
         set(handles.popup_box_select,'String','BOX SELECT');
         set(handles.popup_box_select,'Value',1);
     end
+
+
 

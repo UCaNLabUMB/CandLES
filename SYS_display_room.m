@@ -96,14 +96,14 @@ function plot_boxes(boxes, disp_type, arg)
     ydata = [C_y; C_y; D_y; D_y];
     zdata = [C_z; D_z; D_z; C_z];
     patch(xdata,ydata,zdata, ...
-          [1-boxes(i).ref(2,2) 1-boxes(i).ref(2,2) 1],'LineWidth', box_lw);
+          [1-boxes(i).ref(2,1) 1-boxes(i).ref(2,1) 1],'LineWidth', box_lw);
 
     %West
     xdata = [C_x; C_x; C_x; C_x];
     ydata = [C_y; C_y; D_y; D_y];
     zdata = [C_z; D_z; D_z; C_z];
     patch(xdata,ydata,zdata, ...
-          [1-boxes(i).ref(2,1) 1-boxes(i).ref(2,1) 1],'LineWidth', box_lw);
+          [1-boxes(i).ref(2,2) 1-boxes(i).ref(2,2) 1],'LineWidth', box_lw);
 
     %Top
     xdata = [C_x; C_x; D_x; D_x];

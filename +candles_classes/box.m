@@ -21,37 +21,40 @@ classdef box
         %% Constructor
         function obj = box(x,y,z,l,w,h,ref)
             if nargin == 0
-                obj.x = 0;
-                obj.y = 0;
-                obj.z = 0;
+                obj.x      = 0;
+                obj.y      = 0;
+                obj.z      = 0;
                 obj.length = 0.1;
                 obj.width  = 0.1;
                 obj.height = 0.1;
-                obj.ref    = [1,1; 1,1; 1,0.5];
+                obj.ref    = [1,1; 1,1; 1,1];
                 
             elseif nargin == 3
-                obj.x = x;
-                obj.y = y;
-                obj.z = z;
+                obj.x      = x;
+                obj.y      = y;
+                obj.z      = z;
                 obj.length = 0.1;
                 obj.width  = 0.1;
                 obj.height = 0.1;
-                obj.ref    = [1,1; 1,1; 1,0.5];
+                obj.ref    = [1,1; 1,1; 1,1];
                 
             elseif nargin == 6
-                obj.x = x;
-                obj.y = y;
-                obj.z = z;
+                obj.x      = x;
+                obj.y      = y;
+                obj.z      = z;
                 obj.length = l;
                 obj.width  = w;
                 obj.height = h;
-                obj.ref    = [1,1; 1,1; 1,0.5];
+                obj.ref    = [1,1; 1,1; 1,1];
                 
             elseif nargin == 7;
+                obj.x      = x;
+                obj.y      = y;
+                obj.z      = z;
                 obj.length = l;
                 obj.width  = w;
                 obj.height = h;
-                obj.ref    = ref; %FIXME: Error Check for ref!
+                obj.ref    = max(min(ref,1),0);
 
             else
                 error('Invalid number of arguments');
