@@ -161,6 +161,11 @@ classdef candlesEnv
             end
         end
         
+        % nsewtb indicates north, south, east, west, top, or bottom wall
+        function [obj,ERR] = setRoomRef(obj,nsewtb,temp)
+            [obj.rm,ERR] = obj.rm.setRef(nsewtb, temp);
+        end
+        
         % Get the maximum dimensions of boxes, txs, or rxs
         % -----------------------------------------------------------------
         function [min_x,min_y,min_z] = min_room_dims(obj)

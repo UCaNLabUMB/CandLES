@@ -315,12 +315,11 @@ function slider_RefNorth_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-ref               = get(handles.slider_RefNorth,'value'); % Get new value
+temp              = get(hObject,'value'); % Get new value
     
-% Set the correct value in mainEnv, update the GUI and save to GUI handle
-mainEnv.rm.ref(1,1) = ref;
-set(handles.edit_RefNorth,'String',ref);
+mainEnv = mainEnv.setRoomRef('N',temp);
 setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+set_values();
 
 function edit_RefNorth_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_RefNorth (see GCBO)
@@ -328,21 +327,14 @@ function edit_RefNorth_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(hObject,'String'));
 
-ref = str2double(get(handles.edit_RefNorth,'String'));
-if isnan(ref)
-    set(handles.edit_RefNorth,'String',mainEnv.rm.ref(1,1));
-else
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in mainEnv, update the GUI and save to GUI handle
-    mainEnv.rm.ref(1,1) = ref;
-    set(handles.edit_RefNorth,  'String', ref);
-    set(handles.slider_RefNorth, 'value', ref);
+[mainEnv, ERR] = mainEnv.setRoomRef('N',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 % Room Reflections: South
 % --------------------------------------------------------------------
@@ -353,12 +345,11 @@ function slider_RefSouth_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-ref               = get(handles.slider_RefSouth,'value'); % Get new value
+temp              = get(hObject,'value'); % Get new value
     
-% Set the correct value in mainEnv, update the GUI and save to GUI handle
-mainEnv.rm.ref(1,2) = ref;
-set(handles.edit_RefSouth,'String',ref);
+mainEnv = mainEnv.setRoomRef('S',temp);
 setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+set_values();
 
 function edit_RefSouth_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_RefSouth (see GCBO)
@@ -366,21 +357,14 @@ function edit_RefSouth_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(hObject,'String'));
 
-ref = str2double(get(handles.edit_RefSouth,'String'));
-if isnan(ref)
-    set(handles.edit_RefSouth,'String',mainEnv.rm.ref(1,2));
-else
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in mainEnv, update the GUI and save to GUI handle
-    mainEnv.rm.ref(1,2) = ref;
-    set(handles.edit_RefSouth,  'String', ref);
-    set(handles.slider_RefSouth, 'value', ref);
+[mainEnv, ERR] = mainEnv.setRoomRef('S',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 % Room Reflections: East
 % --------------------------------------------------------------------
@@ -391,12 +375,11 @@ function slider_RefEast_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-ref               = get(handles.slider_RefEast,'value'); % Get new value
+temp              = get(hObject,'value'); % Get new value
     
-% Set the correct value in mainEnv, update the GUI and save to GUI handle
-mainEnv.rm.ref(2,1) = ref;
-set(handles.edit_RefEast,'String',ref);
+mainEnv = mainEnv.setRoomRef('E',temp);
 setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+set_values();
 
 function edit_RefEast_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_RefEast (see GCBO)
@@ -404,21 +387,14 @@ function edit_RefEast_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(hObject,'String'));
 
-ref = str2double(get(handles.edit_RefEast,'String'));
-if isnan(ref)
-    set(handles.edit_RefEast,'String',mainEnv.rm.ref(2,1));
-else
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in mainEnv, update the GUI and save to GUI handle
-    mainEnv.rm.ref(2,1) = ref;
-    set(handles.edit_RefEast,  'String', ref);
-    set(handles.slider_RefEast, 'value', ref);
+[mainEnv, ERR] = mainEnv.setRoomRef('E',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 % Room Reflections: West
 % --------------------------------------------------------------------
@@ -429,12 +405,11 @@ function slider_RefWest_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-ref               = get(handles.slider_RefWest,'value'); % Get new value
+temp              = get(hObject,'value'); % Get new value
     
-% Set the correct value in mainEnv, update the GUI and save to GUI handle
-mainEnv.rm.ref(2,2) = ref;
-set(handles.edit_RefWest,'String',ref);
+mainEnv = mainEnv.setRoomRef('W',temp);
 setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+set_values();
 
 function edit_RefWest_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_RefWest (see GCBO)
@@ -442,21 +417,14 @@ function edit_RefWest_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(hObject,'String'));
 
-ref = str2double(get(handles.edit_RefWest,'String'));
-if isnan(ref)
-    set(handles.edit_RefWest,'String',mainEnv.rm.ref(2,2));
-else
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in mainEnv, update the GUI and save to GUI handle
-    mainEnv.rm.ref(2,2) = ref;
-    set(handles.edit_RefWest,  'String', ref);
-    set(handles.slider_RefWest, 'value', ref);
+[mainEnv, ERR] = mainEnv.setRoomRef('W',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 % Room Reflections: Top
 % --------------------------------------------------------------------
@@ -467,12 +435,11 @@ function slider_RefTop_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-ref               = get(handles.slider_RefTop,'value'); % Get new value
+temp              = get(hObject,'value'); % Get new value
     
-% Set the correct value in mainEnv, update the GUI and save to GUI handle
-mainEnv.rm.ref(3,1) = ref;
-set(handles.edit_RefTop,'String',ref);
+mainEnv = mainEnv.setRoomRef('T',temp);
 setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+set_values();
 
 function edit_RefTop_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_RefTop (see GCBO)
@@ -480,21 +447,14 @@ function edit_RefTop_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(hObject,'String'));
 
-ref = str2double(get(handles.edit_RefTop,'String'));
-if isnan(ref)
-    set(handles.edit_RefTop,'String',mainEnv.rm.ref(3,1));
-else
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in mainEnv, update the GUI and save to GUI handle
-    mainEnv.rm.ref(3,1) = ref;
-    set(handles.edit_RefTop,  'String', ref);
-    set(handles.slider_RefTop, 'value', ref);
+[mainEnv, ERR] = mainEnv.setRoomRef('T',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 % Room Reflections: Bottom
 % --------------------------------------------------------------------
@@ -505,12 +465,11 @@ function slider_RefBottom_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-ref               = get(handles.slider_RefBottom,'value'); % Get new value
+temp              = get(hObject,'value'); % Get new value
     
-% Set the correct value in mainEnv, update the GUI and save to GUI handle
-mainEnv.rm.ref(3,2) = ref;
-set(handles.edit_RefBottom,'String',ref);
+mainEnv = mainEnv.setRoomRef('B',temp);
 setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+set_values();
 
 function edit_RefBottom_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_RefBottom (see GCBO)
@@ -518,21 +477,14 @@ function edit_RefBottom_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
 mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+temp              = str2double(get(hObject,'String'));
 
-ref = str2double(get(handles.edit_RefBottom,'String'));
-if isnan(ref)
-    set(handles.edit_RefBottom,'String',mainEnv.rm.ref(3,2));
-else
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in mainEnv, update the GUI and save to GUI handle
-    mainEnv.rm.ref(3,2) = ref;
-    set(handles.edit_RefBottom,  'String', ref);
-    set(handles.slider_RefBottom, 'value', ref);
+[mainEnv, ERR] = mainEnv.setRoomRef('B',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
 end
-
+set_values();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
