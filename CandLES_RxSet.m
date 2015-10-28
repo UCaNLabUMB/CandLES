@@ -133,12 +133,8 @@ function menu_addRx_Callback(hObject, eventdata, handles)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
-my_rxs = rxSetEnv.rxs;
-my_rxs(length(my_rxs)+1) = candles_classes.rx_ps();
-% FIXME: Check room bounds to make sure the new RX is in the room
+[rxSetEnv, RX_SELECT]  = rxSetEnv.addRx();
 
-RX_SELECT    = length(my_rxs);
-rxSetEnv.rxs = my_rxs;
 setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
 setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
 set_values(); % Set the values and display room with selected RX
@@ -152,13 +148,13 @@ h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
-my_rxs = rxSetEnv.rxs;
-if(length(my_rxs) == 1)
+[rxSetEnv, ERR]  = rxSetEnv.removeRx(RX_SELECT);
+RX_SELECT = min(RX_SELECT, length(rxSetEnv.rxs));
+if(ERR == 1)
     errordlg('CandLES environment must contain a Rx.','Rx Delete');
 else
-    my_rxs(RX_SELECT) = [];
-    RX_SELECT = min(RX_SELECT, length(my_rxs));
-    rxSetEnv.rxs = my_rxs;
+    % NOTE: Do this in the else statement so that the error box doesn't 
+    % get hidden when the GUI is updated in set_values()
     setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
     set_values(); % Set the values and display room with selected RX
@@ -187,20 +183,14 @@ function edit_Rx_x_Callback(hObject, eventdata, handles)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    set(hObject,'String',rxSetEnv.rxs(RX_SELECT).x);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,rxSetEnv.rm.length);
-    
-    % Set the correct value in rxSetEnv, save to handle, and update GUI
-    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_x(temp);
+[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'x',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-    set_values();
 end
+set_values();
 
 function edit_Rx_y_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Rx_y (see GCBO)
@@ -209,20 +199,14 @@ function edit_Rx_y_Callback(hObject, eventdata, handles)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    set(hObject,'String',rxSetEnv.rxs(RX_SELECT).y);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,rxSetEnv.rm.width);
-    
-    % Set the correct value in rxSetEnv, save to handle, and update GUI
-    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_y(temp);
+[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'y',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-    set_values();
 end
+set_values();
 
 function edit_Rx_z_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Rx_z (see GCBO)
@@ -231,20 +215,14 @@ function edit_Rx_z_Callback(hObject, eventdata, handles)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    set(hObject,'String',rxSetEnv.rxs(RX_SELECT).z);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,rxSetEnv.rm.height);
-    
-    % Set the correct value in rxSetEnv, save to handle, and update GUI
-    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_z(temp);
+[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'z',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-    set_values();
 end
+set_values();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,21 +235,14 @@ function edit_Rx_az_Callback(hObject, eventdata, handles)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    [my_az,~] = rxSetEnv.rxs(RX_SELECT).get_angle_deg();
-    set(hObject,'String',my_az);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,360);
-    
-    % Set the correct value in rxSetEnv, save to handle, and update GUI
-    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_az(temp*pi/180);
+[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'az',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-    set_values();
 end
+set_values();
 
 function edit_Rx_el_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Rx_el (see GCBO)
@@ -280,21 +251,14 @@ function edit_Rx_el_Callback(hObject, eventdata, handles)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    [~,my_el] = rxSetEnv.rxs(RX_SELECT).get_angle_deg();
-    set(hObject,'String',my_el);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,360);
-    
-    % Set the correct value in rxSetEnv, save to handle, and update GUI
-    rxSetEnv.rxs(RX_SELECT) = rxSetEnv.rxs(RX_SELECT).set_el(temp*pi/180);
+[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'el',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-    set_values();
 end
+set_values();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

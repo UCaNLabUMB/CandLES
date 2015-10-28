@@ -132,12 +132,8 @@ function menu_addTx_Callback(hObject, eventdata, handles)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-my_txs = txSetEnv.txs;
-my_txs(length(my_txs)+1) = candles_classes.tx_ps();
-% FIXME: Check room bounds to make sure the new TX is in the room
+[txSetEnv, TX_SELECT]  = txSetEnv.addTx();
 
-TX_SELECT    = length(my_txs);
-txSetEnv.txs = my_txs;
 setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
 setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 set_values(); % Set the values and display room with selected TX
@@ -151,18 +147,17 @@ h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-my_txs = txSetEnv.txs;
-if(length(my_txs) == 1)
+[txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
+TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
+if(ERR == 1)
     errordlg('CandLES environment must contain a Tx.','Tx Delete');
 else
-    my_txs(TX_SELECT) = [];
-    TX_SELECT = min(TX_SELECT, length(my_txs));
-    txSetEnv.txs = my_txs;
+    % NOTE: Do this in the else statement so that the error box doesn't 
+    % get hidden when the GUI is updated in set_values()
     setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     set_values(); % Set the values and display room with selected TX
 end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -187,20 +182,14 @@ function edit_Tx_x_Callback(hObject, eventdata, handles)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    set(hObject,'String',txSetEnv.txs(TX_SELECT).x);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,txSetEnv.rm.length);
-    
-    % Set the correct value in txSetEnv, save to handle, and update GUI
-    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_x(temp);
+[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'x',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values();
 end
+set_values();
 
 function edit_Tx_y_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_y (see GCBO)
@@ -209,20 +198,14 @@ function edit_Tx_y_Callback(hObject, eventdata, handles)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    set(hObject,'String',txSetEnv.txs(TX_SELECT).y);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,txSetEnv.rm.width);
-    
-    % Set the correct value in txSetEnv, save to handle, and update GUI
-    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_y(temp);
+[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'y',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values();
 end
+set_values();
 
 function edit_Tx_z_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_z (see GCBO)
@@ -231,20 +214,14 @@ function edit_Tx_z_Callback(hObject, eventdata, handles)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    set(hObject,'String',txSetEnv.txs(TX_SELECT).z);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,txSetEnv.rm.height);
-    
-    % Set the correct value in txSetEnv, save to handle, and update GUI
-    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_z(temp);
+[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'z',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values();
 end
+set_values();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,21 +234,14 @@ function edit_Tx_az_Callback(hObject, eventdata, handles)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    [my_az,~] = txSetEnv.txs(TX_SELECT).get_angle_deg();
-    set(hObject,'String',my_az);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,360);
-    
-    % Set the correct value in txSetEnv, save to handle, and update GUI
-    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_az(temp*pi/180);
+[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'az',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values();
 end
+set_values();
 
 function edit_Tx_el_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_el (see GCBO)
@@ -280,21 +250,14 @@ function edit_Tx_el_Callback(hObject, eventdata, handles)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if isnan(temp)
-    [~,my_el] = txSetEnv.txs(TX_SELECT).get_angle_deg();
-    set(hObject,'String',my_el);
-else
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,360);
-    
-    % Set the correct value in txSetEnv, save to handle, and update GUI
-    txSetEnv.txs(TX_SELECT) = txSetEnv.txs(TX_SELECT).set_el(temp*pi/180);
+[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'el',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values();
 end
+set_values();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
