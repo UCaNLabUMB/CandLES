@@ -81,7 +81,7 @@ set_values();
 % Store functions to be called externally
 setappdata(hObject,  'fhLoadImages', @load_images);
 setappdata(hObject,   'fhSetValues', @set_values );
-
+setappdata(hObject,  'fhUpdateMain', @update_main);
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles) 
@@ -501,6 +501,15 @@ function load_images(guiHandle)
     axes(guiHandle.logo_SL);
     imshow('GUI_Images/pic_SL_logo.bmp');
 
+% Update the main GUI with the CandLES environment newEnv
+% --------------------------------------------------------------------
+function update_main(newEnv)
+    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+    mainEnv = newEnv; %FIXME: Add error check here?
+
+    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+    set_values();
+    
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()

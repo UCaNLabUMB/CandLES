@@ -31,7 +31,7 @@ function varargout = CandLES_BoxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_BoxSet
 
-% Last Modified by GUIDE v2.5 28-Oct-2015 10:48:31
+% Last Modified by GUIDE v2.5 09-Dec-2015 15:28:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -104,19 +104,21 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesMain   = getappdata(0,'h_GUI_CandlesMain');
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+mainEnv             = getappdata(h_GUI_CandlesMain,'mainEnv');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
-% Hint: delete(hObject) closes the figure
-response = questdlg('Keep updates?', '','Yes','No','Yes');
-if strcmp(response,'Yes')
-    % FIXME: Need to store the updated info back to mainEnv or have a save
-    % option where this becomes a question "Close without save" and only
-    % shows up if changes have been made and not saved yet.
-    
+if (~isequal(mainEnv,boxSetEnv))
+    response = questdlg('Keep updates?', '','Yes','No','Yes');
+    if strcmp(response,'Yes')
+        update_main_env();
+    end
 end
 % Remove the handle value of the main figure from root (handle 0) and
 % delete (close) the figure
 rmappdata(0, 'h_GUI_CandlesBoxSet');
-delete(hObject);
+delete(hObject); % Close the figure
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -125,6 +127,19 @@ delete(hObject);
 % --------------------------------------------------------------------
 function menu_File_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_File (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menu_Update_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Update (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+update_main_env();
+
+% --------------------------------------------------------------------
+function menu_Edit_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -551,6 +566,15 @@ set_values(); % update GUI
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Call the update_main function from CandLES.m
+% --------------------------------------------------------------------
+function update_main_env()
+    h_GUI_CandlesMain    = getappdata(0,'h_GUI_CandlesMain');
+    h_GUI_CandlesBoxSet  = getappdata(0,'h_GUI_CandlesBoxSet');
+    boxSetEnv            = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    feval(getappdata(h_GUI_CandlesMain,'fhUpdateMain'),boxSetEnv);
+    figure(h_GUI_CandlesBoxSet); %Bring the Box GUI back to the front
+    
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
@@ -625,6 +649,8 @@ function set_values()
         set(handles.popup_box_select,'String','BOX SELECT');
         set(handles.popup_box_select,'Value',1);
     end
+
+
 
 
 
