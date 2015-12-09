@@ -4,7 +4,8 @@ classdef candlesEnv
     %   GUI. This includes the room parameters and simulation parameters.
     
     %% Class Properties
-    properties
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    properties (SetAccess = private)
         % GUI Properties
         
         % Simulation Environment Properties
@@ -18,6 +19,7 @@ classdef candlesEnv
     end
     
     %% Class Methods
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         % Constructor - Set default values for CandLES here!
         function obj = candlesEnv()
@@ -30,12 +32,17 @@ classdef candlesEnv
         end
         
         %% Transmitter Functions
+        % *****************************************************************
+        % Add a new transmitter
+        % -----------------------------------------------------------------
         function [obj, TX_NUM] = addTx(obj)
             TX_NUM = length(obj.txs)+1;
             obj.txs(TX_NUM) = candles_classes.tx_ps();
             % FIXME: Check room to make sure the new TX is in room
         end
         
+        % Remove the specified transmitter
+        % -----------------------------------------------------------------
         % ERR = 1 means there's only 1 TX left
         function [obj,ERR] = removeTx(obj, TX_NUM)
             ERR = 1;
@@ -45,6 +52,8 @@ classdef candlesEnv
             end
         end
         
+        % Set the position of the specified transmitter
+        % -----------------------------------------------------------------
         % ERR = -1 means invalid TX_NUM
         %     = -2 means invalid position (NaN or complex val)
         %     = -3 means invalid xyz
@@ -81,12 +90,17 @@ classdef candlesEnv
         end
         
         %% Receiver Functions
+        % *****************************************************************
+        % Add a new receiver
+        % -----------------------------------------------------------------
         function [obj, RX_NUM] = addRx(obj)
             RX_NUM = length(obj.rxs)+1;
             obj.rxs(RX_NUM) = candles_classes.rx_ps();
             % FIXME: Check room to make sure the new TX is in room
         end
         
+        % Remove the specified receiver
+        % -----------------------------------------------------------------
         function [obj,ERR] = removeRx(obj, RX_NUM)
             ERR = 1;
             if (length(obj.rxs) > 1)
@@ -95,6 +109,8 @@ classdef candlesEnv
             end
         end
         
+        % Set the position of the specified receiver
+        % -----------------------------------------------------------------
         % ERR = -1 means invalid RX_NUM
         %     = -2 means invalid position (NaN or complex val)
         %     = -3 means invalid xyz
@@ -130,11 +146,113 @@ classdef candlesEnv
             end
         end
         
+        %% Box Functions
+        % *****************************************************************
+        % Add a new box
+        % -----------------------------------------------------------------
+        function [obj, BOX_NUM] = addBox(obj)
+            BOX_NUM = length(obj.boxes)+1;
+            obj.boxes(BOX_NUM) = candles_classes.box();
+            % FIXME: Check room to make sure the new TX is in room
+        end
+        
+        % Remove the specified box
+        % -----------------------------------------------------------------
+        function [obj] = removeBox(obj, BOX_NUM)
+            if (~isempty(obj.boxes))
+                obj.boxes(BOX_NUM) = [];
+            end
+        end
+
+        % Set the position of the specified box
+        % -----------------------------------------------------------------
+        % ERR = -1 means invalid BOX_NUM
+        %     = -2 means invalid position (NaN or complex val)
+        %     = -3 means invalid xyz
+        function [obj,ERR] = setBoxPos(obj,BOX_NUM,xyz,temp)
+            ERR = 0;
+            if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
+                ERR = -1;
+            else
+                if (isnan(temp)) || (~isreal(temp))
+                    ERR = -2;
+                else
+                    switch xyz
+                        case 'x'
+                            % FIXME: Add ERR for out of range x, y, or z
+                            temp = max(min(temp,obj.rm.length ...
+                                                - obj.boxes(BOX_NUM).length),0);
+                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_x(temp);
+                        case 'y'
+                            temp = max(min(temp,obj.rm.width ...
+                                                - obj.boxes(BOX_NUM).width),0);
+                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_y(temp);
+                        case 'z'
+                            temp = max(min(temp,obj.rm.height ...
+                                                - obj.boxes(BOX_NUM).height),0);
+                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_z(temp);
+                        otherwise
+                            ERR = -3;
+                    end
+                end
+            end
+        end
+
+        % Set the dimensions of the specified box
+        % -----------------------------------------------------------------
+        % ERR = -1 means invalid BOX_NUM
+        %     = -2 means invalid dimension (NaN or complex val)
+        %     = -3 means invalid lwh
+        function [obj,ERR] = setBoxDim(obj,BOX_NUM,lwh,temp)
+            ERR = 0;
+            if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
+                ERR = -1;
+            else
+                if (isnan(temp)) || (~isreal(temp))
+                    ERR = -2;
+                else
+                    switch lwh
+                        case 'l'
+                            % FIXME: Add ERR for out of range x, y, or z
+                            temp = max(min(temp,obj.rm.length ...
+                                                - obj.boxes(BOX_NUM).x),0.1);
+                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_length(temp);
+                        case 'w'
+                            temp = max(min(temp,obj.rm.width ...
+                                                - obj.boxes(BOX_NUM).y),0.1);
+                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_width(temp);
+                        case 'h'
+                            temp = max(min(temp,obj.rm.height ...
+                                                - obj.boxes(BOX_NUM).z),0.1);
+                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_height(temp);
+                        otherwise
+                            ERR = -3;
+                    end
+                end
+            end
+        end
+
+        % Set the reflectivities of the specified box
+        % -----------------------------------------------------------------
+        % ERR = -1 means invalid BOX_NUM
+        %     = -2 means invalid ref (NaN or complex val)
+        %     = -3 means invalid nsewtb
+        function [obj,ERR] = setBoxRef(obj,BOX_NUM,nsewtb,ref)
+            if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
+                ERR = -1;
+            else
+                [obj.boxes(BOX_NUM),ERR] = obj.boxes(BOX_NUM).set_ref(nsewtb,ref);
+            end
+        end
+            
         %% Room Functions
+        % *****************************************************************
+        % Set the dimensions of the room
+        % -----------------------------------------------------------------
         % ERR = -2 means invalid value (NaN or complex val)
         %     = -3 means invalid xyz selection
         % Do not make dimensions such that objects are outside the room.
-        % For now, cap  room length at 10m. For computational speed, 
+        % FIXME: For now, cap  room length at 10m. For computational speed, 
         % resolution needs to be lowered when increasing room size.
         function [obj,ERR] = setRoomDim(obj,xyz,temp)
             ERR = 0;
@@ -161,7 +279,9 @@ classdef candlesEnv
             end
         end
         
+        % Set the room reflectivities
         % nsewtb indicates north, south, east, west, top, or bottom wall
+        % -----------------------------------------------------------------
         function [obj,ERR] = setRoomRef(obj,nsewtb,temp)
             [obj.rm,ERR] = obj.rm.setRef(nsewtb, temp);
         end

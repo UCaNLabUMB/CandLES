@@ -3,6 +3,7 @@ classdef rx_ps < candles_classes.point_source
     %   Detailed explanation goes here
     
     %% Class Properties
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties (SetAccess = private)
         A   = 0.0001;   % Receiver Area (m^2)
         FOV = pi/4;     % Receiver Field of View (rad)
@@ -11,8 +12,11 @@ classdef rx_ps < candles_classes.point_source
     end
     
     %% Class Methods
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% Constructor
+        % *****************************************************************
+        % -----------------------------------------------------------------
         function obj = rx_ps(x,y,z,az,el,A,FOV,n)
             % Setup and call superclass constructor
             if nargin == 0
@@ -39,12 +43,15 @@ classdef rx_ps < candles_classes.point_source
         end
         
         %% Set property values
+        % *****************************************************************
         % Set Receiver Area (m^2)
+        % -----------------------------------------------------------------
         function obj = set_A(obj,A)
             obj.A = A;
         end
         
         % Set Receiver Field of View (rad)
+        % -----------------------------------------------------------------
         function obj = set_FOV(obj,FOV)
             obj.FOV = FOV;
             
@@ -53,6 +60,7 @@ classdef rx_ps < candles_classes.point_source
         end         
         
         % Set optics refractive index
+        % -----------------------------------------------------------------
         function obj = set_n(obj,n)
             obj.n = n;
             

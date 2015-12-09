@@ -3,6 +3,7 @@ classdef tx_ps < candles_classes.point_source
     %   Detailed explanation goes here
     
     %% Class Properties
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties (SetAccess = private)
         Ps = 1;         % Transmit Optical Power (W)
         m  = 1;         % Transmitter Lambertian Order
@@ -12,8 +13,11 @@ classdef tx_ps < candles_classes.point_source
     end
     
     %% Class Methods
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
         %% Constructor
+        % *****************************************************************
+        % -----------------------------------------------------------------
         function obj = tx_ps(x,y,z,az,el,Ps,m)
             % Setup and call superclass constructor
             if nargin == 0
@@ -36,12 +40,15 @@ classdef tx_ps < candles_classes.point_source
         end
         
         %% Set property values
+        % *****************************************************************
         % Set Transmit Optical Power (W)
+        % -----------------------------------------------------------------
         function obj = set_Ps(obj,Ps)
             obj.Ps = Ps;
         end
         
         % Set Transmitter Lambertian Order
+        % -----------------------------------------------------------------
         function obj = set_m(obj,m)
             obj.m = m;
         end        

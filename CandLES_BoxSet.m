@@ -151,12 +151,8 @@ function menu_addBox_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
-my_boxes = boxSetEnv.boxes;
-my_boxes(length(my_boxes)+1) = candles_classes.box();
-% FIXME: Check room bounds to make sure the new box is in the room
+[boxSetEnv, BOX_SELECT] = boxSetEnv.addBox();
 
-BOX_SELECT      = length(my_boxes);
-boxSetEnv.boxes = my_boxes;
 setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
 setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 set_values(); % Set the values and display room with selected box
@@ -170,15 +166,12 @@ h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
-my_boxes = boxSetEnv.boxes;
-if(~isempty(my_boxes))
-    my_boxes(BOX_SELECT) = [];
-    BOX_SELECT = min(BOX_SELECT, length(my_boxes));
-    boxSetEnv.boxes = my_boxes;
-    setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-    set_values(); % Set the values and display room with selected TX
-end
+boxSetEnv  = boxSetEnv.removeBox(BOX_SELECT);
+BOX_SELECT = min(BOX_SELECT, length(boxSetEnv.boxes));
+
+setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+set_values(); % Set the values and display room with selected TX
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% BOX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,7 +181,7 @@ function popup_box_select_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT           = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 if (BOX_SELECT > 0)
     BOX_SELECT = get(hObject,'Value');
     setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
@@ -206,16 +199,11 @@ function edit_box_x_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,boxSetEnv.rm.length ...
-                     - boxSetEnv.boxes(BOX_SELECT).length);
-
-    % Set the correct value in txSetEnv and save to handle
-    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_x(temp);
+[boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,'x',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -227,16 +215,11 @@ function edit_box_y_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,boxSetEnv.rm.width ...
-                     - boxSetEnv.boxes(BOX_SELECT).width);
-
-    % Set the correct value in txSetEnv and save to handle
-    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_y(temp);
+[boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,'y',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -248,16 +231,11 @@ function edit_box_z_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0);
-    temp = min(temp,boxSetEnv.rm.height ...
-                     - boxSetEnv.boxes(BOX_SELECT).height);
-
-    % Set the correct value in txSetEnv and save to handle
-    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_z(temp);
+[boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,'z',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -273,16 +251,11 @@ function edit_box_length_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0.1);
-    temp = min(temp,boxSetEnv.rm.length ...
-                     - boxSetEnv.boxes(BOX_SELECT).x);
-
-    % Set the correct value in txSetEnv and save to handle 
-    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_length(temp);
+[boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,'l',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -294,16 +267,11 @@ function edit_box_width_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0.1);
-    temp = min(temp,boxSetEnv.rm.width ...
-                     - boxSetEnv.boxes(BOX_SELECT).y);
-
-    % Set the correct value in txSetEnv and save to handle 
-    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_width(temp);
+[boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,'w',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -315,20 +283,14 @@ function edit_box_height_Callback(hObject, eventdata, handles)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = str2double(get(hObject,'String'));
 
-temp = str2double(get(hObject,'String'));
-if (BOX_SELECT > 0) && (~isnan(temp)) && (isreal(temp))
-    % FIXME: Add warning dialog boxes for out of range
-    temp = max(temp, 0.1);
-    temp = min(temp,boxSetEnv.rm.height ...
-                     - boxSetEnv.boxes(BOX_SELECT).z);
-
-    % Set the correct value in txSetEnv and save to handle 
-    boxSetEnv.boxes(BOX_SELECT) = boxSetEnv.boxes(BOX_SELECT).set_height(temp);
+[boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,'h',temp);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -345,9 +307,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = get(hObject,'value'); % Get new val
 
-if (BOX_SELECT > 0)
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(1,1) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'N',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -361,15 +323,13 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = str2double(get(hObject,'String'));
 
-if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(1,1) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'N',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
+
 
 % Box Reflections: South
 % --------------------------------------------------------------------
@@ -382,9 +342,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = get(hObject,'value'); % Get new val
     
-if (BOX_SELECT > 0)
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(1,2) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'S',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -398,15 +358,13 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = str2double(get(hObject,'String'));
 
-if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(1,2) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'S',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
+
 
 
 % Box Reflections: East
@@ -420,9 +378,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = get(hObject,'value'); % Get new val
     
-if (BOX_SELECT > 0)
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(2,1) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'E',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -436,12 +394,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = str2double(get(hObject,'String'));
 
-if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(2,1) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'E',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -458,9 +413,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = get(hObject,'value'); % Get new val
     
-if (BOX_SELECT > 0)
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(2,2) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'W',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -474,16 +429,12 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = str2double(get(hObject,'String'));
 
-if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(2,2) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'W',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
-
 
 
 % Box Reflections: Top
@@ -497,9 +448,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = get(hObject,'value'); % Get new val
     
-if (BOX_SELECT > 0)
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(3,1) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'T',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -513,12 +464,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = str2double(get(hObject,'String'));
 
-if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(3,1) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'T',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -535,9 +483,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = get(hObject,'value'); % Get new val
     
-if (BOX_SELECT > 0)
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(3,2) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'B',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
@@ -551,12 +499,9 @@ BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 ref                 = str2double(get(hObject,'String'));
 
-if (BOX_SELECT > 0) && (~isnan(ref)) && (isreal(ref))
-    ref = max(ref,0);
-    ref = min(ref,1);
-    
-    % Set the correct value in boxSetEnv, update GUI and save to GUI handle
-    boxSetEnv.boxes(BOX_SELECT).ref(3,2) = ref;
+[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'B',ref);
+% FIXME: Add warning boxes for ERR and bring to front after set_values
+if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
 set_values(); % update GUI
