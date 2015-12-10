@@ -5,8 +5,8 @@ classdef tx_ps < candles_classes.point_source
     %% Class Properties
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties (SetAccess = private)
-        Ps = 1;         % Transmit Optical Power (W)
-        m  = 1;         % Transmitter Lambertian Order
+        Ps  % Transmit Optical Power (W)
+        m   % Transmitter Lambertian Order
 
         % FIXME - no functionality yet
         net_group = 1;  % TX group for resource allocation
@@ -19,24 +19,24 @@ classdef tx_ps < candles_classes.point_source
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = tx_ps(x,y,z,az,el,Ps,m)
+            d_Ps  = 1;           % Default optical power
+            d_m   = 1;           % Default Lambertian order
+            d_pos = {0.1,0.1,0}; % Default position
+            d_az  = 0;           % Default azimuth
+            d_el  = 3*pi/2;      % Default elevation
+
             % Setup and call superclass constructor
-            if nargin == 0
-                % Set txs to default to facing down
-                my_args = {0.1,0.1,0,0,3*pi/2};
-            elseif nargin == 3
-                my_args = {x,y,z,0,3*pi/2};
-            elseif nargin == 5 || nargin == 7
-                my_args = {x,y,z,az,el};
-            else
-                error('Invalid number of arguments');
-            end
+            if (nargin == 0); my_args = [    d_pos(1:3), {d_az,d_el}]; end
+            if (nargin == 1); my_args = [x,  d_pos(2:3), {d_az,d_el}]; end
+            if (nargin == 2); my_args = [x, y, d_pos(3), {d_az,d_el}]; end
+            if (nargin == 3); my_args = [       x, y, z, {d_az,d_el}]; end
+            if (nargin == 4); my_args = {       x, y, z,    az, d_el}; end
+            if (nargin >= 5); my_args = {       x, y, z,    az,   el}; end
             obj@candles_classes.point_source(my_args{:});
             
             % Set Tx power and Lambertian Order if given
-            if nargin > 5
-                obj.Ps = Ps;    % Set Transmit Optical Power (W)
-                obj.m = m;      % Set Transmitter Lambertian Order
-            end
+            if (exist('Ps','var')); obj.Ps = Ps; else obj.Ps = d_Ps; end
+            if (exist( 'm','var')); obj.m  =  m; else obj.m  =  d_m; end
         end
         
         %% Set property values

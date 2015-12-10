@@ -23,9 +23,9 @@ classdef candlesEnv
     methods
         % Constructor - Set default values for CandLES here!
         function obj = candlesEnv()
-            obj.rm  = candles_classes.room(5,4,3);
-            obj.txs = candles_classes.tx_ps(2.5,2,2.5);
-            obj.rxs = candles_classes.rx_ps(2.5,2,1);
+            obj.rm    = candles_classes.room(5,4,3);
+            obj.txs   = candles_classes.tx_ps(2.5,2,2.5);
+            obj.rxs   = candles_classes.rx_ps(2.5,2,1);
             obj.boxes = candles_classes.box.empty;
 
             obj.del_t = 1e-10; 

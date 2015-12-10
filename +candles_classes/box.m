@@ -24,44 +24,21 @@ classdef box
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = box(x,y,z,l,w,h,ref)
-            if nargin == 0
-                obj.x      = 0;
-                obj.y      = 0;
-                obj.z      = 0;
-                obj.length = 0.1;
-                obj.width  = 0.1;
-                obj.height = 0.1;
-                obj.ref    = [1,1; 1,1; 1,1];
-                
-            elseif nargin == 3
-                obj.x      = x;
-                obj.y      = y;
-                obj.z      = z;
-                obj.length = 0.1;
-                obj.width  = 0.1;
-                obj.height = 0.1;
-                obj.ref    = [1,1; 1,1; 1,1];
-                
-            elseif nargin == 6
-                obj.x      = x;
-                obj.y      = y;
-                obj.z      = z;
-                obj.length = l;
-                obj.width  = w;
-                obj.height = h;
-                obj.ref    = [1,1; 1,1; 1,1];
-                
-            elseif nargin == 7;
-                obj.x      = x;
-                obj.y      = y;
-                obj.z      = z;
-                obj.length = l;
-                obj.width  = w;
-                obj.height = h;
-                obj.ref    = max(min(ref,1),0);
-
+            d_pos  = [  0,   0,   0]; % Default Position
+            d_size = [0.1, 0.1, 0.1]; % Default Size
+            d_ref  = [1,1; 1,1; 1,1]; % Default Reflectivity
+            %FIXME: Error check invalid types (NaN, complex, etc.)
+            if (exist('x','var')); obj.x      = x; else obj.x      =  d_pos(1); end
+            if (exist('y','var')); obj.y      = y; else obj.y      =  d_pos(2); end
+            if (exist('z','var')); obj.z      = z; else obj.z      =  d_pos(3); end
+            if (exist('l','var')); obj.length = l; else obj.length = d_size(1); end
+            if (exist('w','var')); obj.width  = w; else obj.width  = d_size(2); end
+            if (exist('h','var')); obj.height = h; else obj.height = d_size(3); end
+            if (exist('ref','var') && isequal(size(ref),[3,2])) 
+                % Constrain reflectivities to 0 <= ref <= 1
+                obj.ref = max(min(ref,1),0);
             else
-                error('Invalid number of arguments');
+                obj.ref = d_ref;
             end
         end
         
@@ -121,18 +98,12 @@ classdef box
                 % FIXME: Add ERR for out of range reflectivity
                 ref = max(min(ref,1),0);
                 switch nsewtb
-                    case 'N'
-                        obj.ref(1,1) = ref;
-                    case 'S'
-                        obj.ref(1,2) = ref;
-                    case 'E'
-                        obj.ref(2,1) = ref;
-                    case 'W'
-                        obj.ref(2,2) = ref;
-                    case 'T'
-                        obj.ref(3,1) = ref;
-                    case 'B'
-                        obj.ref(3,2) = ref;
+                    case 'N'; obj.ref(1,1) = ref;
+                    case 'S'; obj.ref(1,2) = ref;
+                    case 'E'; obj.ref(2,1) = ref;
+                    case 'W'; obj.ref(2,2) = ref;
+                    case 'T'; obj.ref(3,1) = ref;
+                    case 'B'; obj.ref(3,2) = ref;
                     otherwise
                         ERR = -3;
                 end

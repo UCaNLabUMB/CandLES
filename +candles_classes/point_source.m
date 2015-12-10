@@ -5,14 +5,14 @@ classdef point_source
     %% Class Properties
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties (SetAccess = private)
-        x  = 0;         % X location (m)
-        y  = 0;         % Y location (m)
-        z  = 0;         % Z location (m)
-        az = 0;         % Azimuth Angle (rad)
-        el = 0;         % Elevation Angle (rad)
-        x_hat = 1;      % X value - unit vector for az, el
-        y_hat = 0;      % Y value - unit vector for az, el
-        z_hat = 0;      % Z value - unit vector for az, el
+        x       % X location (m)
+        y       % Y location (m)
+        z       % Z location (m)
+        az      % Azimuth Angle (rad)
+        el      % Elevation Angle (rad)
+        x_hat   % X value - unit vector for az, el
+        y_hat   % Y value - unit vector for az, el
+        z_hat   % Z value - unit vector for az, el
     end
     
     %% Class Methods
@@ -22,30 +22,22 @@ classdef point_source
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = point_source(x,y,z,az,el)
-            if nargin > 0
-                if nargin == 3
-                    obj.x = x; % Set X location (m)
-                    obj.y = y; % Set X location (m)
-                    obj.z = z; % Set X location (m)
-                elseif nargin == 5
-                    obj.x = x; % Set X location (m)
-                    obj.y = y; % Set X location (m)
-                    obj.z = z; % Set X location (m)
-
-                    obj.az = az; % Set Azimuth Angle (rad)
-                    obj.el = el; % Set Elevation Angle (rad)
-
-                    % Convert to degrees for exact calculation using sind and cosd.
-                    az = (180/pi)*az;
-                    el = (180/pi)*el;
-                    % Calculate unit vector for az, el
-                    obj.x_hat = 1*cosd(el)*cosd(az);
-                    obj.y_hat = 1*cosd(el)*sind(az);
-                    obj.z_hat = 1*sind(el);
-                else
-                    error('Invalid number of arguments');
-                end
-            end
+            d_pos = [0, 0, 0]; % Default Position
+            d_or  = [0, 0];    % Default Orientation (az, el)
+            %FIXME: Error check invalid types (NaN, complex, etc.)
+            if (exist('x','var'));  obj.x  = x;  else obj.x  = d_pos(1); end
+            if (exist('y','var'));  obj.y  = y;  else obj.y  = d_pos(2); end
+            if (exist('z','var'));  obj.z  = z;  else obj.z  = d_pos(3); end
+            if (exist('az','var')); obj.az = az; else obj.az =  d_or(1); end
+            if (exist('el','var')); obj.el = el; else obj.el =  d_or(2); end
+            
+            % Convert to degrees for exact calculation using sind and cosd.
+            temp_az = (180/pi)*obj.az;
+            temp_el = (180/pi)*obj.el;
+            % Calculate unit vector for az, el
+            obj.x_hat = 1*cosd(temp_el)*cosd(temp_az);
+            obj.y_hat = 1*cosd(temp_el)*sind(temp_az);
+            obj.z_hat = 1*sind(temp_el);
         end
         
         %% Set property values
