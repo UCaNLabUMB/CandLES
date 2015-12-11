@@ -9,43 +9,61 @@ RM_H = 3; % Room Height
 NUM_RX = 50;
 TIME_RES = 2e-11; % Time Resolution
 
-tic;
+myEnv = candles_classes.candlesEnv();
+myEnv = myEnv.setRoomDim('length',RM_L);
+myEnv = myEnv.setRoomDim( 'width',RM_W);
+myEnv = myEnv.setRoomDim('height',RM_H);
 
-Rm = candles_classes.room(RM_L,RM_W,RM_H);
-Boxes(1) = candles_classes.box(1.6,2.4,1.1,0.2,0.2,0.1,1);
-Boxes(2) = candles_classes.box(1.4,2.1,1.1,0.2,0.2,0.1,1);
-%Boxes = candles_classes.box.empty;
-Res.del_t = TIME_RES;
+myEnv = myEnv.addBox();
+myEnv = myEnv.setBoxPos(1,'x',1.6);
+myEnv = myEnv.setBoxPos(1,'y',2.4);
+myEnv = myEnv.setBoxPos(1,'z',1.1);
+myEnv = myEnv.setBoxDim(1,'l',0.2);
+myEnv = myEnv.setBoxDim(1,'w',0.2);
+myEnv = myEnv.setBoxDim(1,'h',0.1);
+myEnv = myEnv.addBox();
+myEnv = myEnv.setBoxPos(2,'x',1.4);
+myEnv = myEnv.setBoxPos(2,'y',2.1);
+myEnv = myEnv.setBoxPos(2,'z',1.1);
+myEnv = myEnv.setBoxDim(2,'l',0.2);
+myEnv = myEnv.setBoxDim(2,'w',0.2);
+myEnv = myEnv.setBoxDim(2,'h',0.1);
+
+myEnv = myEnv.setDelT(TIME_RES);
 
 % Downward facing Tx - Center of ceiling.
-Txs = candles_classes.tx_ps(RM_L/2,RM_W/2,RM_H,0,3*pi/2);
+myEnv = myEnv.setTxPos(1, 'x',RM_L/2);
+myEnv = myEnv.setTxPos(1, 'y',RM_W/2);
+myEnv = myEnv.setTxPos(1, 'z',  RM_H);
+myEnv = myEnv.setTxPos(1,'az',     0);
+myEnv = myEnv.setTxPos(1,'el',   270);
+
+myEnv = myEnv.setRxPos(1, 'x',RM_L/2);
+myEnv = myEnv.setRxPos(1, 'y',RM_W/2);
+myEnv = myEnv.setRxPos(1, 'z',     1);
+myEnv = myEnv.setRxPos(1,'az',     0);
+myEnv = myEnv.setRxPos(1,'el',    90);
+
+tic;
 
 % Upward Facing Rxs across X - centered in Y at Z = 1
-Rxs(1:NUM_RX) = candles_classes.rx_ps(RM_L/2,RM_W/2,1,0,pi/2);
-x_loc = zeros(1,NUM_RX);
-for i = 1:NUM_RX % Span the length of the room
-    x_loc(i) = (i-1)*Rm.length/(NUM_RX-1);
-    Rxs(i) = Rxs(i).set_location(x_loc(i),RM_W/2,1);
-end
-[P1, H1] = VLCIRC(Txs, Rxs, Boxes, Rm, Res);
+x_loc1 = ((1:NUM_RX)-1)*RM_L/(NUM_RX-1);
+y_loc1 = (RM_W/2)*ones(1,NUM_RX);
+[P1, H1] = myEnv.calcMotionPath(1,x_loc1,y_loc1);
+
+% Upward Facing Rxs across Y - centered in X at Z = 1
+x_loc2 = (RM_L/2)*ones(1,NUM_RX);
+y_loc2 = ((1:NUM_RX)-1)*RM_W/(NUM_RX-1);
+[P2, H2] = myEnv.calcMotionPath(1,x_loc2,y_loc2);
+
+toc;
+
 figure();
-plot(x_loc,P1);
+plot(x_loc1,P1);
 title('Rx Power vs X')
 xlabel('X Location (m)');
 
-% Upward Facing Rxs across Y - centered in X at Z = 1
-Rxs(1:NUM_RX) = candles_classes.rx_ps(RM_L/2,RM_W/2,RM_H,0,pi/2);
-y_loc = zeros(1,NUM_RX);
-for i = 1:NUM_RX % Span the width of the room
-    y_loc(i) = (i-1)*Rm.width/(NUM_RX-1);
-    Rxs(i) = Rxs(i).set_location(RM_L/2,y_loc(i),1);
-end
-[P2, H2] = VLCIRC(Txs, Rxs, Boxes, Rm, Res);
-
 figure();
-plot(y_loc,P2);
+plot(y_loc2,P2);
 title('Rx Power vs Y')
 xlabel('Y Location (m)');
-
-
-toc;

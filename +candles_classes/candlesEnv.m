@@ -312,6 +312,46 @@ classdef candlesEnv
             end   
         end
         
+        %% Environment Simulation Setting Functions
+        % *****************************************************************
+        % Set the time resolution
+        % -----------------------------------------------------------------
+        function [obj,ERR] = setDelT(obj,temp)
+            ERR = 0;
+            if (isnan(temp)) || (~isreal(temp))
+                ERR = -2;
+            else
+                obj.del_t = temp;
+            end
+        end
+
+        %% Environment Simulation Functions
+        % *****************************************************************
+        % Calculate rx power with receiver RX_NUM at the various positions
+        % -----------------------------------------------------------------
+        function [P, H] = calcMotionPath(obj,RX_NUM,x_locs,y_locs)
+            obj.rxs(1:length(x_locs)) = obj.rxs(RX_NUM);
+            for i = 1:length(x_locs)
+                obj.rxs(i) = obj.rxs(i).set_x(x_locs(i));
+                obj.rxs(i) = obj.rxs(i).set_y(y_locs(i));                
+            end
+                        
+            Res.del_t = obj.del_t;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res);
+        end
+        
+        % Calculate rx power with receiver RX_NUM at various orientations
+        % -----------------------------------------------------------------
+        function [P, H] = calcRotation(obj,RX_NUM,azs,els)
+            obj.rxs(1:length(azs)) = obj.rxs(RX_NUM);
+            for i = 1:length(azs)
+                obj.rxs(i) = obj.rxs(i).set_az(max(min(azs(i),360),0)*(pi/180));
+                obj.rxs(i) = obj.rxs(i).set_el(max(min(els(i),360),0)*(pi/180));
+            end
+                        
+            Res.del_t = obj.del_t;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res);
+        end
     end
     
 end
