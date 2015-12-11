@@ -1,4 +1,4 @@
-function [ Prx, h_t ] = VLCIRC( Txs, Rxs, Room, Res )
+function [ Prx, h_t ] = VLCIRC( Txs, Rxs, Boxes, Room, Res )
 %VLCIRC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -8,20 +8,27 @@ MAX_BOUNCE = 0;
 global SPEED_OF_LIGHT 
 SPEED_OF_LIGHT = 3.0e8;
 
+%% Setup
 ARRAY_LEN = ceil((MAX_BOUNCE+1)*sqrt(Room.length^2 + ...
                                      Room.width^2  + ...
                                      Room.height^2) ...
                                   / (Res.del_t*SPEED_OF_LIGHT));
 
-%% Allocate Memory
+% Allocate Memory
 Prx = zeros(length(Rxs),1);
 h_t = zeros(length(Rxs),ARRAY_LEN);
 
+% Generate planes to represent room and boxes
+plane_list = Room.get_planes();
+for i=1:length(Boxes)
+    plane_list = [plane_list, Boxes(i).get_planes()]; %#ok<AGROW>
+end
+
 %% Evaluate LOS
 % Pass h_t by "reference" to avoid unnecessary copy overhead.
-% Matlab uses "copy-on-write" semantics, so Txs and Rxs are not copied
+% Matlab uses "copy-on-write" semantics, so Txs/Rxs/Boxes are not copied
 % since they are not modified.
-h_t = zero_bounce_power(Txs, Rxs, h_t, Res.del_t); 
+h_t = zero_bounce_power(Txs, Rxs, plane_list, h_t, Res.del_t); 
 
 
 %% Evaluate normalized impulse response and RX power
@@ -42,12 +49,12 @@ end % EOF VLCIRC
 
 
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%% INTERNAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%% INTERNAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% zero_bounce_power - Calculate LOS response
-function [H] = zero_bounce_power(Txs, Rxs, H, del_t)
+function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t)
 
     global SPEED_OF_LIGHT
     
@@ -69,8 +76,8 @@ function [H] = zero_bounce_power(Txs, Rxs, H, del_t)
             
             cos_FOV = cosd(Rxs(rcv_cnt).FOV*(180/pi));
                    
-            % Check if acceptance angle is less than FOV. 
-            if cos_psi > cos_FOV
+            % Check if acceptance angle is less than FOV and if the LOS path is clear
+            if ((cos_psi > cos_FOV) && (VLCIRC_CheckVisibility(Txs(src_cnt),Rxs(rcv_cnt),plane_list)))
                 % Calculate attenuation
                 attenuation = ...
                     (Rxs(rcv_cnt).A/d^2)*...

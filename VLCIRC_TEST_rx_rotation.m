@@ -12,6 +12,7 @@ TIME_RES = 1e-10; % Time Resolution
 tic;
 
 Rm = candles_classes.room(RM_L,RM_W,RM_H);
+Boxes = candles_classes.box.empty;
 Res.del_t = TIME_RES;
 
 % Downward facing Tx - Center of ceiling.
@@ -24,7 +25,7 @@ for i = 1:NUM_RX % Span 0 to 2pi (360 deg)
     rotation(i) = (i-1)*2*pi/(NUM_RX-1);
     Rxs(i) = Rxs(i).set_rotation(0,rotation(i));
 end
-[P1, H1] = VLCIRC(Txs, Rxs, Rm, Res);
+[P1, H1] = VLCIRC(Txs, Rxs, Boxes, Rm, Res);
 figure();
 plot(rotation*(180/pi),P1);
 hold on;
@@ -41,7 +42,7 @@ for i = 1:NUM_RX % Span 0 to 2pi (360 deg)
     rotation(i) = (i-1)*2*pi/(NUM_RX-1);
     Rxs(i) = Rxs(i).set_rotation(rotation(i),pi/4);
 end
-[P2, H2] = VLCIRC(Txs, Rxs, Rm, Res);
+[P2, H2] = VLCIRC(Txs, Rxs, Boxes, Rm, Res);
 figure();
 plot(rotation*(180/pi),P2);
 title('Rx Power vs Azimuth Angle (El = 45 deg)');

@@ -12,6 +12,9 @@ TIME_RES = 2e-11; % Time Resolution
 tic;
 
 Rm = candles_classes.room(RM_L,RM_W,RM_H);
+Boxes(1) = candles_classes.box(1.6,2.4,1.1,0.2,0.2,0.1,1);
+Boxes(2) = candles_classes.box(1.4,2.1,1.1,0.2,0.2,0.1,1);
+%Boxes = candles_classes.box.empty;
 Res.del_t = TIME_RES;
 
 % Downward facing Tx - Center of ceiling.
@@ -24,20 +27,20 @@ for i = 1:NUM_RX % Span the length of the room
     x_loc(i) = (i-1)*Rm.length/(NUM_RX-1);
     Rxs(i) = Rxs(i).set_location(x_loc(i),RM_W/2,1);
 end
-[P1, H1] = VLCIRC(Txs, Rxs, Rm, Res);
+[P1, H1] = VLCIRC(Txs, Rxs, Boxes, Rm, Res);
 figure();
 plot(x_loc,P1);
 title('Rx Power vs X')
 xlabel('X Location (m)');
 
-% Upward Facing Rxs across X - centered in Y at Z = 1
+% Upward Facing Rxs across Y - centered in X at Z = 1
 Rxs(1:NUM_RX) = candles_classes.rx_ps(RM_L/2,RM_W/2,RM_H,0,pi/2);
 y_loc = zeros(1,NUM_RX);
 for i = 1:NUM_RX % Span the width of the room
     y_loc(i) = (i-1)*Rm.width/(NUM_RX-1);
     Rxs(i) = Rxs(i).set_location(RM_L/2,y_loc(i),1);
 end
-[P2, H2] = VLCIRC(Txs, Rxs, Rm, Res);
+[P2, H2] = VLCIRC(Txs, Rxs, Boxes, Rm, Res);
 
 figure();
 plot(y_loc,P2);
