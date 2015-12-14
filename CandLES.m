@@ -495,11 +495,11 @@ set_values();
 % --------------------------------------------------------------------
 function load_images(guiHandle)
     axes(guiHandle.logo_NSF);
-    imshow('GUI_Images/pic_NSF_logo.bmp');
+    image(importdata('GUI_Images/pic_NSF_logo.bmp')); axis off;
     axes(guiHandle.logo_BU);
-    imshow('GUI_Images/pic_BU_logo.bmp');
+    image(importdata('GUI_Images/pic_BU_logo.bmp')); axis off;
     axes(guiHandle.logo_SL);
-    imshow('GUI_Images/pic_SL_logo.bmp');
+    image(importdata('GUI_Images/pic_SL_logo.bmp')); axis off;
 
 % Update the main GUI with the CandLES environment newEnv
 % --------------------------------------------------------------------
