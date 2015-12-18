@@ -449,7 +449,8 @@ function [element, deltas, start_pos] = get_element(plane,element, deltas, start
     if (isa(element,'candles_classes.rx_ps'))
         element = element.set_n(1.0);
         element = element.set_FOV(pi/2);
-%    elseif(isa(element,'candles_classes.tx_ps'))
+    elseif(isa(element,'candles_classes.tx_ps'))
+        element = element.set_m(1); % Surfaces modeled as perfec Lambertian
     end
     element = element.set_unit_vector(plane.x_hat,plane.y_hat,plane.z_hat);
     

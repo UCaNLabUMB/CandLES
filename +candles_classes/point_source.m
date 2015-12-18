@@ -91,9 +91,12 @@ classdef point_source
             obj.y_hat = y/sqrt(x^2 + y^2 + z^2);
             obj.z_hat = z/sqrt(x^2 + y^2 + z^2);
             
-            % FIXME: Need to check this...
             obj.el = asin(obj.z_hat);
-            obj.az = asin(obj.y_hat/cos(obj.el));
+            obj.az = atan2(obj.y_hat,obj.x_hat);
+            
+            % Check to put az and el between 0 and 2pi for consistency
+            if(obj.el < 0); obj.el = obj.el + 2*pi; end
+            if(obj.az < 0); obj.az = obj.az + 2*pi; end
 
         end
         
@@ -103,11 +106,13 @@ classdef point_source
             obj.az = az; % Set Azimuth Angle (rad)
             
             % Convert to degrees for exact calculation using sind and cosd.
-            az = (180/pi)*az;
+            my_az = (180/pi)*az;
+            my_el = (180/pi)*obj.el;
+            
             % Calculate unit vector for az, el
-            obj.x_hat = 1*cosd(obj.el)*cosd(az);
-            obj.y_hat = 1*cosd(obj.el)*sind(az);
-            obj.z_hat = 1*sind(obj.el);
+            obj.x_hat = 1*cosd(my_el)*cosd(my_az);
+            obj.y_hat = 1*cosd(my_el)*sind(my_az);
+            obj.z_hat = 1*sind(my_el);
         end
         
         % Set the azimuth of the point source object
@@ -116,11 +121,13 @@ classdef point_source
             obj.el = el; % Set Elevation Angle (rad)
             
             % Convert to degrees for exact calculation using sind and cosd.
-            el = (180/pi)*el;
+            my_el = (180/pi)*el;
+            my_az = (180/pi)*obj.az;
+
             % Calculate unit vector for az, el
-            obj.x_hat = 1*cosd(el)*cosd(obj.az);
-            obj.y_hat = 1*cosd(el)*sind(obj.az);
-            obj.z_hat = 1*sind(el);
+            obj.x_hat = 1*cosd(my_el)*cosd(my_az);
+            obj.y_hat = 1*cosd(my_el)*sind(my_az);
+            obj.z_hat = 1*sind(my_el);
         end
         
         %% Get property values
