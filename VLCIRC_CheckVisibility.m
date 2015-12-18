@@ -5,9 +5,6 @@ function [ visible ] = VLCIRC_CheckVisibility( src, dest, plane_list )
     
     visible = 1;
     
-    t_src = [ src.x, src.y, src.z];
-    t_des = [dest.x,dest.y,dest.z]; 
-    
     %% Define line from src to dest
     l0 = [ src.x, src.y, src.z];      % Point on the line
     l = l0 - [dest.x,dest.y,dest.z];  % vector pointing from src to dest
@@ -35,6 +32,8 @@ function [ visible ] = VLCIRC_CheckVisibility( src, dest, plane_list )
             intersect = (dot(p0-l0,n)/dot(l,n))*l + l0;
             
             % Determine if intersect is in the spectified section of plane
+            %   (Points that are tangent to the section of the plane are 
+            %   NOT considered as blocking the LOS)
             % -------------------------------------------------------------
             %   Check for YZ, XZ, and XY planes
             if (((p0(1) == p1(1)) && ...

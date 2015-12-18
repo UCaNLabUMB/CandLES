@@ -6,15 +6,21 @@ RM_W = 5; % Room Width
 RM_H = 3; % Room Height
 
 %NUM_TX = 1; Only 1 transmitter in this test
-NUM_RX = 361;
-TIME_RES = 1e-10; % Time Resolution
+NUM_RX      = 361;   % Number of Receiver positions
+TIME_RES    = 5e-11; % Time Resolution (s)
+SPATIAL_RES = 0.25;   % Spatial Resolution (m)
+MIN_BOUNCE  = 0;
+MAX_BOUNCE  = 1;
 
 myEnv = candles_classes.candlesEnv();
 myEnv = myEnv.setRoomDim('length',RM_L);
 myEnv = myEnv.setRoomDim( 'width',RM_W);
 myEnv = myEnv.setRoomDim('height',RM_H);
+myEnv = myEnv.setRoomRef('b',1);
 
 myEnv = myEnv.setDelT(TIME_RES);
+myEnv = myEnv.setDelS(SPATIAL_RES);
+myEnv = myEnv.setBounces(MIN_BOUNCE,MAX_BOUNCE);
 
 % Downward facing Tx - Center of ceiling.
 myEnv = myEnv.setTxPos(1, 'x',RM_L/2);

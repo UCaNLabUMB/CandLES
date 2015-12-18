@@ -83,6 +83,20 @@ classdef point_source
             obj.z_hat = 1*sind(el);
         end
         
+        % Set the unit vector and associated rotation angles (radians)
+        % -----------------------------------------------------------------
+        function obj = set_unit_vector(obj,x,y,z)
+            % Calculate unit vector
+            obj.x_hat = x/sqrt(x^2 + y^2 + z^2);
+            obj.y_hat = y/sqrt(x^2 + y^2 + z^2);
+            obj.z_hat = z/sqrt(x^2 + y^2 + z^2);
+            
+            % FIXME: Need to check this...
+            obj.el = asin(obj.z_hat);
+            obj.az = asin(obj.y_hat/cos(obj.el));
+
+        end
+        
         % Set the azimuth of the point source object
         % -----------------------------------------------------------------
         function obj = set_az(obj,az)

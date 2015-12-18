@@ -11,6 +11,9 @@ classdef plane_type
         length      % Box length (m)
         width       % Box width  (m)
         height      % Box height (m)
+        num_div_l   % Number of divisions (length)
+        num_div_w   % Number of divisions (width)
+        num_div_h   % Number of divisions (height)
         x_hat       % X direction
         y_hat       % Y direction
         z_hat       % Z direction    
@@ -23,11 +26,12 @@ classdef plane_type
         %% Constructor
         % *****************************************************************
         % -----------------------------------------------------------------
-        function obj = plane_type(x,y,z,l,w,h,xh,yh,zh,ref)
+        function obj = plane_type(x,y,z,l,w,h,xh,yh,zh,ref,res)
             d_pos   = [  0,   0, 0]; % Default position
             d_size  = [0.1, 0.1, 0]; % Default size
-            d_dir =   [  0,   0, 1]; % Default reflection direction 
+            d_dir   = [  0,   0, 1]; % Default reflection direction 
             d_ref   =             1; % Default reflectivity
+            d_res   =           0.5; % Default spatial resolution (m)
             
             %FIXME: Error check invalid types (NaN, complex, etc.)
             if (exist('x','var'));   obj.x      = x;   else obj.x      =  d_pos(1); end
@@ -40,6 +44,11 @@ classdef plane_type
             if (exist('yh','var'));  obj.y_hat  = yh;  else obj.y_hat  =  d_dir(2); end
             if (exist('zh','var'));  obj.z_hat  = zh;  else obj.z_hat  =  d_dir(3); end
             if (exist('ref','var')); obj.ref    = ref; else obj.ref    =     d_ref; end
+            if (~exist('res','var'));    res    = d_res; end
+            
+            obj.num_div_l = ceil(obj.length/res);
+            obj.num_div_w = ceil(obj.width/res);
+            obj.num_div_h = ceil(obj.height/res);
         end
     end
     

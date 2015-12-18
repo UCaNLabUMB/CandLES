@@ -6,8 +6,11 @@ RM_W = 5; % Room Width
 RM_H = 3; % Room Height
 
 %NUM_TX = 1; Only 1 transmitter in this test
-NUM_RX = 50;
-TIME_RES = 2e-11; % Time Resolution
+NUM_RX      = 50;    % Number of Receiver positions
+TIME_RES    = 5e-11; % Time Resolution (s)
+SPATIAL_RES = 0.25;   % Spatial Resolution (m)
+MIN_BOUNCE  = 0;
+MAX_BOUNCE  = 1;
 
 myEnv = candles_classes.candlesEnv();
 myEnv = myEnv.setRoomDim('length',RM_L);
@@ -20,16 +23,18 @@ myEnv = myEnv.setBoxPos(1,'y',2.4);
 myEnv = myEnv.setBoxPos(1,'z',1.1);
 myEnv = myEnv.setBoxDim(1,'l',0.2);
 myEnv = myEnv.setBoxDim(1,'w',0.2);
-myEnv = myEnv.setBoxDim(1,'h',0.1);
+myEnv = myEnv.setBoxDim(1,'h',0.2);
 myEnv = myEnv.addBox();
 myEnv = myEnv.setBoxPos(2,'x',1.4);
 myEnv = myEnv.setBoxPos(2,'y',2.1);
 myEnv = myEnv.setBoxPos(2,'z',1.1);
 myEnv = myEnv.setBoxDim(2,'l',0.2);
 myEnv = myEnv.setBoxDim(2,'w',0.2);
-myEnv = myEnv.setBoxDim(2,'h',0.1);
+myEnv = myEnv.setBoxDim(2,'h',0.2);
 
 myEnv = myEnv.setDelT(TIME_RES);
+myEnv = myEnv.setDelS(SPATIAL_RES);
+myEnv = myEnv.setBounces(MIN_BOUNCE,MAX_BOUNCE);
 
 % Downward facing Tx - Center of ceiling.
 myEnv = myEnv.setTxPos(1, 'x',RM_L/2);

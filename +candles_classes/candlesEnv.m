@@ -15,7 +15,11 @@ classdef candlesEnv
         boxes       % Boxes in the environment
         
         % Simulation Properties
-        del_t
+        del_t       % Time resolution (sec)
+        del_s       % Spatial resolution (m)
+        MIN_BOUNCE  % First reflection considered (0 for LOS)
+        MAX_BOUNCE  % Last reflection considered
+        DISP_WAITBAR = 1;
     end
     
     %% Class Methods
@@ -29,6 +33,9 @@ classdef candlesEnv
             obj.boxes = candles_classes.box.empty;
 
             obj.del_t = 1e-10; 
+            obj.del_s = 2;
+            obj.MIN_BOUNCE = 0;
+            obj.MAX_BOUNCE = 0;
         end
         
         %% Transmitter Functions
@@ -325,6 +332,30 @@ classdef candlesEnv
             end
         end
 
+        % Set the spatial resolution
+        % -----------------------------------------------------------------
+        function [obj,ERR] = setDelS(obj,temp)
+            ERR = 0;
+            if (isnan(temp)) || (~isreal(temp))
+                ERR = -2;
+            else
+                obj.del_s = temp;
+            end
+        end
+        
+        % Set the Min and Max number of reflections (i.e., bounces)
+        % -----------------------------------------------------------------
+        function [obj,ERR] = setBounces(obj,temp1,temp2)
+            ERR = 0;
+            if (isnan(temp1)) || (~isreal(temp1) ...
+                || isnan(temp2)) || (~isreal(temp2))
+                ERR = -2;
+            else
+                obj.MIN_BOUNCE = temp1;
+                obj.MAX_BOUNCE = temp2;
+            end
+        end
+        
         %% Environment Simulation Functions
         % *****************************************************************
         % Calculate rx power with receiver RX_NUM at the various positions
@@ -337,7 +368,10 @@ classdef candlesEnv
             end
                         
             Res.del_t = obj.del_t;
-            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res);
+            Res.del_s = obj.del_s;
+            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
+            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.DISP_WAITBAR);
         end
         
         % Calculate rx power with receiver RX_NUM at various orientations
@@ -350,7 +384,10 @@ classdef candlesEnv
             end
                         
             Res.del_t = obj.del_t;
-            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res);
+            Res.del_s = obj.del_s;
+            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
+            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.DISP_WAITBAR);
         end
     end
     
