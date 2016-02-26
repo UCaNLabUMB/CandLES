@@ -48,6 +48,47 @@ classdef candlesEnv
             % FIXME: Check room to make sure the new TX is in room
         end
         
+        % Add a specified layout of transmitters. Anything outside the room
+        % boundaries gets shifted back within the room.
+        %       N_x:  Number of TXs in X direction.
+        %       N_y:  Number of TXs in Y direction.
+        %         d:  X and Y distance between TXs.
+        %   Z_plane:  Location of grid in Z dimension
+        %    layout:  (1) Grid (2) Cell1 (3) Cell2
+        %   replace:  (0) keep existing TXs (1) replace TXs.
+        % -----------------------------------------------------------------
+        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, Z_plane, layout, replace)
+            
+            % Error check for empty grid
+            if (N_x*N_y == 0)
+                TX_NUM = 1;
+                return
+            end
+            
+            % Remove other transmitters 
+            if (replace)
+                while (isempty(obj.txs) == 0)
+                    obj.txs(1) = [];
+                end
+            end
+            
+            % Determine the X and Y locations
+            TX_NUM = length(obj.txs);
+            my_grid = SYS_grid_cell_locs(obj.rm.length/2, ...
+                                         obj.rm.width/2, N_x,N_y,d,layout);
+            for new_tx_num = 1:size(my_grid,2)
+                my_x = max(min(my_grid(1,new_tx_num),obj.rm.length),0);
+                my_y = max(min(my_grid(2,new_tx_num),obj.rm.width),0);
+                my_z = max(min(Z_plane,obj.rm.height),0);
+                
+                obj.txs(TX_NUM+new_tx_num) = ...
+                       candles_classes.tx_ps(my_x,my_y,my_z);
+            end
+            
+            % Set TX_NUM to the first TX in the grid
+            TX_NUM = TX_NUM+1;
+        end
+        
         % Remove the specified transmitter
         % -----------------------------------------------------------------
         % ERR = 1 means there's only 1 TX left

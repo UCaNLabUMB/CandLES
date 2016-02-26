@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 09-Dec-2015 14:43:54
+% Last Modified by GUIDE v2.5 26-Feb-2016 13:47:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -152,6 +152,83 @@ txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
 setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 set_values(); % Set the values and display room with selected TX
+
+% --------------------------------------------------------------------
+function menu_addTxGrid_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addTxGrid (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+% Grid Input
+prompt       = {'Number of TXs in X dimension:', ...
+                'Number of TXs in Y dimension:', ...
+                'Distance between TXs (m):', ...
+                'Z Plane (m):'};
+dlg_title    = 'TX Grid Setup';
+num_lines    = 1;
+default_vals = {'2','2','1',num2str(txSetEnv.rm.height)};
+ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
+
+% NOTE: If these change to str2num, need to modify the error check below.
+vals = [str2double(ans_dlg(1)), ...
+        str2double(ans_dlg(2)), ...
+        str2double(ans_dlg(3)), ...
+        str2double(ans_dlg(4))];
+if (isnan(sum(vals)))
+    warndlg('Inputs must be numeric values', ...
+            'Warning: Invalid Input');
+elseif (any(mod(vals(1:2),1)))
+    warndlg('Number of TXs must be an integer value', ...
+            'Warning: Invalid Input');
+else
+    replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
+    [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), 1, replace);
+
+    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
+end
+
+% --------------------------------------------------------------------
+function menu_addTxCell_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addTxCell (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+
+% Grid Input
+prompt       = {'Number of TXs in X dimension:', ...
+                'Number of TXs in Y dimension:', ...
+                'Distance between TXs (m):', ...
+                'Z Plane (m):'};
+dlg_title    = 'TX Cellular Setup';
+num_lines    = 1;
+default_vals = {'2','2','1',num2str(txSetEnv.rm.height)};
+ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
+
+% NOTE: If these change to str2num, need to modify the error check below.
+vals = [str2double(ans_dlg(1)), ...
+        str2double(ans_dlg(2)), ...
+        str2double(ans_dlg(3)), ...
+        str2double(ans_dlg(4))];
+if (isnan(sum(vals)))
+    warndlg('Inputs must be numeric values', ...
+            'Warning: Invalid Input');
+elseif (any(mod(vals(1:2),1)))
+    warndlg('Number of TXs must be an integer value', ...
+            'Warning: Invalid Input');
+else
+    layout  = strcmp(questdlg('Layout type?',dlg_title,'1','2','1'),'2') + 2; % Layout 2 or 3
+    replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
+    [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), layout, replace);
+
+    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
+end
 
 % --------------------------------------------------------------------
 function menu_deleteTx_Callback(hObject, eventdata, handles)
