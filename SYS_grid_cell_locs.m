@@ -1,8 +1,16 @@
-function [ grid ] = SYS_grid_cell_locs( C_x, C_y, N_x, N_y, d, grid_or_cell )
+function [ grid ] = SYS_grid_cell_locs( C_x, C_y, N_x, N_y, d, layout )
 %SYS_GRID_CELL_LOCS Generate X / Y locations
-%   Detailed explanation goes here
+%
+%   Input:
+%       C_x, C_y: Center points in X and Y dimensions
+%       N_x, N_y: Number of TXs in X and Y dimensions
+%              d: Distance between TXs
+%         layout: Layout style (1) Grid (2) Cellular1 (3) Cellular2
+%
+%   Output:
+%           grid: 2XN matrix with the X and Y locations of the N TXs
 
-    if (grid_or_cell == 1)
+    if (layout == 1)
     %% Grid Layout
         % X Locations
         if (mod(N_x,2) == 1)
@@ -28,10 +36,10 @@ function [ grid ] = SYS_grid_cell_locs( C_x, C_y, N_x, N_y, d, grid_or_cell )
         d_v = sqrt(d^2 - (d/2)^2); % Y separation to maintain d between all points
 
         % X Locations
-        if (grid_or_cell ==2)
+        if (layout ==2)
             % Narrow / Wide layout
             N_x2 = N_x+1; 
-        elseif (grid_or_cell == 3)
+        elseif (layout == 3)
             % Wide / Narrow layout
             N_x2 = N_x-1;
         end
