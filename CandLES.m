@@ -31,7 +31,7 @@ function varargout = CandLES(varargin)
 
 % Edit the above text to modify the response to help CandLES
 
-% Last Modified by GUIDE v2.5 09-Oct-2015 18:17:04
+% Last Modified by GUIDE v2.5 26-Feb-2016 15:11:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -220,6 +220,22 @@ function menu_Results_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Results (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menu_IllumSim_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_IllumSim (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+CandLES_IllumSim();
+
+
+% --------------------------------------------------------------------
+function menu_CommSim_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_CommSim (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+CandLES_CommSim();
 
 
 % --------------------------------------------------------------------
@@ -537,4 +553,8 @@ function set_values()
     set(handles.slider_RefWest,  'value', mainEnv.rm.ref(2,2));
     set(handles.slider_RefTop,   'value', mainEnv.rm.ref(3,1));
     set(handles.slider_RefBottom,'value', mainEnv.rm.ref(3,2));
+
+
+
+
 
