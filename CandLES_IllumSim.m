@@ -31,7 +31,7 @@ function varargout = CandLES_IllumSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_IllumSim
 
-% Last Modified by GUIDE v2.5 26-Feb-2016 15:02:13
+% Last Modified by GUIDE v2.5 29-Feb-2016 21:58:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -76,9 +76,16 @@ setappdata(0, 'h_GUI_CandlesIllumSim', hObject);
 
 % Generate a temporary CandLES environment and store in the GUI handle so
 % that it can be edited without modifying the main environment until saved.
-mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
-IllumSimEnv = mainEnv;
+mainEnv      = getappdata(h_GUI_CandlesMain,'mainEnv');
+IllumSimEnv  = mainEnv;
+PLANE_SELECT = min(1,mainEnv.rm.height);
+RESULTS      = [];
+RES_PLANES   = [];
 setappdata(hObject, 'IllumSimEnv', IllumSimEnv);
+setappdata(hObject, 'PLANE_SELECT', PLANE_SELECT);
+setappdata(hObject, 'RESULTS', RESULTS);
+setappdata(hObject, 'RESULTS', RES_PLANES);
+set_values(); % Set the values and display environment
 
 
 % --- Outputs from this function are returned to the command line.
@@ -101,12 +108,125 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 response = questdlg('Close Page?', '','Yes','No','Yes');
 if strcmp(response,'Yes')
-    % FIXME: Need to store the updated info back to mainEnv or have a save
-    % option where this becomes a question "Close without save" and only
-    % shows up if changes have been made and not saved yet.
+    % FIXME: Need to add option to save results and add a variable to
+    % indicate if the most recent results have been saved.
     
     % Remove the handle value of the figure from root (handle 0) and then
     % delete (close) the figure
     rmappdata(0, 'h_GUI_CandlesIllumSim');
     delete(hObject);
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% EDIT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------------------
+function edit_Plane_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Plane (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
+PLANE_SELECT = max(min(str2double(get(hObject,'String')),IllumSimEnv.rm.height),0);
+setappdata(h_GUI_CandlesIllumSim, 'PLANE_SELECT', PLANE_SELECT);
+set_values(); % Set the values and display room with selected TX
+
+% --------------------------------------------------------------------
+function slider_Plane_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Plane (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
+PLANE_SELECT = max(min(get(hObject,'Value'),IllumSimEnv.rm.height),0);
+setappdata(h_GUI_CandlesIllumSim, 'PLANE_SELECT', PLANE_SELECT);
+set_values(); % Set the values and display room with selected TX
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS DISPLAY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --------------------------------------------------------------------
+function pushbutton_GenRes_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_GenRes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
+PLANE_SELECT          = getappdata(h_GUI_CandlesIllumSim,'PLANE_SELECT');
+RESULTS               = getappdata(h_GUI_CandlesIllumSim,'RESULTS');
+RES_PLANES            = getappdata(h_GUI_CandlesIllumSim,'RES_PLANES');
+
+% Calculate the results if not already stored
+if (isempty(RES_PLANES) || ~any(RES_PLANES == PLANE_SELECT))
+    temp = IllumSimEnv.getIllum(PLANE_SELECT);
+    RESULTS(:,:,length(RES_PLANES)+1) = temp;
+    RES_PLANES(length(RES_PLANES)+1) = PLANE_SELECT;
+end
+
+setappdata(h_GUI_CandlesIllumSim, 'RESULTS', RESULTS);
+setappdata(h_GUI_CandlesIllumSim, 'RES_PLANES', RES_PLANES);
+set_values(); % Set the values and display room with selected TX
+
+
+% --------------------------------------------------------------------
+function radiobutton_results_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton_cdf (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set_values()
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set the values within the GUI
+% --------------------------------------------------------------------
+function set_values()
+    h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+    IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
+    PLANE_SELECT          = getappdata(h_GUI_CandlesIllumSim,'PLANE_SELECT');
+    RESULTS               = getappdata(h_GUI_CandlesIllumSim,'RESULTS');
+    RES_PLANES            = getappdata(h_GUI_CandlesIllumSim,'RES_PLANES');
+    handles               = guidata(h_GUI_CandlesIllumSim);
+    
+    % Display room with selected Plane
+    SYS_display_room(handles.axes_room, IllumSimEnv, 4, PLANE_SELECT);
+    
+    % Display results
+    res_view = get(get(handles.panel_display,'SelectedObject'),'String');
+    if (isempty(RES_PLANES) || ~any(RES_PLANES == PLANE_SELECT))
+        % Display a message on the Results Axis
+        cla(handles.axes_results,'reset')
+        MSG = sprintf(['Results have not been generated \n' ...
+                       '           for this configuration.']);
+        text(0.23, 0.5, MSG, 'Parent', handles.axes_results);
+        
+    else
+        my_ax = handles.axes_results;
+        my_results = RESULTS(:,:,RES_PLANES == PLANE_SELECT);
+
+        if(strcmp(res_view,'Spatial Plane'))
+            IllumSimEnv.plotIllumPlane(my_results,PLANE_SELECT,my_ax);
+        elseif(strcmp(res_view,'CDF'))
+            IllumSimEnv.plotIllumPlaneCDF(my_results,PLANE_SELECT,my_ax);            
+        end
+    end
+    
+    % Set Selection Boxes
+    set(handles.edit_Plane,'String',num2str(PLANE_SELECT));
+    set(handles.slider_Plane,'Value',PLANE_SELECT);
+    set(handles.slider_Plane,'Min',0);
+    set(handles.slider_Plane,'Max',IllumSimEnv.rm.height);
+    set(handles.slider_Plane,'SliderStep',[0.1/IllumSimEnv.rm.height, ...
+                                             1/IllumSimEnv.rm.height]);
+    
+
+
+
+
+
+
+

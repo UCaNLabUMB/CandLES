@@ -14,9 +14,14 @@ classdef candlesEnv
         rxs         % Receivers in the environment
         boxes       % Boxes in the environment
         
+        % Tx Group Properties
+        Sprime      % Normalized PSD
+        lambda      % wavelengths of Sprime
+        
         % Simulation Properties
         del_t       % Time resolution (sec)
-        del_s       % Spatial resolution (m)
+        del_s       % Spatial resolution of surface (m)
+        del_p       % Spatial resolution of simulated plane (m)
         MIN_BOUNCE  % First reflection considered (0 for LOS)
         MAX_BOUNCE  % Last reflection considered
         DISP_WAITBAR = 1;
@@ -31,9 +36,19 @@ classdef candlesEnv
             obj.txs   = candles_classes.tx_ps(2.5,2,2.5);
             obj.rxs   = candles_classes.rx_ps(2.5,2,1);
             obj.boxes = candles_classes.box.empty;
+            
+            % This is a simple base PSD... Update for LEDs to be used
+            LAMBDAMIN=200; LAMBDAMAX=1100; DLAMBDA=1;
+            obj.lambda=LAMBDAMIN:DLAMBDA:LAMBDAMAX;
+            s1=18; m1=450; a1=1; s2=60; m2=555; a2=2.15*a1; s3=25; m3=483; a3=-0.2*a1;
+            Sprime = a1/(sqrt(2*pi)*s1)*exp(-(obj.lambda-m1).^2/(2*s1^2)) + ...
+                     a2/(sqrt(2*pi)*s2)*exp(-(obj.lambda-m2).^2/(2*s2^2)) + ...
+                     a3/(sqrt(2*pi)*s3)*exp(-(obj.lambda-m3).^2/(2*s3^2));
+            obj.Sprime=Sprime/sum(Sprime);  %Normalized PSD
 
             obj.del_t = 1e-10; 
-            obj.del_s = 2;
+            obj.del_s = 0.25;
+            obj.del_p = 0.1;
             obj.MIN_BOUNCE = 0;
             obj.MAX_BOUNCE = 0;
         end
@@ -373,7 +388,7 @@ classdef candlesEnv
             end
         end
 
-        % Set the spatial resolution
+        % Set the spatial resolution of the simulation surfaces
         % -----------------------------------------------------------------
         function [obj,ERR] = setDelS(obj,temp)
             ERR = 0;
@@ -381,6 +396,17 @@ classdef candlesEnv
                 ERR = -2;
             else
                 obj.del_s = temp;
+            end
+        end
+        
+        % Set the spatial resolution of the simulation plane
+        % -----------------------------------------------------------------
+        function [obj,ERR] = setDelP(obj,temp)
+            ERR = 0;
+            if (isnan(temp)) || (~isreal(temp))
+                ERR = -2;
+            else
+                obj.del_p = temp;
             end
         end
         
@@ -399,6 +425,44 @@ classdef candlesEnv
         
         %% Environment Simulation Functions
         % *****************************************************************
+        % Calculate Illumination at height Z
+        % -----------------------------------------------------------------
+        function [Illum, grid] = getIllum(obj,Z)
+            
+            % Setup X,Y locations
+            x = 0:obj.del_p:obj.rm.length;
+            y = 0:obj.del_p:obj.rm.width;
+            N_x = length(x);
+            N_y = length(y);
+            
+            [X, Y] = meshgrid(x, y);
+            x_locs = reshape(X,1,N_x*N_y);
+            y_locs = reshape(Y,1,N_x*N_y);
+
+            temp_rx = candles_classes.rx_ps(0,0,0,0,pi/2,obj.del_p^2,pi/2,1);
+            my_rxs(1:size(x_locs,2)) = temp_rx;
+            for i = 1:size(x_locs,2)
+                my_rxs(i) = my_rxs(i).set_x(x_locs(i));
+                my_rxs(i) = my_rxs(i).set_y(y_locs(i));
+                my_rxs(i) = my_rxs(i).set_z(Z);
+            end
+            
+            Res.del_t = obj.del_t;
+            Res.del_s = obj.del_s;
+            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
+            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
+            [P_rx,~]       = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
+                                    Res, obj.DISP_WAITBAR);
+            
+            
+            Irrad = P_rx./(obj.del_p)^2; 
+            Irrad = reshape(Irrad,[N_y,N_x]);
+            
+            V = SYS_eye_sensitivity(min(obj.lambda), max(obj.lambda), 1978);
+            Illum = Irrad*683*sum(obj.Sprime.*V); 
+            grid = [x_locs;y_locs];
+        end
+        
         % Calculate rx power with receiver RX_NUM at the various positions
         % -----------------------------------------------------------------
         function [P, H] = calcMotionPath(obj,RX_NUM,x_locs,y_locs)
@@ -430,6 +494,37 @@ classdef candlesEnv
             Res.MAX_BOUNCE = obj.MAX_BOUNCE;
             [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.DISP_WAITBAR);
         end
+        
+        %% Environment Simulation Results - Plots
+        % *****************************************************************
+        % Plot the Illumination results at a specified plane
+        % -----------------------------------------------------------------
+        function plotIllumPlane(obj,Illum,plane,my_ax)
+            x = 0:obj.del_p:obj.rm.length;
+            y = 0:obj.del_p:obj.rm.width;
+            
+            axes(my_ax);
+            contourf(x,y,Illum);
+            xlabel('X (m)');
+            ylabel('Y (m)');
+            title(['Surface Illumination (Lux) at ' ...
+                     num2str(plane) 'm']);
+            view([0 90]);
+            caxis([0 max(max(Illum))]);
+            colorbar;
+        end
+        
+        % Plot the CDF of the Illumination results at a specified plane
+        % -----------------------------------------------------------------
+        function plotIllumPlaneCDF(~,Illum,plane,my_ax)
+            axes(my_ax);
+            temp = reshape(Illum,[1,size(Illum,1)*size(Illum,2)]);
+            cdfplot(temp);
+%            xlabel('Illuminance (lux)');
+%            ylabel('CDF');
+            title(['CDF of the Surface Illumination at ' ...
+                     num2str(plane) 'm']);
+        end        
     end
     
 end

@@ -5,8 +5,9 @@ classdef tx_ps < candles_classes.point_source
     %% Class Properties
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties (SetAccess = private)
-        Ps  % Transmit Optical Power (W)
-        m   % Transmitter Lambertian Order
+        Ps     % Transmit Optical Power (W)
+        theta  % Semiangle at half power (degrees)
+        m      % Transmitter Lambertian Order
 
         % FIXME - no functionality yet
         net_group = 1;  % TX group for resource allocation
@@ -37,6 +38,7 @@ classdef tx_ps < candles_classes.point_source
             % Set Tx power and Lambertian Order if given
             if (exist('Ps','var')); obj.Ps = Ps; else obj.Ps = d_Ps; end
             if (exist( 'm','var')); obj.m  =  m; else obj.m  =  d_m; end
+            obj.theta = acosd(exp(-log(2)/obj.m));
         end
         
         %% Set property values
@@ -51,6 +53,14 @@ classdef tx_ps < candles_classes.point_source
         % -----------------------------------------------------------------
         function obj = set_m(obj,m)
             obj.m = m;
+            obj.theta = acosd(exp(-log(2)/m));
+        end        
+        
+        % Set Transmitter Semiangle at half power
+        % -----------------------------------------------------------------
+        function obj = set_theta(obj,theta)
+            obj.theta = theta;
+            obj.m = -log(2)/log(cosd(theta)); % -ln2/ln(cos(theta))
         end        
     end
     
