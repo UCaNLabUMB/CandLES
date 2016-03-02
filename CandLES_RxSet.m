@@ -31,7 +31,7 @@ function varargout = CandLES_RxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_RxSet
 
-% Last Modified by GUIDE v2.5 09-Dec-2015 15:21:22
+% Last Modified by GUIDE v2.5 01-Mar-2016 22:18:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -207,6 +207,20 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Rx_x_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Rx_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = get(hObject,'Value');
+
+rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'x',temp);
+setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+set_values();
+
 function edit_Rx_y_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Rx_y (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -221,6 +235,20 @@ temp               = str2double(get(hObject,'String'));
 if (ERR == 0)
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
 end
+set_values();
+
+% --- Executes on slider movement.
+function slider_Rx_y_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Rx_y (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = get(hObject,'Value');
+
+rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'y',temp);
+setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
 set_values();
 
 function edit_Rx_z_Callback(hObject, eventdata, handles)
@@ -239,6 +267,19 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Rx_z_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Rx_z (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = get(hObject,'Value');
+
+rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'z',temp);
+setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+set_values();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% RX ROTATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -259,6 +300,20 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Rx_az_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Rx_az (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = get(hObject,'Value');
+
+rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'az',temp);
+setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+set_values();
+
 function edit_Rx_el_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Rx_el (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -275,6 +330,19 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Rx_el_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Rx_el (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+temp               = get(hObject,'Value');
+
+rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'el',temp);
+setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+set_values();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -304,12 +372,31 @@ function set_values()
     set(handles.edit_Rx_x,'string',num2str(rxSetEnv.rxs(RX_SELECT).x));
     set(handles.edit_Rx_y,'string',num2str(rxSetEnv.rxs(RX_SELECT).y));
     set(handles.edit_Rx_z,'string',num2str(rxSetEnv.rxs(RX_SELECT).z));
+    set(handles.slider_Rx_x,'value',rxSetEnv.rxs(RX_SELECT).x);
+    set(handles.slider_Rx_y,'value',rxSetEnv.rxs(RX_SELECT).y);
+    set(handles.slider_Rx_z,'value',rxSetEnv.rxs(RX_SELECT).z);
+    set(handles.slider_Rx_x,'Min',0);
+    set(handles.slider_Rx_y,'Min',0);
+    set(handles.slider_Rx_z,'Min',0);
+    set(handles.slider_Rx_x,'Max',rxSetEnv.rm.length);
+    set(handles.slider_Rx_y,'Max',rxSetEnv.rm.width);
+    set(handles.slider_Rx_z,'Max',rxSetEnv.rm.height);
+    set(handles.slider_Rx_x,'SliderStep',[0.1/rxSetEnv.rm.length, 1/rxSetEnv.rm.length]);
+    set(handles.slider_Rx_y,'SliderStep',[0.1/rxSetEnv.rm.width, 1/rxSetEnv.rm.width]);
+    set(handles.slider_Rx_z,'SliderStep',[0.1/rxSetEnv.rm.height, 1/rxSetEnv.rm.height]);
 
     % Set Rotation boxes
     [my_az,my_el] = rxSetEnv.rxs(RX_SELECT).get_angle_deg();
     set(handles.edit_Rx_az,'string',num2str(my_az));
     set(handles.edit_Rx_el,'string',num2str(my_el));
-
+    set(handles.slider_Rx_az,'value',my_az);
+    set(handles.slider_Rx_el,'value',my_el);
+    set(handles.slider_Rx_az,'Min',0);
+    set(handles.slider_Rx_el,'Min',0);
+    set(handles.slider_Rx_az,'Max',360);
+    set(handles.slider_Rx_el,'Max',360);
+    set(handles.slider_Rx_az,'SliderStep',[1/360, 1/36]);
+    set(handles.slider_Rx_el,'SliderStep',[1/360, 1/36]);
     % Set Rx Selection box
     set(handles.popup_rx_select,'String',1:1:length(rxSetEnv.rxs));
     set(handles.popup_rx_select,'Value',RX_SELECT);

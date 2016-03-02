@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 01-Mar-2016 21:25:38
+% Last Modified by GUIDE v2.5 01-Mar-2016 21:59:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -261,6 +261,21 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Tx_x_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Tx_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = get(hObject,'Value');
+
+txSetEnv = txSetEnv.setTxPos(TX_SELECT,'x',temp);
+setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+set_values();
+
+
 function edit_Tx_y_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_y (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -277,6 +292,21 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Tx_y_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Tx_y (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = get(hObject,'Value');
+
+txSetEnv = txSetEnv.setTxPos(TX_SELECT,'y',temp);
+setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+set_values();
+
+
 function edit_Tx_z_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_z (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -291,6 +321,20 @@ temp               = str2double(get(hObject,'String'));
 if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 end
+set_values();
+
+% --- Executes on slider movement.
+function slider_Tx_z_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Tx_z (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = get(hObject,'Value');
+
+txSetEnv = txSetEnv.setTxPos(TX_SELECT,'z',temp);
+setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 set_values();
 
 
@@ -313,6 +357,20 @@ if (ERR == 0)
 end
 set_values();
 
+% --- Executes on slider movement.
+function slider_Tx_az_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Tx_az (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = get(hObject,'Value');
+
+txSetEnv = txSetEnv.setTxPos(TX_SELECT,'az',temp);
+setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+set_values();
+
 function edit_Tx_el_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_Tx_el (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -327,6 +385,20 @@ temp               = str2double(get(hObject,'String'));
 if (ERR == 0)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 end
+set_values();
+
+% --- Executes on slider movement.
+function slider_Tx_el_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_Tx_el (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+temp               = get(hObject,'Value');
+
+txSetEnv = txSetEnv.setTxPos(TX_SELECT,'el',temp);
+setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 set_values();
 
 
@@ -359,12 +431,32 @@ function set_values()
     set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x));
     set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y));
     set(handles.edit_Tx_z,'string',num2str(txSetEnv.txs(TX_SELECT).z));
+    set(handles.slider_Tx_x,'value',txSetEnv.txs(TX_SELECT).x);
+    set(handles.slider_Tx_y,'value',txSetEnv.txs(TX_SELECT).y);
+    set(handles.slider_Tx_z,'value',txSetEnv.txs(TX_SELECT).z);
+    set(handles.slider_Tx_x,'Min',0);
+    set(handles.slider_Tx_y,'Min',0);
+    set(handles.slider_Tx_z,'Min',0);
+    set(handles.slider_Tx_x,'Max',txSetEnv.rm.length);
+    set(handles.slider_Tx_y,'Max',txSetEnv.rm.width);
+    set(handles.slider_Tx_z,'Max',txSetEnv.rm.height);
+    set(handles.slider_Tx_x,'SliderStep',[0.1/txSetEnv.rm.length, 1/txSetEnv.rm.length]);
+    set(handles.slider_Tx_y,'SliderStep',[0.1/txSetEnv.rm.width, 1/txSetEnv.rm.width]);
+    set(handles.slider_Tx_z,'SliderStep',[0.1/txSetEnv.rm.height, 1/txSetEnv.rm.height]);
 
     % Set Rotation boxes
     [my_az,my_el] = txSetEnv.txs(TX_SELECT).get_angle_deg();
     set(handles.edit_Tx_az,'string',num2str(my_az));
     set(handles.edit_Tx_el,'string',num2str(my_el));
-
+    set(handles.slider_Tx_az,'value',my_az);
+    set(handles.slider_Tx_el,'value',my_el);
+    set(handles.slider_Tx_az,'Min',0);
+    set(handles.slider_Tx_el,'Min',0);
+    set(handles.slider_Tx_az,'Max',360);
+    set(handles.slider_Tx_el,'Max',360);
+    set(handles.slider_Tx_az,'SliderStep',[1/360, 1/36]);
+    set(handles.slider_Tx_el,'SliderStep',[1/360, 1/36]);
+    
     % Set Tx Selection box
     set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
     set(handles.popup_tx_select,'Value',TX_SELECT);
@@ -372,3 +464,7 @@ function set_values()
     
   
     
+
+
+
+
