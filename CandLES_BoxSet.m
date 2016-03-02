@@ -31,7 +31,7 @@ function varargout = CandLES_BoxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_BoxSet
 
-% Last Modified by GUIDE v2.5 09-Dec-2015 15:28:30
+% Last Modified by GUIDE v2.5 01-Mar-2016 22:49:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -208,6 +208,21 @@ if (ERR == 0)
 end
 set_values(); % update GUI
 
+% --- Executes on slider movement.
+function slider_box_x_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_box_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = get(hObject,'value');
+
+boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,'x',temp);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+set_values(); % update GUI
+
+
 function edit_box_y_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_box_y (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -224,6 +239,21 @@ if (ERR == 0)
 end
 set_values(); % update GUI
 
+% --- Executes on slider movement.
+function slider_box_y_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_box_y (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = get(hObject,'value');
+
+boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,'y',temp);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+set_values(); % update GUI
+
+
 function edit_box_z_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_box_z (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -238,6 +268,20 @@ temp                = str2double(get(hObject,'String'));
 if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
+set_values(); % update GUI
+
+% --- Executes on slider movement.
+function slider_box_z_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_box_z (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = get(hObject,'value');
+
+boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,'z',temp);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 set_values(); % update GUI
 
 
@@ -260,6 +304,21 @@ if (ERR == 0)
 end
 set_values(); % update GUI
 
+% --- Executes on slider movement.
+function slider_box_length_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_box_length (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = get(hObject,'value');
+
+boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,'l',temp);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+set_values(); % update GUI
+
+
 function edit_box_width_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_box_width (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -276,6 +335,21 @@ if (ERR == 0)
 end
 set_values(); % update GUI
 
+% --- Executes on slider movement.
+function slider_box_width_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_box_width (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = get(hObject,'value');
+
+boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,'w',temp);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+set_values(); % update GUI
+
+
 function edit_box_height_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_box_height (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -290,6 +364,20 @@ temp                = str2double(get(hObject,'String'));
 if (ERR == 0)
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 end
+set_values(); % update GUI
+
+% --- Executes on slider movement.
+function slider_box_height_Callback(hObject, eventdata, handles)
+% hObject    handle to slider_box_height (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+temp                = get(hObject,'value');
+
+boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,'h',temp);
+setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
 set_values(); % update GUI
 
 
@@ -532,17 +620,66 @@ function set_values()
         % Display room with selected Box
         SYS_display_room(handles.axes_room, boxSetEnv, 3, BOX_SELECT);
         my_box = boxSetEnv.boxes(BOX_SELECT);
+        max_x = boxSetEnv.rm.length - my_box.length;
+        max_y = boxSetEnv.rm.width  - my_box.width;
+        max_z = boxSetEnv.rm.height - my_box.height;
+        max_l = boxSetEnv.rm.length - my_box.x;
+        max_w = boxSetEnv.rm.width  - my_box.y;
+        max_h = boxSetEnv.rm.height - my_box.z;
+        
+        % Note: need these checks to make sure floating point rounding 
+        % errors don't cause the sliders to go out of bounds. Otherwise
+        % sliders disappear (if value > max) or errors occur (if the
+        % minimum slider step > 1).
+        slider_x = min(max_x,my_box.x);
+        slider_y = min(max_y,my_box.y);
+        slider_z = min(max_z,my_box.z);
+        slider_l = min(max_l,my_box.length);
+        slider_w = min(max_w,my_box.width);
+        slider_h = min(max_h,my_box.height);
+        step_x   = [min(1,0.1/max_x), 1/max_x];
+        step_y   = [min(1,0.1/max_y), 1/max_y];
+        step_z   = [min(1,0.1/max_z), 1/max_z];
+        step_l   = [min(1,0.1/max_l), 1/max_l];
+        step_w   = [min(1,0.1/max_w), 1/max_w];
+        step_h   = [min(1,0.1/max_h), 1/max_h];
 
         % Set Location boxes
         set(handles.edit_box_x,      'string',       num2str(my_box.x));
         set(handles.edit_box_y,      'string',       num2str(my_box.y));
         set(handles.edit_box_z,      'string',       num2str(my_box.z));
 
+        set(handles.slider_box_x,     'value',                slider_x);
+        set(handles.slider_box_y,     'value',                slider_y);
+        set(handles.slider_box_z,     'value',                slider_z);
+        set(handles.slider_box_x,       'Min',                       0);
+        set(handles.slider_box_y,       'Min',                       0);
+        set(handles.slider_box_z,       'Min',                       0);
+        set(handles.slider_box_x,       'Max',                   max_x);
+        set(handles.slider_box_y,       'Max',                   max_y);
+        set(handles.slider_box_z,       'Max',                   max_z);
+        set(handles.slider_box_x,'SliderStep',                  step_x);
+        set(handles.slider_box_y,'SliderStep',                  step_y);
+        set(handles.slider_box_z,'SliderStep',                  step_z);
+        
         % Set Size boxes
-        set(handles.edit_box_length, 'string',  num2str(my_box.length));
-        set(handles.edit_box_width , 'string',   num2str(my_box.width));
-        set(handles.edit_box_height, 'string',  num2str(my_box.height));
+        set(handles.edit_box_length,  'string',  num2str(my_box.length));
+        set(handles.edit_box_width ,  'string',   num2str(my_box.width));
+        set(handles.edit_box_height,  'string',  num2str(my_box.height));
 
+        set(handles.slider_box_length, 'value',                slider_l);
+        set(handles.slider_box_width,  'value',                slider_w);
+        set(handles.slider_box_height, 'value',                slider_h);
+        set(handles.slider_box_length,   'Min',                       0);
+        set(handles.slider_box_width,    'Min',                       0);
+        set(handles.slider_box_height,   'Min',                       0);
+        set(handles.slider_box_length,   'Max',                   max_l);
+        set(handles.slider_box_width,    'Max',                   max_w);
+        set(handles.slider_box_height,   'Max',                   max_h);
+        set(handles.slider_box_length, 'SliderStep',             step_l);
+        set(handles.slider_box_width,  'SliderStep',             step_w);
+        set(handles.slider_box_height, 'SliderStep',             step_h);
+        
         % Set Box Reflectivities
         set(handles.edit_RefNorth,   'string',         my_box.ref(1,1));
         set(handles.edit_RefSouth,   'string',         my_box.ref(1,2)); 
@@ -564,16 +701,33 @@ function set_values()
     else
         % Display room with selected Box
         SYS_display_room(handles.axes_room, boxSetEnv, 0);
+        
+        % NOTE: Set default slider values this way to avoid errors when a
+        % box is added and then removed such that Max < 1.
+        X = get(handles.slider_box_x,'Max');
+        Y = get(handles.slider_box_y,'Max');
+        Z = get(handles.slider_box_z,'Max');
+        L = get(handles.slider_box_length,'Max');
+        W = get(handles.slider_box_width,'Max');
+        H = get(handles.slider_box_height,'Max');
 
         % Set Location boxes
         set(handles.edit_box_x,      'string', '--');
         set(handles.edit_box_y,      'string', '--');
         set(handles.edit_box_z,      'string', '--');
-
+        
+        set(handles.slider_box_x,     'value',    X);
+        set(handles.slider_box_y,     'value',    Y);
+        set(handles.slider_box_z,     'value',    Z);
+        
         % Set Size boxes
         set(handles.edit_box_length, 'string', '--');
         set(handles.edit_box_width , 'string', '--');
         set(handles.edit_box_height, 'string', '--');
+        
+        set(handles.slider_box_length,'value',    L);
+        set(handles.slider_box_width ,'value',    W);
+        set(handles.slider_box_height,'value',    H);
         
         % Set box Reflectivities
         set(handles.edit_RefNorth,   'string', '--');
