@@ -178,10 +178,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% RX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function popup_rx_select_Callback(hObject, eventdata, handles)
+function popup_rx_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_rx_select (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 RX_SELECT = get(hObject,'Value');
 setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
@@ -191,162 +189,88 @@ set_values(); % Set the values and display room with selected RX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% RX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function edit_Rx_x_Callback(hObject, eventdata, handles)
+function edit_Rx_x_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_x (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'x',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-end
-set_values();
+update_edit(hObject, 'x');
 
 % --- Executes on slider movement.
-function slider_Rx_x_Callback(hObject, eventdata, handles)
+function slider_Rx_x_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_x (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'x');
 
-rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'x',temp);
-setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-set_values();
-
-function edit_Rx_y_Callback(hObject, eventdata, handles)
+function edit_Rx_y_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_y (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'y',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-end
-set_values();
+update_edit(hObject, 'y');
 
 % --- Executes on slider movement.
-function slider_Rx_y_Callback(hObject, eventdata, handles)
+function slider_Rx_y_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_y (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'y');
 
-rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'y',temp);
-setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-set_values();
-
-function edit_Rx_z_Callback(hObject, eventdata, handles)
+function edit_Rx_z_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_z (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'z',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-end
-set_values();
+update_edit(hObject, 'z');
 
 % --- Executes on slider movement.
-function slider_Rx_z_Callback(hObject, eventdata, handles)
+function slider_Rx_z_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_z (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'z');
 
-rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'z',temp);
-setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-set_values();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% RX ROTATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function edit_Rx_az_Callback(hObject, eventdata, handles)
+function edit_Rx_az_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_az (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'az',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-end
-set_values();
+update_edit(hObject, 'az');
 
 % --- Executes on slider movement.
-function slider_Rx_az_Callback(hObject, eventdata, handles)
+function slider_Rx_az_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_az (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'az');
 
-rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'az',temp);
-setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-set_values();
-
-function edit_Rx_el_Callback(hObject, eventdata, handles)
+function edit_Rx_el_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_el (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,'el',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-end
-set_values();
+update_edit(hObject, 'el');
 
 % --- Executes on slider movement.
-function slider_Rx_el_Callback(hObject, eventdata, handles)
+function slider_Rx_el_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_el (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'el');
 
-rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,'el',temp);
-setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-set_values();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Update values based on the change to the edit box hObject. 
+%    param = {'x', 'y', 'z', 'az', 'el'}
+% --------------------------------------------------------------------
+function update_edit(hObject, param)
+    h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+    RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+    rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+    temp               = str2double(get(hObject,'String'));
+
+    [rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+    end
+    set_values();
+
+% Update values based on the change to the slider hObject. 
+%    param = {'x', 'y', 'z', 'az', 'el'}
+% --------------------------------------------------------------------
+function update_slider(hObject, param)
+    h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+    RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+    rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+    temp               = get(hObject,'Value');
+
+    rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,param,temp);
+    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+    set_values();
 
 % Call the update_main function from CandLES.m
 % --------------------------------------------------------------------

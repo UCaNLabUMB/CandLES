@@ -232,10 +232,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function popup_tx_select_Callback(hObject, eventdata, handles)
+function popup_tx_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_tx_select (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 TX_SELECT = get(hObject,'Value');
 setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
@@ -245,166 +243,88 @@ set_values(); % Set the values and display room with selected TX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% TX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function edit_Tx_x_Callback(hObject, eventdata, handles)
+function edit_Tx_x_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_x (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'x',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-end
-set_values();
+update_edit(hObject, 'x');
 
 % --- Executes on slider movement.
-function slider_Tx_x_Callback(hObject, eventdata, handles)
+function slider_Tx_x_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_x (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'x');
 
-txSetEnv = txSetEnv.setTxPos(TX_SELECT,'x',temp);
-setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-set_values();
-
-
-function edit_Tx_y_Callback(hObject, eventdata, handles)
+function edit_Tx_y_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_y (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'y',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-end
-set_values();
+update_edit(hObject, 'y');
 
 % --- Executes on slider movement.
-function slider_Tx_y_Callback(hObject, eventdata, handles)
+function slider_Tx_y_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_y (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'y');
 
-txSetEnv = txSetEnv.setTxPos(TX_SELECT,'y',temp);
-setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-set_values();
-
-
-function edit_Tx_z_Callback(hObject, eventdata, handles)
+function edit_Tx_z_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_z (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'z',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-end
-set_values();
+update_edit(hObject, 'z');
 
 % --- Executes on slider movement.
-function slider_Tx_z_Callback(hObject, eventdata, handles)
+function slider_Tx_z_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_z (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = get(hObject,'Value');
-
-txSetEnv = txSetEnv.setTxPos(TX_SELECT,'z',temp);
-setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-set_values();
+update_slider(hObject, 'z');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% TX ROTATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function edit_Tx_az_Callback(hObject, eventdata, handles)
+function edit_Tx_az_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_az (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'az',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-end
-set_values();
+update_edit(hObject, 'az');
 
 % --- Executes on slider movement.
-function slider_Tx_az_Callback(hObject, eventdata, handles)
+function slider_Tx_az_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_az (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = get(hObject,'Value');
+update_slider(hObject, 'az');
 
-txSetEnv = txSetEnv.setTxPos(TX_SELECT,'az',temp);
-setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-set_values();
-
-function edit_Tx_el_Callback(hObject, eventdata, handles)
+function edit_Tx_el_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_el (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = str2double(get(hObject,'String'));
-
-[txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,'el',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-end
-set_values();
+update_edit(hObject, 'el');
 
 % --- Executes on slider movement.
-function slider_Tx_el_Callback(hObject, eventdata, handles)
+function slider_Tx_el_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_el (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-temp               = get(hObject,'Value');
-
-txSetEnv = txSetEnv.setTxPos(TX_SELECT,'el',temp);
-setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-set_values();
+update_slider(hObject, 'el');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Update values based on the change to the edit box hObject. 
+%    param = {'x', 'y', 'z', 'az', 'el'}
+% --------------------------------------------------------------------
+function update_edit(hObject, param)
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    temp               = str2double(get(hObject,'String'));
+
+    [txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    end
+    set_values();
+
+% Update values based on the change to the slider hObject. 
+%    param = {'x', 'y', 'z', 'az', 'el'}
+% --------------------------------------------------------------------
+function update_slider(hObject, param)
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    temp               = get(hObject,'Value');
+
+    txSetEnv = txSetEnv.setTxPos(TX_SELECT,param,temp);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values();
 
 % Call the update_main function from CandLES.m
 % --------------------------------------------------------------------

@@ -151,7 +151,6 @@ if FileName ~= 0
 end
  
 
-
 % --------------------------------------------------------------------
 function menu_Clear_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Clear (see GCBO)
@@ -261,248 +260,118 @@ helpdlg(['CandLES is a simulation tool for indoor optical wireless ' ...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % --- Executes on button press in pushbutton_disp_room.
-function pushbutton_disp_room_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_disp_room (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-figure();
-SYS_display_room(axes(), mainEnv)
+function pushbutton_disp_room_Callback(~, ~, ~)
+    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+    mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+    figure();
+    SYS_display_room(axes(), mainEnv)
 
 
-% Room Length
+% Room Size
 % --------------------------------------------------------------------
-function edit_RmLength_Callback(hObject, eventdata, handles)
+function edit_RmLength_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmLength (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(handles.edit_RmLength,'String'));
-
-[mainEnv, ERR] = mainEnv.setRoomDim('length',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
+    update_size_edit(hObject, 'length');
     
-% Room Width
-% --------------------------------------------------------------------
-function edit_RmWidth_Callback(hObject, eventdata, handles)
+function edit_RmWidth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmWidth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(handles.edit_RmWidth,'String'));
+    update_size_edit(hObject, 'width');
 
-[mainEnv, ERR] = mainEnv.setRoomDim('width',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
-
-% Room Height
-% --------------------------------------------------------------------
-function edit_RmHeight_Callback(hObject, eventdata, handles)
+function edit_RmHeight_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmHeight (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(handles.edit_RmHeight,'String'));
+    update_size_edit(hObject, 'height');
 
-[mainEnv, ERR] = mainEnv.setRoomDim('height',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
+% Update room size based on the change to the edit hObject. 
+%    param = {'length', 'width', 'height'}
+function update_size_edit(hObject, param)
+    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+    mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+    temp              = str2double(get(hObject,'String'));
 
-% Room Reflections: North
+    [mainEnv, ERR] = mainEnv.setRoomDim(param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+    end
+    set_values();
+
+
+% Room Reflections
 % --------------------------------------------------------------------
-% --- Executes on slider movement.
-function slider_RefNorth_Callback(hObject, eventdata, handles)
+function slider_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefNorth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = get(hObject,'value'); % Get new value
-    
-mainEnv = mainEnv.setRoomRef('N',temp);
-setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-set_values();
+    update_ref_slider(hObject, 'N');
 
-function edit_RefNorth_Callback(hObject, eventdata, handles)
+function edit_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefNorth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(hObject,'String'));
+    update_ref_edit(hObject, 'N');
 
-[mainEnv, ERR] = mainEnv.setRoomRef('N',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
-
-% Room Reflections: South
-% --------------------------------------------------------------------
-% --- Executes on slider movement.
-function slider_RefSouth_Callback(hObject, eventdata, handles)
+function slider_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefSouth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = get(hObject,'value'); % Get new value
-    
-mainEnv = mainEnv.setRoomRef('S',temp);
-setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-set_values();
+    update_ref_slider(hObject, 'S');
 
-function edit_RefSouth_Callback(hObject, eventdata, handles)
+function edit_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefSouth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(hObject,'String'));
+    update_ref_edit(hObject, 'S');
 
-[mainEnv, ERR] = mainEnv.setRoomRef('S',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
-
-% Room Reflections: East
-% --------------------------------------------------------------------
-% --- Executes on slider movement.
-function slider_RefEast_Callback(hObject, eventdata, handles)
+function slider_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefEast (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = get(hObject,'value'); % Get new value
-    
-mainEnv = mainEnv.setRoomRef('E',temp);
-setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-set_values();
+    update_ref_slider(hObject, 'E');
 
-function edit_RefEast_Callback(hObject, eventdata, handles)
+function edit_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefEast (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(hObject,'String'));
+    update_ref_edit(hObject, 'E');
 
-[mainEnv, ERR] = mainEnv.setRoomRef('E',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
-
-% Room Reflections: West
-% --------------------------------------------------------------------
-% --- Executes on slider movement.
-function slider_RefWest_Callback(hObject, eventdata, handles)
+function slider_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefWest (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = get(hObject,'value'); % Get new value
-    
-mainEnv = mainEnv.setRoomRef('W',temp);
-setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-set_values();
+    update_ref_slider(hObject, 'W');
 
-function edit_RefWest_Callback(hObject, eventdata, handles)
+function edit_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefWest (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(hObject,'String'));
+    update_ref_edit(hObject, 'W');
 
-[mainEnv, ERR] = mainEnv.setRoomRef('W',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
-
-% Room Reflections: Top
-% --------------------------------------------------------------------
-% --- Executes on slider movement.
-function slider_RefTop_Callback(hObject, eventdata, handles)
+function slider_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefTop (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = get(hObject,'value'); % Get new value
-    
-mainEnv = mainEnv.setRoomRef('T',temp);
-setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-set_values();
+    update_ref_slider(hObject, 'T');
 
-function edit_RefTop_Callback(hObject, eventdata, handles)
+function edit_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefTop (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(hObject,'String'));
+    update_ref_edit(hObject, 'T');
 
-[mainEnv, ERR] = mainEnv.setRoomRef('T',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
-
-% Room Reflections: Bottom
-% --------------------------------------------------------------------
-% --- Executes on slider movement.
-function slider_RefBottom_Callback(hObject, eventdata, handles)
+function slider_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefBottom (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = get(hObject,'value'); % Get new value
-    
-mainEnv = mainEnv.setRoomRef('B',temp);
-setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-set_values();
+    update_ref_slider(hObject, 'B');
 
-function edit_RefBottom_Callback(hObject, eventdata, handles)
+function edit_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefBottom (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-temp              = str2double(get(hObject,'String'));
+    update_ref_edit(hObject, 'B');
 
-[mainEnv, ERR] = mainEnv.setRoomRef('B',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
+% Update reflectivity values based on the change to the slider hObject. 
+%    param = {'N', 'S', 'E', 'W', 'T', 'B'}
+function update_ref_slider(hObject, param)
+    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+    mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+    temp              = get(hObject,'value'); % Get new value
+
+    mainEnv = mainEnv.setRoomRef(param,temp);
     setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-end
-set_values();
+    set_values();
+    
+% Update reflectivity values based on the change to the edit hObject. 
+%    param = {'N', 'S', 'E', 'W', 'T', 'B'}
+function update_ref_edit(hObject, param)
+    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+    mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
+    temp              = str2double(get(hObject,'String'));
 
+    [mainEnv, ERR] = mainEnv.setRoomRef(param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+    end
+    set_values();
 
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -176,10 +176,8 @@ set_values(); % Set the values and display room with selected TX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% BOX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function popup_box_select_Callback(hObject, eventdata, handles)
+function popup_box_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_box_select (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
 if (BOX_SELECT > 0)
@@ -192,408 +190,223 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% BOX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function edit_box_x_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_box_x (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,'x',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-% --- Executes on slider movement.
-function slider_box_x_Callback(hObject, eventdata, handles)
+% Box Position: X
+% --------------------------------------------------------------------
+function slider_box_x_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_x (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = get(hObject,'value');
+update_pos_slider(hObject, 'x');
 
-boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,'x',temp);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % update GUI
+function edit_box_x_Callback(hObject, ~, ~)
+% hObject    handle to edit_box_x (see GCBO)
+update_pos_edit(hObject, 'x');
 
-
-function edit_box_y_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_box_y (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,'y',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-% --- Executes on slider movement.
-function slider_box_y_Callback(hObject, eventdata, handles)
+% Box Position: Y
+% --------------------------------------------------------------------
+function slider_box_y_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_y (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = get(hObject,'value');
+update_pos_slider(hObject, 'y');
 
-boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,'y',temp);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % update GUI
+function edit_box_y_Callback(hObject, ~, ~)
+% hObject    handle to edit_box_y (see GCBO)
+update_pos_edit(hObject, 'y');
 
-
-function edit_box_z_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_box_z (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,'z',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-% --- Executes on slider movement.
-function slider_box_z_Callback(hObject, eventdata, handles)
+% Box Position: Z
+% --------------------------------------------------------------------
+function slider_box_z_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_z (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = get(hObject,'value');
+update_pos_slider(hObject, 'z');
 
-boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,'z',temp);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % update GUI
+function edit_box_z_Callback(hObject, ~, ~)
+% hObject    handle to edit_box_z (see GCBO)
+update_pos_edit(hObject, 'z');
 
 
+% Update box position based on the change to the slider hObject. 
+%    param = {'x', 'y', 'z'}
+% --------------------------------------------------------------------
+function update_pos_slider(hObject, param)
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    temp                = get(hObject,'value');
+
+    boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,param,temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    set_values(); % update GUI
+    
+% Update box position based on the change to the edit hObject. 
+%    param = {'x', 'y', 'z'}
+% --------------------------------------------------------------------
+function update_pos_edit(hObject, param)
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    temp                = str2double(get(hObject,'String'));
+
+    [boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    end
+    set_values(); % update GUI
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% BOX SIZE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function edit_box_length_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_box_length (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,'l',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-% --- Executes on slider movement.
-function slider_box_length_Callback(hObject, eventdata, handles)
+% Box Dimensions: Length
+% --------------------------------------------------------------------
+function slider_box_length_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_length (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = get(hObject,'value');
+update_size_slider(hObject, 'l');
 
-boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,'l',temp);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % update GUI
+function edit_box_length_Callback(hObject, ~, ~)
+% hObject    handle to edit_box_length (see GCBO)
+update_size_edit(hObject, 'l')
 
-
-function edit_box_width_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_box_width (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,'w',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-% --- Executes on slider movement.
-function slider_box_width_Callback(hObject, eventdata, handles)
+% Box Dimensions: Width
+% --------------------------------------------------------------------
+function slider_box_width_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_width (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = get(hObject,'value');
+update_size_slider(hObject, 'w');
 
-boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,'w',temp);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % update GUI
+function edit_box_width_Callback(hObject, ~, ~)
+% hObject    handle to edit_box_width (see GCBO)
+update_size_edit(hObject, 'w')
 
-
-function edit_box_height_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_box_height (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,'h',temp);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-% --- Executes on slider movement.
-function slider_box_height_Callback(hObject, eventdata, handles)
+% Box Dimensions: Height
+% --------------------------------------------------------------------
+function slider_box_height_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_height (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-temp                = get(hObject,'value');
+update_size_slider(hObject, 'h');
 
-boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,'h',temp);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % update GUI
+function edit_box_height_Callback(hObject, ~, ~)
+% hObject    handle to edit_box_height (see GCBO)
+update_size_edit(hObject, 'h');
 
+% Update box dimensions based on the change to the slider hObject. 
+%    param = {'l', 'w', 'h'}
+% --------------------------------------------------------------------
+function update_size_slider(hObject, param)
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    temp                = get(hObject,'value');
 
+    boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,param,temp);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    set_values(); % update GUI
+    
+% Update box dimensions based on the change to the edit hObject. 
+%    param = {'l', 'w', 'h'}
+% --------------------------------------------------------------------
+function update_size_edit(hObject, param)
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    temp                = str2double(get(hObject,'String'));
+
+    [boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    end
+    set_values(); % update GUI
+    
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%% BOX REFLECTION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Box Reflections: North
 % --------------------------------------------------------------------
-function slider_RefNorth_Callback(hObject, eventdata, handles)
+function slider_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefNorth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = get(hObject,'value'); % Get new val
+update_ref_slider(hObject, 'N');
 
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'N',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-function edit_RefNorth_Callback(hObject, eventdata, handles)
+function edit_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefNorth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'N',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
+update_ref_edit(hObject, 'N')
 
 % Box Reflections: South
 % --------------------------------------------------------------------
-function slider_RefSouth_Callback(hObject, eventdata, handles)
+function slider_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefSouth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = get(hObject,'value'); % Get new val
-    
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'S',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
+update_ref_slider(hObject, 'S');
 
-function edit_RefSouth_Callback(hObject, eventdata, handles)
+function edit_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefSouth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'S',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
-
+update_ref_edit(hObject, 'S')
 
 % Box Reflections: East
 % --------------------------------------------------------------------
-function slider_RefEast_Callback(hObject, eventdata, handles)
+function slider_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefEast (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = get(hObject,'value'); % Get new val
-    
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'E',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
+update_ref_slider(hObject, 'E');
 
-function edit_RefEast_Callback(hObject, eventdata, handles)
+function edit_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefEast (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'E',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
+update_ref_edit(hObject, 'E')
 
 % Box Reflections: West
 % --------------------------------------------------------------------
-function slider_RefWest_Callback(hObject, eventdata, handles)
+function slider_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefWest (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = get(hObject,'value'); % Get new val
-    
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'W',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
+update_ref_slider(hObject, 'W');
 
-function edit_RefWest_Callback(hObject, eventdata, handles)
+function edit_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefWest (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'W',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
+update_ref_edit(hObject, 'W')
 
 % Box Reflections: Top
 % --------------------------------------------------------------------
-function slider_RefTop_Callback(hObject, eventdata, handles)
+function slider_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefTop (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = get(hObject,'value'); % Get new val
-    
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'T',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
+update_ref_slider(hObject, 'T');
 
-function edit_RefTop_Callback(hObject, eventdata, handles)
+function edit_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefTop (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = str2double(get(hObject,'String'));
-
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'T',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
-
+update_ref_edit(hObject, 'T')
 
 % Box Reflections: Bottom
 % --------------------------------------------------------------------
-function slider_RefBottom_Callback(hObject, eventdata, handles)
+function slider_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefBottom (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = get(hObject,'value'); % Get new val
-    
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'B',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
+update_ref_slider(hObject, 'B');
 
-function edit_RefBottom_Callback(hObject, eventdata, handles)
+function edit_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefBottom (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
-ref                 = str2double(get(hObject,'String'));
+update_ref_edit(hObject, 'B')
 
-[boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,'B',ref);
-% FIXME: Add warning boxes for ERR and bring to front after set_values
-if (ERR == 0)
-    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-end
-set_values(); % update GUI
+% Update reflectivity values based on the change to the slider hObject. 
+%    param = {'N', 'S', 'E', 'W', 'T', 'B'}
+% --------------------------------------------------------------------
+function update_ref_slider(hObject, param)
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    ref                 = get(hObject,'value'); % Get new val
 
+    [boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,param,ref);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    end
+    set_values(); % update GUI
+    
+% Update reflectivity values based on the change to the edit hObject. 
+%    param = {'N', 'S', 'E', 'W', 'T', 'B'}
+% --------------------------------------------------------------------
+function update_ref_edit(hObject, param)
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    ref                 = str2double(get(hObject,'String'));
+
+    [boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,param,ref);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    end
+    set_values(); % update GUI
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
