@@ -121,38 +121,64 @@ classdef candlesEnv
         % ERR = -1 means invalid TX_NUM
         %     = -2 means invalid position (NaN or complex val)
         %     = -3 means invalid xyz
-        function [obj,ERR] = setTxPos(obj,TX_NUM,xyz,temp)
+        % FIXME: This has become more like setTxParam rather than Position
+        function [obj,ERR] = setTxPos(obj,TX_NUM,xyz,temp) 
             ERR = 0;
             if (TX_NUM < 1) || (TX_NUM > length(obj.txs))
                 ERR = -1;
+            elseif (isnan(temp)) || (~isreal(temp))
+                ERR = -2;
             else
-                if (isnan(temp)) || (~isreal(temp))
-                    ERR = -2;
-                else
-                    switch xyz
-                        case 'x'
-                            % FIXME: Add ERR for out of range x, y, or z
-                            temp = max(min(temp,obj.rm.length),0);
-                            obj.txs(TX_NUM) = obj.txs(TX_NUM).set_x(temp);
-                        case 'y'
-                            temp = max(min(temp,obj.rm.width),0);
-                            obj.txs(TX_NUM) = obj.txs(TX_NUM).set_y(temp);
-                        case 'z'
-                            temp = max(min(temp,obj.rm.height),0);
-                            obj.txs(TX_NUM) = obj.txs(TX_NUM).set_z(temp);
-                        case 'az' % Set in degrees
-                            temp = max(min(temp,360),0)*(pi/180);
-                            obj.txs(TX_NUM) = obj.txs(TX_NUM).set_az(temp);
-                        case 'el' % Set in degrees
-                            temp = max(min(temp,360),0)*(pi/180);
-                            obj.txs(TX_NUM) = obj.txs(TX_NUM).set_el(temp);
-                        otherwise
-                            ERR = -3;
-                    end
+                switch xyz
+                    case 'x'
+                        temp = max(min(temp,obj.rm.length),0);
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_x(temp);
+                    case 'y'
+                        temp = max(min(temp,obj.rm.width),0);
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_y(temp);
+                    case 'z'
+                        temp = max(min(temp,obj.rm.height),0);
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_z(temp);
+                    case 'az' 
+                        temp = temp*(pi/180); % Convert and set in radians
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_az(temp);
+                    case 'el' 
+                        temp = temp*(pi/180); % Convert and set in radians
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_el(temp);
+                    case 'Ps'
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_Ps(temp);
+                    case 'm'
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_m(temp);
+                    case 'theta' % Set in degrees
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_theta(temp);
+                    otherwise
+                        ERR = -3;
                 end
             end
         end
         
+        % Plot the normalized emission pattern of the specified Tx
+        % -----------------------------------------------------------------
+        function plotTxEmission(obj,TX_SELECT,my_axes) 
+            my_tx = obj.txs(TX_SELECT);
+
+            angles_deg = -90:90;
+            angles_rad = angles_deg*pi/180;
+            
+            emission = (my_tx.m+1)*cos(angles_rad).^(my_tx.m)/(2*pi);
+            emission_norm = 100*emission/max(emission);
+            
+            axes(my_axes); cla;
+            plot(angles_deg,emission_norm);
+            axis([-90 90 0 105]);
+            set(my_axes,'FontSize',8);
+            title('Normalized Emission Pattern', 'FontSize',10);
+            xlabel('Emission Angle (deg)', 'FontSize',9);
+            ylabel('% of Peak', 'FontSize',9);
+            my_axes.XTick = -90:45:90;
+            my_axes.YTick = 0:50:100;
+        end
+
         %% Receiver Functions
         % *****************************************************************
         % Add a new receiver
@@ -188,7 +214,6 @@ classdef candlesEnv
                 else
                     switch xyz
                         case 'x'
-                            % FIXME: Add ERR for out of range x, y, or z
                             temp = max(min(temp,obj.rm.length),0);
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_x(temp);
                         case 'y'
@@ -197,11 +222,11 @@ classdef candlesEnv
                         case 'z'
                             temp = max(min(temp,obj.rm.height),0);
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_z(temp);
-                        case 'az' % Set in degrees
-                            temp = max(min(temp,360),0)*(pi/180);
+                        case 'az' 
+                            temp = temp*(pi/180); % Convert and set in radians
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_az(temp);
-                        case 'el' % Set in degrees
-                            temp = max(min(temp,360),0)*(pi/180);
+                        case 'el' 
+                            temp = temp*(pi/180); % Convert and set in radians
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_el(temp);
                         otherwise
                             ERR = -3;

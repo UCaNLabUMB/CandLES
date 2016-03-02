@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 01-Mar-2016 21:59:32
+% Last Modified by GUIDE v2.5 02-Mar-2016 13:44:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -283,6 +283,24 @@ function slider_Tx_el_Callback(hObject, ~, ~)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% TX PARAMETER FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Edit callback for average transmit power (Optical Watts)
+function edit_Tx_Ps_Callback(hObject, ~, ~)
+% hObject    handle to edit_Tx_Ps (see GCBO)
+    update_edit(hObject, 'Ps');
+    
+% Edit callback for Lambertian Order
+function edit_Tx_m_Callback(hObject, ~, ~)
+% hObject    handle to edit_Tx_m (see GCBO)
+    update_edit(hObject, 'm');
+
+function edit_Tx_theta_Callback(hObject, ~, ~)
+% hObject    handle to edit_Tx_theta (see GCBO)
+    update_edit(hObject, 'theta');
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -336,6 +354,9 @@ function set_values()
     % Display room with selected Tx
     SYS_display_room(handles.axes_room, txSetEnv, 1, TX_SELECT);
     
+    % Display emission pattern of selected Tx
+    txSetEnv.plotTxEmission(TX_SELECT,handles.axes_tx);
+    
     % Set Location boxes
     set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x));
     set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y));
@@ -369,6 +390,11 @@ function set_values()
     % Set Tx Selection box
     set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
     set(handles.popup_tx_select,'Value',TX_SELECT);
+
+    % Set Tx Parameters
+    set(handles.edit_Tx_Ps,   'string', num2str(txSetEnv.txs(TX_SELECT).Ps));
+    set(handles.edit_Tx_m,    'string', num2str(txSetEnv.txs(TX_SELECT).m));
+    set(handles.edit_Tx_theta,'string', num2str(txSetEnv.txs(TX_SELECT).theta));
 
     
   

@@ -46,21 +46,26 @@ classdef tx_ps < candles_classes.point_source
         % Set Transmit Optical Power (W)
         % -----------------------------------------------------------------
         function obj = set_Ps(obj,Ps)
+            Ps = max(Ps,0); % Check Bound
             obj.Ps = Ps;
         end
         
         % Set Transmitter Lambertian Order
         % -----------------------------------------------------------------
         function obj = set_m(obj,m)
-            obj.m = m;
-            obj.theta = acosd(exp(-log(2)/m));
+            if (m > 0)
+                obj.m = m;
+                obj.theta = acosd(exp(-log(2)/m));
+            end
         end        
         
         % Set Transmitter Semiangle at half power
         % -----------------------------------------------------------------
         function obj = set_theta(obj,theta)
-            obj.theta = theta;
-            obj.m = -log(2)/log(cosd(theta)); % -ln2/ln(cos(theta))
+            if (theta > 0) && (theta < 90)
+                obj.theta = theta;
+                obj.m = -log(2)/log(cosd(theta)); % -ln2/ln(cos(theta))
+            end
         end        
     end
     

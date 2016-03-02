@@ -103,6 +103,7 @@ classdef point_source
         % Set the azimuth of the point source object
         % -----------------------------------------------------------------
         function obj = set_az(obj,az)
+            az = max(min(az,2*pi),0); % Confirm 0 <= az <= 2pi
             obj.az = az; % Set Azimuth Angle (rad)
             
             % Convert to degrees for exact calculation using sind and cosd.
@@ -115,9 +116,10 @@ classdef point_source
             obj.z_hat = 1*sind(my_el);
         end
         
-        % Set the azimuth of the point source object
+        % Set the elevation of the point source object
         % -----------------------------------------------------------------
         function obj = set_el(obj,el)
+            el = max(min(el,2*pi),0); % Confirm 0 <= el <= 2pi
             obj.el = el; % Set Elevation Angle (rad)
             
             % Convert to degrees for exact calculation using sind and cosd.
