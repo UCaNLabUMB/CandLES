@@ -123,88 +123,82 @@ delete(hObject); % Close the figure
 % --------------------------------------------------------------------
 function menu_File_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_File (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function Menu_Update_Callback(hObject, eventdata, handles)
 % hObject    handle to Menu_Update (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-update_main_env();
+    update_main_env();
 
 % --------------------------------------------------------------------
 function menu_Edit_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function menu_addTx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addTx (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-[txSetEnv, TX_SELECT]  = txSetEnv.addTx();
+    [txSetEnv, TX_SELECT]  = txSetEnv.addTx();
 
-setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-set_values(); % Set the values and display room with selected TX
+    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
 
 % --------------------------------------------------------------------
 function menu_addTxLayout_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addTxLayout (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-dlg_title    = 'Tx Layout Settings';
+    dlg_title    = 'Tx Layout Settings';
 
-% NOTE: Grid layout = 1. Cell layout 1 = 2. Cell layout 2 = 3.
-layout = listdlg('ListString',{'Grid Layout','Cell Layout 1','Cell Layout 2'}, ...
-                 'SelectionMode','single',...
-                 'Name',dlg_title, ...
-                 'ListSize',[160 60]);
-             
-if (~isempty(layout))
-    num_lines    = 1;
-    prompt       = {'Number of TXs in X dimension:', ...
-                    'Number of TXs in Y dimension:', ...
-                    'Distance between TXs (m):', ...
-                    'Center in X dimension (m):', ...
-                    'Center in Y dimension (m):', ...
-                    'Z Plane (m):'};
-    default_vals = {'2','2','1',num2str(txSetEnv.rm.length/2), ...
-                                num2str(txSetEnv.rm.width/2), ...
-                                num2str(txSetEnv.rm.height)};
+    % NOTE: Grid layout = 1. Cell layout 1 = 2. Cell layout 2 = 3.
+    layout = listdlg('ListString',{'Grid Layout', ...
+                                   'Cell Layout 1', ...
+                                   'Cell Layout 2'}, ...
+                     'SelectionMode','single',...
+                     'Name',dlg_title, ...
+                     'ListSize',[160 60]);
 
-    ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
+    if (~isempty(layout))
+        num_lines    = 1;
+        prompt       = {'Number of TXs in X dimension:', ...
+                        'Number of TXs in Y dimension:', ...
+                        'Distance between TXs (m):', ...
+                        'Center in X dimension (m):', ...
+                        'Center in Y dimension (m):', ...
+                        'Z Plane (m):'};
+        default_vals = {'2','2','1',num2str(txSetEnv.rm.length/2), ...
+                                    num2str(txSetEnv.rm.width/2), ...
+                                    num2str(txSetEnv.rm.height)};
 
-    % NOTE: If these change to str2num, need to modify the error check below.
-    vals = [str2double(ans_dlg(1)), ...
-            str2double(ans_dlg(2)), ...
-            str2double(ans_dlg(3)), ...
-            str2double(ans_dlg(4)), ...
-            str2double(ans_dlg(5)), ...
-            str2double(ans_dlg(6))];
-        
-    if (isnan(sum(vals)))
-        warndlg('Inputs must be numeric values', 'Warning: Invalid Input');
-    elseif (any(mod(vals(1:2),1)))
-        warndlg('Number of TXs must be an integer value', 'Warning: Invalid Input');
-    else
-        replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
-        [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), ...
-                                                     vals(5), vals(6), layout, replace);
+        ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
 
-        setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-        setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-        set_values(); % Set the values and display room with selected TX
+        % NOTE: If changing to str2num, need to modify error check below.
+        vals = [str2double(ans_dlg(1)), ...
+                str2double(ans_dlg(2)), ...
+                str2double(ans_dlg(3)), ...
+                str2double(ans_dlg(4)), ...
+                str2double(ans_dlg(5)), ...
+                str2double(ans_dlg(6))];
+
+        if (isnan(sum(vals)))
+            warndlg('Inputs must be numeric values', ...
+                    'Warning: Invalid Input');
+        elseif (any(mod(vals(1:2),1)))
+            warndlg('Number of TXs must be an integer value', ...
+                    'Warning: Invalid Input');
+        else
+            replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
+            [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), ...
+                                                         vals(5), vals(6), layout, replace);
+
+            setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+            setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+            set_values(); % Set the values and display room with selected TX
+        end
     end
-end
 
 
 % --------------------------------------------------------------------
@@ -212,21 +206,21 @@ function menu_deleteTx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteTx (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-[txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
-TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
-if(ERR == 1)
-    errordlg('CandLES environment must contain a Tx.','Tx Delete');
-else
-    % NOTE: Do this in the else statement so that the error box doesn't 
-    % get hidden when the GUI is updated in set_values()
-    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values(); % Set the values and display room with selected TX
-end
+    [txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
+    TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
+    if(ERR == 1)
+        errordlg('CandLES environment must contain a Tx.','Tx Delete');
+    else
+        % NOTE: Do this in the else statement so that the error box doesn't 
+        % get hidden when the GUI is updated in set_values()
+        setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+        setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+        set_values(); % Set the values and display room with selected TX
+    end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -234,10 +228,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function popup_tx_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_tx_select (see GCBO)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-TX_SELECT = get(hObject,'Value');
-setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-set_values(); % Set the values and display room with selected TX
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    TX_SELECT = get(hObject,'Value');
+    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    set_values(); % Set the values and display room with selected TX
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -245,30 +239,27 @@ set_values(); % Set the values and display room with selected TX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function edit_Tx_x_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_x (see GCBO)
-update_edit(hObject, 'x');
+    update_edit(hObject, 'x');
 
-% --- Executes on slider movement.
 function slider_Tx_x_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_x (see GCBO)
-update_slider(hObject, 'x');
+    update_slider(hObject, 'x');
 
 function edit_Tx_y_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_y (see GCBO)
-update_edit(hObject, 'y');
+    update_edit(hObject, 'y');
 
-% --- Executes on slider movement.
 function slider_Tx_y_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_y (see GCBO)
-update_slider(hObject, 'y');
+    update_slider(hObject, 'y');
 
 function edit_Tx_z_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_z (see GCBO)
-update_edit(hObject, 'z');
+    update_edit(hObject, 'z');
 
-% --- Executes on slider movement.
 function slider_Tx_z_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_z (see GCBO)
-update_slider(hObject, 'z');
+    update_slider(hObject, 'z');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -276,21 +267,19 @@ update_slider(hObject, 'z');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function edit_Tx_az_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_az (see GCBO)
-update_edit(hObject, 'az');
+    update_edit(hObject, 'az');
 
-% --- Executes on slider movement.
 function slider_Tx_az_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_az (see GCBO)
-update_slider(hObject, 'az');
+    update_slider(hObject, 'az');
 
 function edit_Tx_el_Callback(hObject, ~, ~)
 % hObject    handle to edit_Tx_el (see GCBO)
-update_edit(hObject, 'el');
+    update_edit(hObject, 'el');
 
-% --- Executes on slider movement.
 function slider_Tx_el_Callback(hObject, ~, ~)
 % hObject    handle to slider_Tx_el (see GCBO)
-update_slider(hObject, 'el');
+    update_slider(hObject, 'el');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

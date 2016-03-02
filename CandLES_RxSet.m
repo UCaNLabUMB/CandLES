@@ -123,67 +123,56 @@ delete(hObject); % Close the figure
 % --------------------------------------------------------------------
 function menu_File_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_File (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function menu_Update_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Update (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-update_main_env();
+    update_main_env();
 
 % --------------------------------------------------------------------
 function menu_Edit_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function menu_addRx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addRx (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+    h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+    rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
-[rxSetEnv, RX_SELECT]  = rxSetEnv.addRx();
+    [rxSetEnv, RX_SELECT]  = rxSetEnv.addRx();
 
-setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
-setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-set_values(); % Set the values and display room with selected RX
+    setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
+    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+    set_values(); % Set the values and display room with selected RX
 
 % --------------------------------------------------------------------
 function menu_deleteRx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteRx (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
-rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
+    h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+    RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
+    rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
-[rxSetEnv, ERR]  = rxSetEnv.removeRx(RX_SELECT);
-RX_SELECT = min(RX_SELECT, length(rxSetEnv.rxs));
-if(ERR == 1)
-    errordlg('CandLES environment must contain a Rx.','Rx Delete');
-else
-    % NOTE: Do this in the else statement so that the error box doesn't 
-    % get hidden when the GUI is updated in set_values()
-    setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
-    setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
-    set_values(); % Set the values and display room with selected RX
-end
+    [rxSetEnv, ERR]  = rxSetEnv.removeRx(RX_SELECT);
+    RX_SELECT = min(RX_SELECT, length(rxSetEnv.rxs));
+    if(ERR == 1)
+        errordlg('CandLES environment must contain a Rx.','Rx Delete');
+    else
+        % NOTE: Do this in the else statement so that the error box doesn't 
+        % get hidden when the GUI is updated in set_values()
+        setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
+        setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
+        set_values(); % Set the values and display room with selected RX
+    end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% RX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function popup_rx_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_rx_select (see GCBO)
-h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
-RX_SELECT = get(hObject,'Value');
-setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
-set_values(); % Set the values and display room with selected RX
+    h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
+    RX_SELECT = get(hObject,'Value');
+    setappdata(h_GUI_CandlesRxSet, 'RX_SELECT', RX_SELECT);
+    set_values(); % Set the values and display room with selected RX
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,30 +180,27 @@ set_values(); % Set the values and display room with selected RX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function edit_Rx_x_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_x (see GCBO)
-update_edit(hObject, 'x');
+    update_edit(hObject, 'x');
 
-% --- Executes on slider movement.
 function slider_Rx_x_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_x (see GCBO)
-update_slider(hObject, 'x');
+    update_slider(hObject, 'x');
 
 function edit_Rx_y_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_y (see GCBO)
-update_edit(hObject, 'y');
+    update_edit(hObject, 'y');
 
-% --- Executes on slider movement.
 function slider_Rx_y_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_y (see GCBO)
-update_slider(hObject, 'y');
+    update_slider(hObject, 'y');
 
 function edit_Rx_z_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_z (see GCBO)
-update_edit(hObject, 'z');
+    update_edit(hObject, 'z');
 
-% --- Executes on slider movement.
 function slider_Rx_z_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_z (see GCBO)
-update_slider(hObject, 'z');
+    update_slider(hObject, 'z');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -222,21 +208,19 @@ update_slider(hObject, 'z');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function edit_Rx_az_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_az (see GCBO)
-update_edit(hObject, 'az');
+    update_edit(hObject, 'az');
 
-% --- Executes on slider movement.
 function slider_Rx_az_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_az (see GCBO)
-update_slider(hObject, 'az');
+    update_slider(hObject, 'az');
 
 function edit_Rx_el_Callback(hObject, ~, ~)
 % hObject    handle to edit_Rx_el (see GCBO)
-update_edit(hObject, 'el');
+    update_edit(hObject, 'el');
 
-% --- Executes on slider movement.
 function slider_Rx_el_Callback(hObject, ~, ~)
 % hObject    handle to slider_Rx_el (see GCBO)
-update_slider(hObject, 'el');
+    update_slider(hObject, 'el');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

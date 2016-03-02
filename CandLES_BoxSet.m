@@ -127,98 +127,86 @@ delete(hObject); % Close the figure
 % --------------------------------------------------------------------
 function menu_File_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_File (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function menu_Update_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Update (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-update_main_env();
+    update_main_env();
 
 % --------------------------------------------------------------------
 function menu_Edit_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function menu_addBox_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addBox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
-[boxSetEnv, BOX_SELECT] = boxSetEnv.addBox();
+    [boxSetEnv, BOX_SELECT] = boxSetEnv.addBox();
 
-setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % Set the values and display room with selected box
+    setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    set_values(); % Set the values and display room with selected box
 
 % --------------------------------------------------------------------
 function menu_deleteBox_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteBox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
-boxSetEnv  = boxSetEnv.removeBox(BOX_SELECT);
-BOX_SELECT = min(BOX_SELECT, length(boxSetEnv.boxes));
+    boxSetEnv  = boxSetEnv.removeBox(BOX_SELECT);
+    BOX_SELECT = min(BOX_SELECT, length(boxSetEnv.boxes));
 
-setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
-setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
-set_values(); % Set the values and display room with selected TX
+    setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+    setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
+    set_values(); % Set the values and display room with selected TX
 
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% BOX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function popup_box_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_box_select (see GCBO)
-h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
-BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
-if (BOX_SELECT > 0)
-    BOX_SELECT = get(hObject,'Value');
-    setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
-    set_values(); % Set the values and display room with selected TX
-end
+    h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
+    BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
+    if (BOX_SELECT > 0)
+        BOX_SELECT = get(hObject,'Value');
+        setappdata(h_GUI_CandlesBoxSet, 'BOX_SELECT', BOX_SELECT);
+        set_values(); % Set the values and display room with selected TX
+    end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% BOX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Box Position: X
 % --------------------------------------------------------------------
 function slider_box_x_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_x (see GCBO)
-update_pos_slider(hObject, 'x');
+    update_pos_slider(hObject, 'x');
 
 function edit_box_x_Callback(hObject, ~, ~)
 % hObject    handle to edit_box_x (see GCBO)
-update_pos_edit(hObject, 'x');
+    update_pos_edit(hObject, 'x');
 
-% Box Position: Y
 % --------------------------------------------------------------------
 function slider_box_y_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_y (see GCBO)
-update_pos_slider(hObject, 'y');
+    update_pos_slider(hObject, 'y');
 
 function edit_box_y_Callback(hObject, ~, ~)
 % hObject    handle to edit_box_y (see GCBO)
-update_pos_edit(hObject, 'y');
+    update_pos_edit(hObject, 'y');
 
-% Box Position: Z
 % --------------------------------------------------------------------
 function slider_box_z_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_z (see GCBO)
-update_pos_slider(hObject, 'z');
+    update_pos_slider(hObject, 'z');
 
 function edit_box_z_Callback(hObject, ~, ~)
 % hObject    handle to edit_box_z (see GCBO)
-update_pos_edit(hObject, 'z');
+    update_pos_edit(hObject, 'z');
 
 
 % Update box position based on the change to the slider hObject. 
@@ -253,35 +241,31 @@ function update_pos_edit(hObject, param)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% BOX SIZE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Box Dimensions: Length
+% Box Dimensions
 % --------------------------------------------------------------------
 function slider_box_length_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_length (see GCBO)
-update_size_slider(hObject, 'l');
+    update_size_slider(hObject, 'l');
 
 function edit_box_length_Callback(hObject, ~, ~)
 % hObject    handle to edit_box_length (see GCBO)
-update_size_edit(hObject, 'l')
+    update_size_edit(hObject, 'l')
 
-% Box Dimensions: Width
-% --------------------------------------------------------------------
 function slider_box_width_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_width (see GCBO)
-update_size_slider(hObject, 'w');
+    update_size_slider(hObject, 'w');
 
 function edit_box_width_Callback(hObject, ~, ~)
 % hObject    handle to edit_box_width (see GCBO)
-update_size_edit(hObject, 'w')
+    update_size_edit(hObject, 'w')
 
-% Box Dimensions: Height
-% --------------------------------------------------------------------
 function slider_box_height_Callback(hObject, ~, ~)
 % hObject    handle to slider_box_height (see GCBO)
-update_size_slider(hObject, 'h');
+    update_size_slider(hObject, 'h');
 
 function edit_box_height_Callback(hObject, ~, ~)
 % hObject    handle to edit_box_height (see GCBO)
-update_size_edit(hObject, 'h');
+    update_size_edit(hObject, 'h');
 
 % Update box dimensions based on the change to the slider hObject. 
 %    param = {'l', 'w', 'h'}
@@ -316,65 +300,59 @@ function update_size_edit(hObject, param)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%% BOX REFLECTION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Box Reflections: North
+% Box Reflections: North / South
 % --------------------------------------------------------------------
 function slider_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefNorth (see GCBO)
-update_ref_slider(hObject, 'N');
+    update_ref_slider(hObject, 'N');
 
 function edit_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefNorth (see GCBO)
-update_ref_edit(hObject, 'N')
+    update_ref_edit(hObject, 'N')
 
-% Box Reflections: South
-% --------------------------------------------------------------------
 function slider_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefSouth (see GCBO)
-update_ref_slider(hObject, 'S');
+    update_ref_slider(hObject, 'S');
 
 function edit_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefSouth (see GCBO)
-update_ref_edit(hObject, 'S')
+    update_ref_edit(hObject, 'S')
 
-% Box Reflections: East
+% Box Reflections: East / West
 % --------------------------------------------------------------------
 function slider_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefEast (see GCBO)
-update_ref_slider(hObject, 'E');
+    update_ref_slider(hObject, 'E');
 
 function edit_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefEast (see GCBO)
-update_ref_edit(hObject, 'E')
+    update_ref_edit(hObject, 'E')
 
-% Box Reflections: West
-% --------------------------------------------------------------------
 function slider_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefWest (see GCBO)
-update_ref_slider(hObject, 'W');
+    update_ref_slider(hObject, 'W');
 
 function edit_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefWest (see GCBO)
-update_ref_edit(hObject, 'W')
+    update_ref_edit(hObject, 'W')
 
-% Box Reflections: Top
+% Box Reflections: Top / Bottom
 % --------------------------------------------------------------------
 function slider_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefTop (see GCBO)
-update_ref_slider(hObject, 'T');
+    update_ref_slider(hObject, 'T');
 
 function edit_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefTop (see GCBO)
-update_ref_edit(hObject, 'T')
+    update_ref_edit(hObject, 'T')
 
-% Box Reflections: Bottom
-% --------------------------------------------------------------------
 function slider_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefBottom (see GCBO)
-update_ref_slider(hObject, 'B');
+    update_ref_slider(hObject, 'B');
 
 function edit_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefBottom (see GCBO)
-update_ref_edit(hObject, 'B')
+    update_ref_edit(hObject, 'B')
 
 % Update reflectivity values based on the change to the slider hObject. 
 %    param = {'N', 'S', 'E', 'W', 'T', 'B'}

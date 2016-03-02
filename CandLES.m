@@ -114,141 +114,97 @@ varargout{1} = handles.output;
 % --------------------------------------------------------------------
 function menu_File_Callback(hObject, eventdata, handles) 
 % hObject    handle to menu_File (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function menu_Save_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Save (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv'); %#ok<NASGU>
- 
-[FileName, PathName] = uiputfile('*.mat');
-if FileName ~= 0
-    save([PathName FileName], 'mainEnv');
-end
+    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+    mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv'); %#ok<NASGU>
 
+    [FileName, PathName] = uiputfile('*.mat');
+    if FileName ~= 0
+        save([PathName FileName], 'mainEnv');
+    end
 
 % --------------------------------------------------------------------
 function menu_Load_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Load (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[FileName, PathName] = uigetfile('*.mat');
-if FileName ~= 0
-    load([PathName FileName])
-    % FIXME: Should validate the content of the loaded mainEnv
-    if exist('mainEnv','var')
-        h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-        setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-        set_values();
-    else
-        warndlg('Invalid .mat file. CandLES Environment does not exist');
+    [FileName, PathName] = uigetfile('*.mat');
+    if FileName ~= 0
+        load([PathName FileName])
+        % FIXME: Should validate the content of the loaded mainEnv
+        if exist('mainEnv','var')
+            h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+            setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+            set_values();
+        else
+            warndlg('Invalid .mat file. CandLES Environment does not exist');
+        end
     end
-end
- 
 
 % --------------------------------------------------------------------
 function menu_Clear_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Clear (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-response = questdlg('Clear the current configuration?', ...
-                    'Clear Configuration', 'Yes', 'No', 'Yes');
-% NOTE: Apparently questdlg alway returns the default when 'Enter' is
-% pressed, even if you tab to a different selection. (Spacebar works)
-if strcmp(response,'Yes')
-    mainEnv = candles_classes.candlesEnv();
-    h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-    setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
-    set_values();
-end
-
+    response = questdlg('Clear the current configuration?', ...
+                        'Clear Configuration', 'Yes', 'No', 'Yes');
+    % NOTE: Apparently questdlg alway returns the default when 'Enter' is
+    % pressed, even if you tab to a different selection. (Spacebar works)
+    if strcmp(response,'Yes')
+        mainEnv = candles_classes.candlesEnv();
+        h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
+        setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
+        set_values();
+    end
 
 % --------------------------------------------------------------------
 function menu_Print_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Print (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function menu_Edit_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function menu_TxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_TxSet (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-CandLES_TxSet();
-
+    CandLES_TxSet();
 
 % --------------------------------------------------------------------
 function menu_RxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_RxSet (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-CandLES_RxSet();
-
+    CandLES_RxSet();
 
 % --------------------------------------------------------------------
 function menu_BoxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_BoxSet (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-CandLES_BoxSet();
-
+    CandLES_BoxSet();
 
 % --------------------------------------------------------------------
 function menu_SimSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_SimSet (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-CandLES_SimSet();
-
+    CandLES_SimSet();
 
 % --------------------------------------------------------------------
 function menu_Results_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Results (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function menu_IllumSim_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_IllumSim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-CandLES_IllumSim();
-
+    CandLES_IllumSim();
 
 % --------------------------------------------------------------------
 function menu_CommSim_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_CommSim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-CandLES_CommSim();
-
+    CandLES_CommSim();
 
 % --------------------------------------------------------------------
 function menu_Help_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Help (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 
 % --------------------------------------------------------------------
 function menu_About_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_About (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 helpdlg(['CandLES is a simulation tool for indoor optical wireless ' ...
          'communication systems. The software was developed at Boston '...
          'University as part of the NSF funded Smart Lighting '...
