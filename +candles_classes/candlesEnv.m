@@ -68,11 +68,13 @@ classdef candlesEnv
         %       N_x:  Number of TXs in X direction.
         %       N_y:  Number of TXs in Y direction.
         %         d:  X and Y distance between TXs.
+        %       C_x:  Center point in X direction.
+        %       C_y:  Center point in Y direction.
         %   Z_plane:  Location of grid in Z dimension
         %    layout:  (1) Grid (2) Cell1 (3) Cell2
         %   replace:  (0) keep existing TXs (1) replace TXs.
         % -----------------------------------------------------------------
-        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, Z_plane, layout, replace)
+        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, C_x, C_y, Z_plane, layout, replace)
             
             % Error check for empty grid
             if (N_x*N_y == 0)
@@ -89,8 +91,7 @@ classdef candlesEnv
             
             % Determine the X and Y locations
             TX_NUM = length(obj.txs);
-            my_grid = SYS_grid_cell_locs(obj.rm.length/2, ...
-                                         obj.rm.width/2, N_x,N_y,d,layout);
+            my_grid = SYS_grid_cell_locs(C_x, C_y, N_x,N_y,d,layout);
             for new_tx_num = 1:size(my_grid,2)
                 my_x = max(min(my_grid(1,new_tx_num),obj.rm.length),0);
                 my_y = max(min(my_grid(2,new_tx_num),obj.rm.width),0);

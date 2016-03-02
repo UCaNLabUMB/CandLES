@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 26-Feb-2016 13:47:27
+% Last Modified by GUIDE v2.5 01-Mar-2016 21:25:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -154,81 +154,58 @@ setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
 set_values(); % Set the values and display room with selected TX
 
 % --------------------------------------------------------------------
-function menu_addTxGrid_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_addTxGrid (see GCBO)
+function menu_addTxLayout_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addTxLayout (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-% Grid Input
-prompt       = {'Number of TXs in X dimension:', ...
-                'Number of TXs in Y dimension:', ...
-                'Distance between TXs (m):', ...
-                'Z Plane (m):'};
-dlg_title    = 'TX Grid Setup';
-num_lines    = 1;
-default_vals = {'2','2','1',num2str(txSetEnv.rm.height)};
-ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
+dlg_title    = 'Tx Layout Settings';
 
-% NOTE: If these change to str2num, need to modify the error check below.
-vals = [str2double(ans_dlg(1)), ...
-        str2double(ans_dlg(2)), ...
-        str2double(ans_dlg(3)), ...
-        str2double(ans_dlg(4))];
-if (isnan(sum(vals)))
-    warndlg('Inputs must be numeric values', ...
-            'Warning: Invalid Input');
-elseif (any(mod(vals(1:2),1)))
-    warndlg('Number of TXs must be an integer value', ...
-            'Warning: Invalid Input');
-else
-    replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
-    [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), 1, replace);
+% NOTE: Grid layout = 1. Cell layout 1 = 2. Cell layout 2 = 3.
+layout = listdlg('ListString',{'Grid Layout','Cell Layout 1','Cell Layout 2'}, ...
+                 'SelectionMode','single',...
+                 'Name',dlg_title, ...
+                 'ListSize',[160 60]);
+             
+if (~isempty(layout))
+    num_lines    = 1;
+    prompt       = {'Number of TXs in X dimension:', ...
+                    'Number of TXs in Y dimension:', ...
+                    'Distance between TXs (m):', ...
+                    'Center in X dimension (m):', ...
+                    'Center in Y dimension (m):', ...
+                    'Z Plane (m):'};
+    default_vals = {'2','2','1',num2str(txSetEnv.rm.length/2), ...
+                                num2str(txSetEnv.rm.width/2), ...
+                                num2str(txSetEnv.rm.height)};
 
-    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values(); % Set the values and display room with selected TX
+    ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
+
+    % NOTE: If these change to str2num, need to modify the error check below.
+    vals = [str2double(ans_dlg(1)), ...
+            str2double(ans_dlg(2)), ...
+            str2double(ans_dlg(3)), ...
+            str2double(ans_dlg(4)), ...
+            str2double(ans_dlg(5)), ...
+            str2double(ans_dlg(6))];
+        
+    if (isnan(sum(vals)))
+        warndlg('Inputs must be numeric values', 'Warning: Invalid Input');
+    elseif (any(mod(vals(1:2),1)))
+        warndlg('Number of TXs must be an integer value', 'Warning: Invalid Input');
+    else
+        replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
+        [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), ...
+                                                     vals(5), vals(6), layout, replace);
+
+        setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+        setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+        set_values(); % Set the values and display room with selected TX
+    end
 end
 
-% --------------------------------------------------------------------
-function menu_addTxCell_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_addTxCell (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-
-% Grid Input
-prompt       = {'Number of TXs in X dimension:', ...
-                'Number of TXs in Y dimension:', ...
-                'Distance between TXs (m):', ...
-                'Z Plane (m):'};
-dlg_title    = 'TX Cellular Setup';
-num_lines    = 1;
-default_vals = {'2','2','1',num2str(txSetEnv.rm.height)};
-ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
-
-% NOTE: If these change to str2num, need to modify the error check below.
-vals = [str2double(ans_dlg(1)), ...
-        str2double(ans_dlg(2)), ...
-        str2double(ans_dlg(3)), ...
-        str2double(ans_dlg(4))];
-if (isnan(sum(vals)))
-    warndlg('Inputs must be numeric values', ...
-            'Warning: Invalid Input');
-elseif (any(mod(vals(1:2),1)))
-    warndlg('Number of TXs must be an integer value', ...
-            'Warning: Invalid Input');
-else
-    layout  = strcmp(questdlg('Layout type?',dlg_title,'1','2','1'),'2') + 2; % Layout 2 or 3
-    replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
-    [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), layout, replace);
-
-    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-    set_values(); % Set the values and display room with selected TX
-end
 
 % --------------------------------------------------------------------
 function menu_deleteTx_Callback(hObject, eventdata, handles)
@@ -366,6 +343,7 @@ function update_main_env()
     feval(getappdata(h_GUI_CandlesMain,'fhUpdateMain'),txSetEnv);
     figure(h_GUI_CandlesTxSet); %Bring the TX GUI back to the front
 
+    
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
@@ -391,4 +369,6 @@ function set_values()
     set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
     set(handles.popup_tx_select,'Value',TX_SELECT);
 
+    
+  
     
