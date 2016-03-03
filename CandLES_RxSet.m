@@ -121,17 +121,9 @@ delete(hObject); % Close the figure
 %%%%%%%%%%%%%%%%%%%%%%%%%% RX MENU FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --------------------------------------------------------------------
-function menu_File_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_File (see GCBO)
-
-% --------------------------------------------------------------------
 function menu_Update_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Update (see GCBO)
     update_main_env();
-
-% --------------------------------------------------------------------
-function menu_Edit_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_Edit (see GCBO)
 
 % --------------------------------------------------------------------
 function menu_addRx_Callback(hObject, eventdata, handles)

@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 02-Mar-2016 13:44:10
+% Last Modified by GUIDE v2.5 03-Mar-2016 16:46:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -121,17 +121,9 @@ delete(hObject); % Close the figure
 %%%%%%%%%%%%%%%%%%%%%%%%%% TX MENU FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % --------------------------------------------------------------------
-function menu_File_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_File (see GCBO)
-
-% --------------------------------------------------------------------
-function Menu_Update_Callback(hObject, eventdata, handles)
-% hObject    handle to Menu_Update (see GCBO)
+function menu_Update_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Update (see GCBO)
     update_main_env();
-
-% --------------------------------------------------------------------
-function menu_Edit_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_Edit (see GCBO)
 
 % --------------------------------------------------------------------
 function menu_addTx_Callback(hObject, eventdata, handles)

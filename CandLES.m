@@ -110,11 +110,7 @@ varargout{1} = handles.output;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% MENU CALLBACKS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% --------------------------------------------------------------------
-function menu_File_Callback(hObject, eventdata, handles) 
-% hObject    handle to menu_File (see GCBO)
-
+% File Menu ----------------------------------------------------------
 % --------------------------------------------------------------------
 function menu_Save_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Save (see GCBO)
@@ -126,7 +122,6 @@ function menu_Save_Callback(hObject, eventdata, handles)
         save([PathName FileName], 'mainEnv');
     end
 
-% --------------------------------------------------------------------
 function menu_Load_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Load (see GCBO)
     [FileName, PathName] = uigetfile('*.mat');
@@ -142,7 +137,6 @@ function menu_Load_Callback(hObject, eventdata, handles)
         end
     end
 
-% --------------------------------------------------------------------
 function menu_Clear_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Clear (see GCBO)
     response = questdlg('Clear the current configuration?', ...
@@ -156,52 +150,40 @@ function menu_Clear_Callback(hObject, eventdata, handles)
         set_values();
     end
 
-% --------------------------------------------------------------------
 function menu_Print_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Print (see GCBO)
+    % FIXME: Add Print feature
+    helpdlg('This feature has not yet been added.');
 
-% --------------------------------------------------------------------
-function menu_Edit_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_Edit (see GCBO)
-
+% Edit Menu ----------------------------------------------------------
 % --------------------------------------------------------------------
 function menu_TxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_TxSet (see GCBO)
     CandLES_TxSet();
 
-% --------------------------------------------------------------------
 function menu_RxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_RxSet (see GCBO)
     CandLES_RxSet();
 
-% --------------------------------------------------------------------
 function menu_BoxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_BoxSet (see GCBO)
     CandLES_BoxSet();
 
-% --------------------------------------------------------------------
 function menu_SimSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_SimSet (see GCBO)
     CandLES_SimSet();
 
-% --------------------------------------------------------------------
-function menu_Results_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_Results (see GCBO)
-
+% Results Menu -------------------------------------------------------   
 % --------------------------------------------------------------------
 function menu_IllumSim_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_IllumSim (see GCBO)
     CandLES_IllumSim();
 
-% --------------------------------------------------------------------
 function menu_CommSim_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_CommSim (see GCBO)
     CandLES_CommSim();
 
-% --------------------------------------------------------------------
-function menu_Help_Callback(hObject, eventdata, handles)
-% hObject    handle to menu_Help (see GCBO)
-
+% Help Menu ----------------------------------------------------------    
 % --------------------------------------------------------------------
 function menu_About_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_About (see GCBO)
@@ -223,7 +205,7 @@ function pushbutton_disp_room_Callback(~, ~, ~)
     SYS_display_room(axes(), mainEnv)
 
 
-% Room Size
+% Room Size ----------------------------------------------------------
 % --------------------------------------------------------------------
 function edit_RmLength_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmLength (see GCBO)
@@ -252,7 +234,7 @@ function update_size_edit(hObject, param)
     set_values();
 
 
-% Room Reflections
+% Room Reflections ---------------------------------------------------
 % --------------------------------------------------------------------
 function slider_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefNorth (see GCBO)
