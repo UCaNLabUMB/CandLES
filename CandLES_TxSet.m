@@ -305,7 +305,7 @@ function edit_Tx_theta_Callback(hObject, ~, ~)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Update values based on the change to the edit box hObject. 
-%    param = {'x', 'y', 'z', 'az', 'el'}
+%    param = {'x', 'y', 'z', 'az', 'el', 'Ps', 'm', 'theta'}
 % --------------------------------------------------------------------
 function update_edit(hObject, param)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
@@ -321,7 +321,7 @@ function update_edit(hObject, param)
     set_values();
 
 % Update values based on the change to the slider hObject. 
-%    param = {'x', 'y', 'z', 'az', 'el'}
+%    param = {'x', 'y', 'z', 'az', 'el', 'Ps', 'm', 'theta'}
 % --------------------------------------------------------------------
 function update_slider(hObject, param)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');

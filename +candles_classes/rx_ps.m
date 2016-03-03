@@ -48,27 +48,34 @@ classdef rx_ps < candles_classes.point_source
         % Set Receiver Area (m^2)
         % -----------------------------------------------------------------
         function obj = set_A(obj,A)
-            obj.A = A;
+            if (A > 0)
+                obj.A = A;
+            end
         end
         
         % Set Receiver Field of View (rad)
         % -----------------------------------------------------------------
         function obj = set_FOV(obj,FOV)
-            obj.FOV = FOV;
-            
-            % Set concentrator gain (n^2/(sin(FOV))^2)
-            obj.gc  = (obj.n/sin(FOV))^2;      
+            if (FOV > 0) && (FOV <= pi/2)
+                obj.FOV = FOV;
+                obj = obj.set_gc();
+            end
         end         
         
         % Set optics refractive index
         % -----------------------------------------------------------------
         function obj = set_n(obj,n)
-            obj.n = n;
-            
-            % Set concentrator gain (n^2/(sin(FOV))^2)
-            obj.gc  = (n/sin(obj.FOV))^2;      
+            if (n > 0)
+                obj.n = n;
+                obj = obj.set_gc();
+            end
         end
-        
+
+        % Set concentrator gain (n^2/(sin(FOV))^2)
+        % -----------------------------------------------------------------
+        function obj = set_gc(obj)
+            obj.gc  = (obj.n/sin(obj.FOV))^2;   
+        end
     end
     
 end

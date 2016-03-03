@@ -31,7 +31,7 @@ function varargout = CandLES_RxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_RxSet
 
-% Last Modified by GUIDE v2.5 01-Mar-2016 22:18:40
+% Last Modified by GUIDE v2.5 02-Mar-2016 23:17:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -224,6 +224,24 @@ function slider_Rx_el_Callback(hObject, ~, ~)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% TX PARAMETER FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Edit callback for photosensor area (mm^2)
+function edit_Rx_A_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Rx_A (see GCBO)
+    update_edit(hObject, 'A');
+
+% Edit callback for Field of View (degrees)
+function edit_Rx_FOV_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Rx_FOV (see GCBO)
+    update_edit(hObject, 'FOV');
+
+% Edit callback for Refractive Index
+function edit_Rx_n_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_Rx_n (see GCBO)
+    update_edit(hObject, 'n');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -305,7 +323,14 @@ function set_values()
     set(handles.slider_Rx_el,'Max',360);
     set(handles.slider_Rx_az,'SliderStep',[1/360, 1/36]);
     set(handles.slider_Rx_el,'SliderStep',[1/360, 1/36]);
+
     % Set Rx Selection box
     set(handles.popup_rx_select,'String',1:1:length(rxSetEnv.rxs));
     set(handles.popup_rx_select,'Value',RX_SELECT);
+
+    % Set Rx Parameters
+    set(handles.edit_Rx_A,   'string', rxSetEnv.rxs(RX_SELECT).A*10^6);
+    set(handles.edit_Rx_FOV, 'string', rxSetEnv.rxs(RX_SELECT).FOV*180/pi);
+    set(handles.edit_Rx_n,   'string', rxSetEnv.rxs(RX_SELECT).n);
+    set(handles.edit_Rx_gc,  'string', rxSetEnv.rxs(RX_SELECT).gc);
 

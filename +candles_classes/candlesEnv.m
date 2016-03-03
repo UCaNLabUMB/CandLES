@@ -228,6 +228,14 @@ classdef candlesEnv
                         case 'el' 
                             temp = temp*(pi/180); % Convert and set in radians
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_el(temp);
+                        case 'A' 
+                            temp = temp*1e-6; % Convert and set in m^2
+                            obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_A(temp);
+                        case 'FOV' 
+                            temp = temp*(pi/180); % Convert and set in radians
+                            obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_FOV(temp);
+                        case 'n' 
+                            obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_n(temp);
                         otherwise
                             ERR = -3;
                     end
