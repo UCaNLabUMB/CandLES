@@ -24,7 +24,7 @@ classdef candlesEnv
         del_p       % Spatial resolution of simulated plane (m)
         MIN_BOUNCE  % First reflection considered (0 for LOS)
         MAX_BOUNCE  % Last reflection considered
-        DISP_WAITBAR = 1;
+        DISP_WAITBAR % Display waitbar when running simulations
     end
     
     %% Class Methods
@@ -51,6 +51,7 @@ classdef candlesEnv
             obj.del_p = 0.1;
             obj.MIN_BOUNCE = 0;
             obj.MAX_BOUNCE = 0;
+            obj.DISP_WAITBAR = 0;
         end
         
         %% Transmitter Functions
@@ -411,14 +412,35 @@ classdef candlesEnv
         
         %% Environment Simulation Setting Functions
         % *****************************************************************
-        % Set the time resolution
+        % Set the specified simulation setting
         % -----------------------------------------------------------------
-        function [obj,ERR] = setDelT(obj,temp)
+        % ERR = -2 means invalid position (NaN or complex val)
+        %     = -3 means invalid param
+        function [obj,ERR] = setSimSetting(obj,param,temp) 
             ERR = 0;
             if (isnan(temp)) || (~isreal(temp))
                 ERR = -2;
             else
-                obj.del_t = temp;
+                switch param
+                    case 'del_t'
+                        if (temp > 0); obj.del_t = temp; end
+                    case 'del_s'
+                        if (temp > 0); obj.del_s = temp; end
+                    case 'del_p'
+                        if (temp > 0); obj.del_p = temp; end
+                    case 'min_b'
+                        temp = floor(temp);
+                        if (temp >= 0); obj.MIN_BOUNCE = temp; end
+                    case 'max_b'
+                        temp = floor(temp);
+                        if (temp >= 0); obj.MAX_BOUNCE = temp; end
+                    case 'disp'
+                        if((temp ==0) || (temp == 1)) 
+                            obj.DISP_WAITBAR = temp;
+                        end
+                    otherwise
+                        ERR = -3;
+                end
             end
         end
 

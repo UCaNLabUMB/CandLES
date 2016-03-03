@@ -31,7 +31,7 @@ function varargout = CandLES_SimSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_SimSet
 
-% Last Modified by GUIDE v2.5 08-Oct-2015 12:21:06
+% Last Modified by GUIDE v2.5 03-Mar-2016 16:33:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -79,6 +79,7 @@ setappdata(0, 'h_GUI_CandlesSimSet', hObject);
 mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
 simSetEnv = mainEnv;
 setappdata(hObject, 'simSetEnv', simSetEnv);
+set_values(); % Set the values and display environment
 
 
 % --- Outputs from this function are returned to the command line.
@@ -97,14 +98,16 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesMain   = getappdata(0,'h_GUI_CandlesMain');
+h_GUI_CandlesSimSet = getappdata(0,'h_GUI_CandlesSimSet');
+mainEnv             = getappdata(h_GUI_CandlesMain,'mainEnv');
+simSetEnv           = getappdata(h_GUI_CandlesSimSet,'simSetEnv');
 
-% Hint: delete(hObject) closes the figure
-response = questdlg('Keep updates?', '','Yes','No','Yes');
-if strcmp(response,'Yes')
-    % FIXME: Need to store the updated info back to mainEnv or have a save
-    % option where this becomes a question "Close without save" and only
-    % shows up if changes have been made and not saved yet.
-    
+if (~isequal(mainEnv,simSetEnv))
+    response = questdlg('Keep updates?', '','Yes','No','Yes');
+    if strcmp(response,'Yes')
+        update_main_env();
+    end
 end
 % Remove the handle value of the main figure from root (handle 0) and
 % delete (close) the figure
@@ -112,27 +115,84 @@ rmappdata(0, 'h_GUI_CandlesSimSet');
 delete(hObject);
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% SIM MENU FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------------------
+function menu_Update_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Update (see GCBO)
+    update_main_env();
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% SIMULATION PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function edit_del_t_Callback(hObject, ~, handles)
 % hObject    handle to edit_del_t (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+    update_edit(hObject, 'del_t');
 
-% Hints: get(hObject,'String') returns contents of edit_del_t as text
-%        str2double(get(hObject,'String')) returns contents of edit_del_t as a double
+function edit_del_s_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_del_s (see GCBO)
+    update_edit(hObject, 'del_s');
+
+function edit_max_bounce_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_max_bounce (see GCBO)
+    update_edit(hObject, 'max_b');
+
+% Update values based on the change to the edit box hObject. 
+%    param = {'del_t', 'del_s', 'del_p', 'min_b', 'max_b', 'disp'}
+% --------------------------------------------------------------------
+function update_edit(hObject, param)
+    h_GUI_CandlesSimSet = getappdata(0,'h_GUI_CandlesSimSet');
+    simSetEnv           = getappdata(h_GUI_CandlesSimSet,'simSetEnv');
+    temp                = str2double(get(hObject,'String'));
+    
+    [simSetEnv, ERR] = simSetEnv.setSimSetting(param,temp);
+    % FIXME: Add warning boxes for ERR and bring to front after set_values
+    if (ERR == 0)
+        setappdata(h_GUI_CandlesSimSet, 'simSetEnv', simSetEnv);
+    end
+    set_values();
+    
+% --- Executes on button press in checkbox_waitbar.
+function checkbox_waitbar_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_waitbar (see GCBO)
+    h_GUI_CandlesSimSet = getappdata(0,'h_GUI_CandlesSimSet');
+    simSetEnv           = getappdata(h_GUI_CandlesSimSet,'simSetEnv');
+    simSetEnv           = simSetEnv.setSimSetting('disp',get(hObject,'value'));
+
+    setappdata(h_GUI_CandlesSimSet, 'simSetEnv', simSetEnv);
+    set_values();
+    
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Call the update_main function from CandLES.m
+% --------------------------------------------------------------------
+function update_main_env()
+    h_GUI_CandlesMain   = getappdata(0,'h_GUI_CandlesMain');
+    h_GUI_CandlesSimSet = getappdata(0,'h_GUI_CandlesSimSet');
+    simSetEnv           = getappdata(h_GUI_CandlesSimSet,'simSetEnv');
+    feval(getappdata(h_GUI_CandlesMain,'fhUpdateMain'),simSetEnv);
+    figure(h_GUI_CandlesSimSet); %Bring the Sim GUI back to the front
+
+% Set the values within the GUI
+% --------------------------------------------------------------------
+function set_values()
+    h_GUI_CandlesSimSet = getappdata(0,'h_GUI_CandlesSimSet');
+    simSetEnv           = getappdata(h_GUI_CandlesSimSet,'simSetEnv');
+    handles            = guidata(h_GUI_CandlesSimSet);
+    
+    %Set Text Boxes
+    set(handles.edit_del_t,      'string', num2str(simSetEnv.del_t));
+    set(handles.edit_del_s,      'string', num2str(simSetEnv.del_s));
+    set(handles.edit_max_bounce, 'string', num2str(simSetEnv.MAX_BOUNCE));
+    
+    set(handles.checkbox_waitbar, 'value', simSetEnv.DISP_WAITBAR);
+    
 
 
-% --- Executes during object creation, after setting all properties.
-function edit_del_t_CreateFcn(hObject, ~, handles)
-% hObject    handle to edit_del_t (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
-h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
-mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
-set(hObject,'string',num2str(mainEnv.del_t));
