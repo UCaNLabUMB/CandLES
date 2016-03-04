@@ -136,11 +136,8 @@ function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t, WAITBAR)
                                                             plane_list);
             if (visible)
                 % Determine location in impulse response and update H
-                i = round(1 + delay/del_t);
-                if (i > size(H,2)) % Sanity check - should never get here
-                    error('Delay is out of array bound'); 
-                end
-                H(rcv_cnt,i) = H(rcv_cnt,i) + (Txs(src_cnt).Ps)*attenuation;
+                t_i = get_array_loc(delay, del_t);
+                H(rcv_cnt,t_i) = H(rcv_cnt,t_i) + (Txs(src_cnt).Ps)*attenuation;
             end
         end
     end
@@ -186,7 +183,7 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
                             get_atten_delay(Txs(tx_no), element, plane_list);
                         if (visible)
                             % Determine location in impulse response
-                            t_i = round(1 + delay/Res.del_t);
+                            t_i = get_array_loc(delay, Res.del_t);
                             THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
                                                         (Txs(tx_no).Ps * attenuation);
                             start_prev(element_no)   = min(start_prev(element_no), t_i);
@@ -211,7 +208,7 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
                             get_atten_delay(Txs(tx_no), element, plane_list);
                         if (visible)
                             % Determine location in impulse response
-                            t_i = round(1 + delay/Res.del_t);
+                            t_i = get_array_loc(delay, Res.del_t);
                             THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
                                                         (Txs(tx_no).Ps * attenuation);
                             start_prev(element_no)   = min(start_prev(element_no), t_i);
@@ -236,7 +233,7 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
                             get_atten_delay(Txs(tx_no), element, plane_list);
                         if (visible)
                             % Determine location in impulse response
-                            t_i = round(1 + delay/Res.del_t);
+                            t_i = get_array_loc(delay, Res.del_t);
                             THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
                                                         (Txs(tx_no).Ps * attenuation);
                             start_prev(element_no)   = min(start_prev(element_no), t_i);
@@ -291,7 +288,7 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
                             get_atten_delay(element, Rxs(rx_no), plane_list);
                         if (visible && (plane_list(plane_no).ref ~= 0))
                             attenuation = plane_list(plane_no).ref * attenuation;
-                            t_i = round(1 + delay/Res.del_t);
+                            t_i = get_array_loc(delay, Res.del_t);
                         else
                             attenuation = 0;
                             t_i = 1;
@@ -319,7 +316,7 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
                             get_atten_delay(element, Rxs(rx_no), plane_list);
                         if (visible && (plane_list(plane_no).ref ~= 0))
                             attenuation = plane_list(plane_no).ref * attenuation;
-                            t_i = round(1 + delay/Res.del_t);
+                            t_i = get_array_loc(delay, Res.del_t);
                         else
                             attenuation = 0;
                             t_i = 1;
@@ -347,7 +344,7 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
                             get_atten_delay(element, Rxs(rx_no), plane_list);
                         if (visible && (plane_list(plane_no).ref ~= 0))
                             attenuation = plane_list(plane_no).ref * attenuation;
-                            t_i = round(1 + delay/Res.del_t);
+                            t_i = get_array_loc(delay, Res.del_t);
                         else
                             attenuation = 0;
                             t_i = 1;
@@ -461,4 +458,10 @@ function [element, deltas, start_pos] = get_element(plane,element, deltas, start
     
 end
 
-
+%% get_array_loc - Determine location in the time array 
+% -------------------------------------------------------------------------
+function [i] = get_array_loc(t, del_t)
+    % Using floor rather than round so that rounding errors don't propogate
+    % and cause out of range errors where a value is set beyond ARRAY_LEN.
+    i = 1 + floor(t/del_t);
+end
