@@ -62,7 +62,7 @@ if (Res.MIN_BOUNCE == 0)
     % Pass h_t by "reference" to avoid unnecessary copy overhead.
     % Matlab uses "copy-on-write" semantics, so Txs/Rxs/Boxes are not 
     % copied since they are not modified.
-    h_t = zero_bounce_power(Txs, Rxs, plane_list, h_t, Res.del_t); 
+    h_t = zero_bounce_power(Txs, Rxs, plane_list, h_t, Res.del_t, WAITBAR); 
 end
 
 if (Res.MAX_BOUNCE > 0)
@@ -124,8 +124,12 @@ end % EOF VLCIRC
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% zero_bounce_power - Calculate LOS response
 % -------------------------------------------------------------------------
-function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t)
+function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t, WAITBAR)
+    if (WAITBAR); wb = waitbar(0,'Zero Bounce calculation...'); end
     for src_cnt = 1:length(Txs)
+        if (WAITBAR)
+            waitbar((src_cnt-1)/length(Txs),wb);
+        end        
         for rcv_cnt = 1:length(Rxs)
             [visible, attenuation, delay] = get_atten_delay(Txs(src_cnt), ...
                                                             Rxs(rcv_cnt), ...
@@ -140,6 +144,7 @@ function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t)
             end
         end
     end
+    if (WAITBAR); close(wb); end
 end
 
 %% first_bounce_matrix - Calculate response from transmitters to reflectors

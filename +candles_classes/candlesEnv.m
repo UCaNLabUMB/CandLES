@@ -48,7 +48,7 @@ classdef candlesEnv
 
             obj.del_t = 1e-10; 
             obj.del_s = 0.25;
-            obj.del_p = 0.1;
+            obj.del_p = 0.25;
             obj.MIN_BOUNCE = 0;
             obj.MAX_BOUNCE = 0;
             obj.DISP_WAITBAR = 0;
