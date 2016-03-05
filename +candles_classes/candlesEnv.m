@@ -64,8 +64,9 @@ classdef candlesEnv
             % FIXME: Check room to make sure the new TX is in room
         end
         
-        % Add a specified layout of transmitters. Anything outside the room
-        % boundaries gets shifted back within the room.
+        % Add a specified layout of transmitters.
+        % -----------------------------------------------------------------
+        % Any Txs outside room boundaries gets shifted to the room edge.
         %       N_x:  Number of TXs in X direction.
         %       N_y:  Number of TXs in Y direction.
         %         d:  X and Y distance between TXs.
@@ -74,7 +75,6 @@ classdef candlesEnv
         %   Z_plane:  Location of grid in Z dimension
         %    layout:  (1) Grid (2) Cell1 (3) Cell2
         %   replace:  (0) keep existing TXs (1) replace TXs.
-        % -----------------------------------------------------------------
         function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, C_x, C_y, Z_plane, layout, replace)
             
             % Error check for empty grid
@@ -117,7 +117,7 @@ classdef candlesEnv
             end
         end
         
-        % Set the position of the specified transmitter
+        % Set the parameters of the specified transmitter
         % -----------------------------------------------------------------
         function [obj,ERR] = setTxParam(obj,TX_NUM,param,temp) 
             ERR = 0;
@@ -342,8 +342,8 @@ classdef candlesEnv
         end
         
         % Set the room reflectivities
-        % nsewtb indicates north, south, east, west, top, or bottom wall
         % -----------------------------------------------------------------
+        % nsewtb indicates north, south, east, west, top, or bottom wall
         function [obj,ERR] = setRoomRef(obj,nsewtb,temp)
             ERR = 0;
             if (isnan(temp)) || (~isreal(temp))
@@ -527,7 +527,9 @@ classdef candlesEnv
                      num2str(plane) 'm']);
         end        
         
-        function [msg] = getErrorMessage(ERR)
+        % Get the error message associated with error ERR
+        % -----------------------------------------------------------------
+        function [msg] = getErrorMessage(~,ERR)
             switch ERR
                 case 1
                     msg = 'Environment Requires at least 1 Tx and 1 Rx.';
