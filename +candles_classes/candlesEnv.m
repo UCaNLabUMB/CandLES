@@ -119,18 +119,14 @@ classdef candlesEnv
         
         % Set the position of the specified transmitter
         % -----------------------------------------------------------------
-        % ERR = -1 means invalid TX_NUM
-        %     = -2 means invalid position (NaN or complex val)
-        %     = -3 means invalid xyz
-        % FIXME: This has become more like setTxParam rather than Position
-        function [obj,ERR] = setTxPos(obj,TX_NUM,xyz,temp) 
+        function [obj,ERR] = setTxParam(obj,TX_NUM,param,temp) 
             ERR = 0;
             if (TX_NUM < 1) || (TX_NUM > length(obj.txs))
                 ERR = -1;
             elseif (isnan(temp)) || (~isreal(temp))
                 ERR = -2;
             else
-                switch xyz
+                switch param
                     case 'x'
                         temp = max(min(temp,obj.rm.length),0);
                         obj.txs(TX_NUM) = obj.txs(TX_NUM).set_x(temp);
@@ -202,10 +198,7 @@ classdef candlesEnv
         
         % Set the position of the specified receiver
         % -----------------------------------------------------------------
-        % ERR = -1 means invalid RX_NUM
-        %     = -2 means invalid position (NaN or complex val)
-        %     = -3 means invalid xyz
-        function [obj,ERR] = setRxPos(obj,RX_NUM,xyz,temp)
+        function [obj,ERR] = setRxParam(obj,RX_NUM,param,temp)
             ERR = 0;
             if (RX_NUM < 1) || (RX_NUM > length(obj.rxs))
                 ERR = -1;
@@ -213,7 +206,7 @@ classdef candlesEnv
                 if (isnan(temp)) || (~isreal(temp))
                     ERR = -2;
                 else
-                    switch xyz
+                    switch param
                         case 'x'
                             temp = max(min(temp,obj.rm.length),0);
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_x(temp);
@@ -264,77 +257,47 @@ classdef candlesEnv
 
         % Set the position of the specified box
         % -----------------------------------------------------------------
-        % ERR = -1 means invalid BOX_NUM
-        %     = -2 means invalid position (NaN or complex val)
-        %     = -3 means invalid xyz
-        function [obj,ERR] = setBoxPos(obj,BOX_NUM,xyz,temp)
+        function [obj,ERR] = setBoxParam(obj,BOX_NUM,param,temp)
             ERR = 0;
             if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
                 ERR = -1;
-            else
-                if (isnan(temp)) || (~isreal(temp))
+            elseif (isnan(temp)) || (~isreal(temp))
                     ERR = -2;
-                else
-                    switch xyz
-                        case 'x'
-                            % FIXME: Add ERR for out of range x, y, or z
-                            temp = max(min(temp,obj.rm.length ...
-                                                - obj.boxes(BOX_NUM).length),0);
-                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_x(temp);
-                        case 'y'
-                            temp = max(min(temp,obj.rm.width ...
-                                                - obj.boxes(BOX_NUM).width),0);
-                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_y(temp);
-                        case 'z'
-                            temp = max(min(temp,obj.rm.height ...
-                                                - obj.boxes(BOX_NUM).height),0);
-                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_z(temp);
-                        otherwise
-                            ERR = -3;
-                    end
-                end
-            end
-        end
-
-        % Set the dimensions of the specified box
-        % -----------------------------------------------------------------
-        % ERR = -1 means invalid BOX_NUM
-        %     = -2 means invalid dimension (NaN or complex val)
-        %     = -3 means invalid lwh
-        function [obj,ERR] = setBoxDim(obj,BOX_NUM,lwh,temp)
-            ERR = 0;
-            if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
-                ERR = -1;
             else
-                if (isnan(temp)) || (~isreal(temp))
-                    ERR = -2;
-                else
-                    switch lwh
-                        case 'l'
-                            % FIXME: Add ERR for out of range x, y, or z
-                            temp = max(min(temp,obj.rm.length ...
-                                                - obj.boxes(BOX_NUM).x),0.1);
-                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_length(temp);
-                        case 'w'
-                            temp = max(min(temp,obj.rm.width ...
-                                                - obj.boxes(BOX_NUM).y),0.1);
-                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_width(temp);
-                        case 'h'
-                            temp = max(min(temp,obj.rm.height ...
-                                                - obj.boxes(BOX_NUM).z),0.1);
-                            obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_height(temp);
-                        otherwise
-                            ERR = -3;
-                    end
+                switch param
+                    case 'x'
+                        % FIXME: Add ERR for out of range x,y,z,l,w,h
+                        temp = max(min(temp,obj.rm.length ...
+                                            - obj.boxes(BOX_NUM).length),0);
+                        obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_x(temp);
+                    case 'y'
+                        temp = max(min(temp,obj.rm.width ...
+                                            - obj.boxes(BOX_NUM).width),0);
+                        obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_y(temp);
+                    case 'z'
+                        temp = max(min(temp,obj.rm.height ...
+                                            - obj.boxes(BOX_NUM).height),0);
+                        obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_z(temp);
+                    case 'l'
+                        temp = max(min(temp,obj.rm.length ...
+                                            - obj.boxes(BOX_NUM).x),0.1);
+                        obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_length(temp);
+                    case 'w'
+                        temp = max(min(temp,obj.rm.width ...
+                                            - obj.boxes(BOX_NUM).y),0.1);
+                        obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_width(temp);
+                    case 'h'
+                        temp = max(min(temp,obj.rm.height ...
+                                            - obj.boxes(BOX_NUM).z),0.1);
+                        obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_height(temp);
+                    otherwise
+                        ERR = -3;
                 end
             end
         end
 
         % Set the reflectivities of the specified box
         % -----------------------------------------------------------------
-        % ERR = -1 means invalid BOX_NUM
-        %     = -2 means invalid ref (NaN or complex val)
-        %     = -3 means invalid nsewtb
         function [obj,ERR] = setBoxRef(obj,BOX_NUM,nsewtb,ref)
             if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
                 ERR = -1;
@@ -347,27 +310,25 @@ classdef candlesEnv
         % *****************************************************************
         % Set the dimensions of the room
         % -----------------------------------------------------------------
-        % ERR = -2 means invalid value (NaN or complex val)
-        %     = -3 means invalid xyz selection
         % Do not make dimensions such that objects are outside the room.
         % FIXME: For now, cap  room length at 10m. For computational speed, 
         % resolution needs to be lowered when increasing room size.
-        function [obj,ERR] = setRoomDim(obj,xyz,temp)
+        function [obj,ERR] = setRoomDim(obj,param,temp)
             ERR = 0;
             if (isnan(temp)) || (~isreal(temp))
                 ERR = -2;
             else
-                switch xyz
-                    case 'length'
+                switch param
+                    case 'l'
                         % FIXME: Add ERR for out of range x, y, or z
                         [x,~,~] = obj.min_room_dims();
                         temp = max(min(temp,10),x);
                         obj.rm = obj.rm.setLength(temp);
-                    case 'width'
+                    case 'w'
                         [~,y,~] = obj.min_room_dims();
                         temp = max(min(temp,10),y);
                         obj.rm = obj.rm.setWidth(temp);
-                    case 'height'
+                    case 'h'
                         [~,~,z] = obj.min_room_dims();
                         temp = max(min(temp,10),z);
                         obj.rm = obj.rm.setHeight(temp);
@@ -414,8 +375,6 @@ classdef candlesEnv
         % *****************************************************************
         % Set the specified simulation setting
         % -----------------------------------------------------------------
-        % ERR = -2 means invalid position (NaN or complex val)
-        %     = -3 means invalid param
         function [obj,ERR] = setSimSetting(obj,param,temp) 
             ERR = 0;
             if (isnan(temp)) || (~isreal(temp))
@@ -435,7 +394,7 @@ classdef candlesEnv
                         temp = floor(temp);
                         if (temp >= 0); obj.MAX_BOUNCE = temp; end
                     case 'disp'
-                        if((temp ==0) || (temp == 1)) 
+                        if((temp == 0) || (temp == 1)) 
                             obj.DISP_WAITBAR = temp;
                         end
                     otherwise
@@ -444,28 +403,6 @@ classdef candlesEnv
             end
         end
 
-        % Set the spatial resolution of the simulation surfaces
-        % -----------------------------------------------------------------
-        function [obj,ERR] = setDelS(obj,temp)
-            ERR = 0;
-            if (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
-            else
-                obj.del_s = temp;
-            end
-        end
-        
-        % Set the spatial resolution of the simulation plane
-        % -----------------------------------------------------------------
-        function [obj,ERR] = setDelP(obj,temp)
-            ERR = 0;
-            if (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
-            else
-                obj.del_p = temp;
-            end
-        end
-        
         % Set the Min and Max number of reflections (i.e., bounces)
         % -----------------------------------------------------------------
         function [obj,ERR] = setBounces(obj,temp1,temp2)
@@ -581,6 +518,21 @@ classdef candlesEnv
             title(['CDF of the Surface Illumination at ' ...
                      num2str(plane) 'm']);
         end        
+        
+        function [msg] = getErrorMessage(ERR)
+            switch ERR
+                case 1
+                    msg = 'Environment Requires at least 1 Tx and 1 Rx.';
+                case -1
+                    msg = 'Invalid item selection.';
+                case -2
+                    msg = 'Invalid value entry (NaN or Complex).';
+                case -3
+                    msg = 'Invalid parameter selection.';
+                otherwise
+                    msg = 'Unknown Error.';
+            end                
+        end
     end
     
 end

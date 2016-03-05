@@ -13,28 +13,28 @@ MIN_BOUNCE  = 0;
 MAX_BOUNCE  = 1;
 
 myEnv = candles_classes.candlesEnv();
-myEnv = myEnv.setRoomDim('length',RM_L);
-myEnv = myEnv.setRoomDim( 'width',RM_W);
-myEnv = myEnv.setRoomDim('height',RM_H);
+myEnv = myEnv.setRoomDim('l',RM_L);
+myEnv = myEnv.setRoomDim('w',RM_W);
+myEnv = myEnv.setRoomDim('h',RM_H);
 myEnv = myEnv.setRoomRef('B',1);
 
 myEnv = myEnv.setDelT(TIME_RES);
-myEnv = myEnv.setDelS(SPATIAL_RES);
+myEnv = myEnv.setSimSetting('del_s',SPATIAL_RES);
 myEnv = myEnv.setBounces(MIN_BOUNCE,MAX_BOUNCE);
 
 % Downward facing Tx - Center of room, 0.5m below ceiling.
-myEnv = myEnv.setTxPos(1, 'x',   RM_L/2);
-myEnv = myEnv.setTxPos(1, 'y',   RM_W/2);
-myEnv = myEnv.setTxPos(1, 'z', RM_H-0.5);
-myEnv = myEnv.setTxPos(1,'az',        0);
-myEnv = myEnv.setTxPos(1,'el',      270);
+myEnv = myEnv.setTxParam(1, 'x',   RM_L/2);
+myEnv = myEnv.setTxParam(1, 'y',   RM_W/2);
+myEnv = myEnv.setTxParam(1, 'z', RM_H-0.5);
+myEnv = myEnv.setTxParam(1,'az',        0);
+myEnv = myEnv.setTxParam(1,'el',      270);
 
 % Rx at center of room (Z=1) with various elevation angle 
-myEnv = myEnv.setRxPos(1, 'x',RM_L/2);
-myEnv = myEnv.setRxPos(1, 'y',RM_W/2);
-myEnv = myEnv.setRxPos(1, 'z',     1);
-myEnv = myEnv.setRxPos(1,'az',     0);
-myEnv = myEnv.setRxPos(1,'el',    90);
+myEnv = myEnv.setRxParam(1, 'x',RM_L/2);
+myEnv = myEnv.setRxParam(1, 'y',RM_W/2);
+myEnv = myEnv.setRxParam(1, 'z',     1);
+myEnv = myEnv.setRxParam(1,'az',     0);
+myEnv = myEnv.setRxParam(1,'el',    90);
 
 tic;
 

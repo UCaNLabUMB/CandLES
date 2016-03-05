@@ -218,7 +218,7 @@ function update_pos_slider(hObject, param)
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
     temp                = get(hObject,'value');
 
-    boxSetEnv = boxSetEnv.setBoxPos(BOX_SELECT,param,temp);
+    boxSetEnv = boxSetEnv.setBoxParam(BOX_SELECT,param,temp);
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
     set_values(); % update GUI
     
@@ -231,7 +231,7 @@ function update_pos_edit(hObject, param)
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
     temp                = str2double(get(hObject,'String'));
 
-    [boxSetEnv,ERR] = boxSetEnv.setBoxPos(BOX_SELECT,param,temp);
+    [boxSetEnv,ERR] = boxSetEnv.setBoxParam(BOX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
     if (ERR == 0)
         setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
@@ -276,7 +276,7 @@ function update_size_slider(hObject, param)
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
     temp                = get(hObject,'value');
 
-    boxSetEnv = boxSetEnv.setBoxDim(BOX_SELECT,param,temp);
+    boxSetEnv = boxSetEnv.setBoxParam(BOX_SELECT,param,temp);
     setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
     set_values(); % update GUI
     
@@ -289,7 +289,7 @@ function update_size_edit(hObject, param)
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
     temp                = str2double(get(hObject,'String'));
 
-    [boxSetEnv,ERR] = boxSetEnv.setBoxDim(BOX_SELECT,param,temp);
+    [boxSetEnv,ERR] = boxSetEnv.setBoxParam(BOX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
     if (ERR == 0)
         setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);

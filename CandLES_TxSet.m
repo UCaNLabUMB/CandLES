@@ -305,7 +305,7 @@ function update_edit(hObject, param)
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
     temp               = str2double(get(hObject,'String'));
 
-    [txSetEnv, ERR] = txSetEnv.setTxPos(TX_SELECT,param,temp);
+    [txSetEnv, ERR] = txSetEnv.setTxParam(TX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
     if (ERR == 0)
         setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
@@ -321,7 +321,7 @@ function update_slider(hObject, param)
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
     temp               = get(hObject,'Value');
 
-    txSetEnv = txSetEnv.setTxPos(TX_SELECT,param,temp);
+    txSetEnv = txSetEnv.setTxParam(TX_SELECT,param,temp);
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     set_values();
 

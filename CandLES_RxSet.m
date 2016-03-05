@@ -246,7 +246,7 @@ function update_edit(hObject, param)
     rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
     temp               = str2double(get(hObject,'String'));
 
-    [rxSetEnv, ERR] = rxSetEnv.setRxPos(RX_SELECT,param,temp);
+    [rxSetEnv, ERR] = rxSetEnv.setRxParam(RX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
     if (ERR == 0)
         setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
@@ -262,7 +262,7 @@ function update_slider(hObject, param)
     rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
     temp               = get(hObject,'Value');
 
-    rxSetEnv = rxSetEnv.setRxPos(RX_SELECT,param,temp);
+    rxSetEnv = rxSetEnv.setRxParam(RX_SELECT,param,temp);
     setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
     set_values();
 

@@ -209,18 +209,18 @@ function pushbutton_disp_room_Callback(~, ~, ~)
 % --------------------------------------------------------------------
 function edit_RmLength_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmLength (see GCBO)
-    update_size_edit(hObject, 'length');
+    update_size_edit(hObject, 'l');
     
 function edit_RmWidth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmWidth (see GCBO)
-    update_size_edit(hObject, 'width');
+    update_size_edit(hObject, 'w');
 
 function edit_RmHeight_Callback(hObject, ~, ~)
 % hObject    handle to edit_RmHeight (see GCBO)
-    update_size_edit(hObject, 'height');
+    update_size_edit(hObject, 'h');
 
 % Update room size based on the change to the edit hObject. 
-%    param = {'length', 'width', 'height'}
+%    param = {'l', 'w', 'h'}
 function update_size_edit(hObject, param)
     h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
