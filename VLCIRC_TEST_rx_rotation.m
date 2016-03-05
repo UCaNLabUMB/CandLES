@@ -16,7 +16,7 @@ myEnv = candles_classes.candlesEnv();
 myEnv = myEnv.setRoomDim('l',RM_L);
 myEnv = myEnv.setRoomDim('w',RM_W);
 myEnv = myEnv.setRoomDim('h',RM_H);
-myEnv = myEnv.setRoomRef('B',1);
+myEnv = myEnv.setRoomRef('ref_B',1);
 
 myEnv = myEnv.setDelT(TIME_RES);
 myEnv = myEnv.setSimSetting('del_s',SPATIAL_RES);

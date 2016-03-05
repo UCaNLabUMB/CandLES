@@ -238,54 +238,54 @@ function update_size_edit(hObject, param)
 % --------------------------------------------------------------------
 function slider_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefNorth (see GCBO)
-    update_ref_slider(hObject, 'N');
+    update_ref_slider(hObject, 'ref_N');
 
 function edit_RefNorth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefNorth (see GCBO)
-    update_ref_edit(hObject, 'N');
+    update_ref_edit(hObject, 'ref_N');
 
 function slider_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefSouth (see GCBO)
-    update_ref_slider(hObject, 'S');
+    update_ref_slider(hObject, 'ref_S');
 
 function edit_RefSouth_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefSouth (see GCBO)
-    update_ref_edit(hObject, 'S');
+    update_ref_edit(hObject, 'ref_S');
 
 function slider_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefEast (see GCBO)
-    update_ref_slider(hObject, 'E');
+    update_ref_slider(hObject, 'ref_E');
 
 function edit_RefEast_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefEast (see GCBO)
-    update_ref_edit(hObject, 'E');
+    update_ref_edit(hObject, 'ref_E');
 
 function slider_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefWest (see GCBO)
-    update_ref_slider(hObject, 'W');
+    update_ref_slider(hObject, 'ref_W');
 
 function edit_RefWest_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefWest (see GCBO)
-    update_ref_edit(hObject, 'W');
+    update_ref_edit(hObject, 'ref_W');
 
 function slider_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefTop (see GCBO)
-    update_ref_slider(hObject, 'T');
+    update_ref_slider(hObject, 'ref_T');
 
 function edit_RefTop_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefTop (see GCBO)
-    update_ref_edit(hObject, 'T');
+    update_ref_edit(hObject, 'ref_T');
 
 function slider_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to slider_RefBottom (see GCBO)
-    update_ref_slider(hObject, 'B');
+    update_ref_slider(hObject, 'ref_B');
 
 function edit_RefBottom_Callback(hObject, ~, ~)
 % hObject    handle to edit_RefBottom (see GCBO)
-    update_ref_edit(hObject, 'B');
+    update_ref_edit(hObject, 'ref_B');
 
 % Update reflectivity values based on the change to the slider hObject. 
-%    param = {'N', 'S', 'E', 'W', 'T', 'B'}
+%    param = {'ref_N', 'ref_S', 'ref_E', 'ref_W', 'ref_T', 'ref_B'}
 function update_ref_slider(hObject, param)
     h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
@@ -296,7 +296,7 @@ function update_ref_slider(hObject, param)
     set_values();
     
 % Update reflectivity values based on the change to the edit hObject. 
-%    param = {'N', 'S', 'E', 'W', 'T', 'B'}
+%    param = {'ref_N', 'ref_S', 'ref_E', 'ref_W', 'ref_T', 'ref_B'}
 function update_ref_edit(hObject, param)
     h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');

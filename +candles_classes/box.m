@@ -73,40 +73,32 @@ classdef box
         % Set the length of the box
         % -----------------------------------------------------------------
         function obj = set_length(obj,length)
-            obj.length = length; % Set length (m)
+            if (length > 0); obj.length = length; end % Set length (m)
         end
         
         % Set the width of the box
         % -----------------------------------------------------------------
         function obj = set_width(obj,width)
-            obj.width = width; % Set width (m)
+            if (width > 0); obj.width = width; end    % Set width (m)
         end
         
         % Set the height of the box
         % -----------------------------------------------------------------
         function obj = set_height(obj,height)
-            obj.height = height; % Set height (m)
+            if (height > 0); obj.height = height; end % Set height (m)
         end        
         
         % Set the height of the box
         % -----------------------------------------------------------------
-        function [obj,ERR] = set_ref(obj,nsewtb,ref)
-            ERR = 0;
-            if (isnan(ref)) || (~isreal(ref))
-                ERR = -2;
-            else
-                % FIXME: Add ERR for out of range reflectivity
-                ref = max(min(ref,1),0);
-                switch nsewtb
-                    case 'N'; obj.ref(1,1) = ref;
-                    case 'S'; obj.ref(1,2) = ref;
-                    case 'E'; obj.ref(2,1) = ref;
-                    case 'W'; obj.ref(2,2) = ref;
-                    case 'T'; obj.ref(3,1) = ref;
-                    case 'B'; obj.ref(3,2) = ref;
-                    otherwise
-                        ERR = -3;
-                end
+        function obj = set_ref(obj,nsewtb,ref)
+            ref = max(min(ref,1),0);
+            switch nsewtb
+                case 'ref_N'; obj.ref(1,1) = ref;
+                case 'ref_S'; obj.ref(1,2) = ref;
+                case 'ref_E'; obj.ref(2,1) = ref;
+                case 'ref_W'; obj.ref(2,2) = ref;
+                case 'ref_T'; obj.ref(3,1) = ref;
+                case 'ref_B'; obj.ref(3,2) = ref;
             end
         end
         

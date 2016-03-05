@@ -41,43 +41,33 @@ classdef room
         % Set the length of the room
         % -----------------------------------------------------------------
         function obj = setLength(obj, temp)
-            obj.length = temp;
+            if (temp > 0); obj.length = temp; end
         end
         
         % Set the width of the room
         % -----------------------------------------------------------------
         function obj = setWidth(obj, temp)
-            obj.width  = temp;
+            if (temp > 0); obj.width  = temp; end
         end
         
         % Set the height of the room
         % -----------------------------------------------------------------
         function obj = setHeight(obj, temp)
-            obj.height = temp;
+            if (temp > 0); obj.height = temp; end
         end
         
         % Set Reflectivities of the walls
         % -----------------------------------------------------------------
         % nsewtb indicates north, south, east, west, top, or bottom wall
-        % ERR = -2 means invalid value (NaN or complex val)
-        %     = -3 means invalid nsewtb selection
-        function [obj,ERR] = setRef(obj, nsewtb, temp)
-            ERR = 0;
-            if (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
-            else
-                % FIXME: Add ERR for out of range reflectivity
-                temp = max(min(temp,1),0);
-                switch nsewtb
-                    case 'N'; obj.ref(1,1) = temp;
-                    case 'S'; obj.ref(1,2) = temp;
-                    case 'E'; obj.ref(2,1) = temp;
-                    case 'W'; obj.ref(2,2) = temp;
-                    case 'T'; obj.ref(3,1) = temp;
-                    case 'B'; obj.ref(3,2) = temp;
-                    otherwise
-                        ERR = -3;
-                end
+        function obj = setRef(obj, nsewtb, temp)
+            temp = max(min(temp,1),0);
+            switch nsewtb
+                case 'ref_N'; obj.ref(1,1) = temp;
+                case 'ref_S'; obj.ref(1,2) = temp;
+                case 'ref_E'; obj.ref(2,1) = temp;
+                case 'ref_W'; obj.ref(2,2) = temp;
+                case 'ref_T'; obj.ref(3,1) = temp;
+                case 'ref_B'; obj.ref(3,2) = temp;
             end
         end
         

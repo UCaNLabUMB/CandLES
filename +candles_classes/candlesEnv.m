@@ -51,7 +51,7 @@ classdef candlesEnv
             obj.del_p = 0.25;
             obj.MIN_BOUNCE = 0;
             obj.MAX_BOUNCE = 0;
-            obj.DISP_WAITBAR = 0;
+            obj.DISP_WAITBAR = 1;
         end
         
         %% Transmitter Functions
@@ -262,7 +262,7 @@ classdef candlesEnv
             if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
                 ERR = -1;
             elseif (isnan(temp)) || (~isreal(temp))
-                    ERR = -2;
+                ERR = -2;
             else
                 switch param
                     case 'x'
@@ -298,11 +298,14 @@ classdef candlesEnv
 
         % Set the reflectivities of the specified box
         % -----------------------------------------------------------------
-        function [obj,ERR] = setBoxRef(obj,BOX_NUM,nsewtb,ref)
+        function [obj,ERR] = setBoxRef(obj,BOX_NUM,nsewtb,temp)
+            ERR = 0;
             if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
                 ERR = -1;
+            elseif (isnan(temp)) || (~isreal(temp))
+                ERR = -2;
             else
-                [obj.boxes(BOX_NUM),ERR] = obj.boxes(BOX_NUM).set_ref(nsewtb,ref);
+                obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_ref(nsewtb,temp);
             end
         end
             
@@ -342,7 +345,12 @@ classdef candlesEnv
         % nsewtb indicates north, south, east, west, top, or bottom wall
         % -----------------------------------------------------------------
         function [obj,ERR] = setRoomRef(obj,nsewtb,temp)
-            [obj.rm,ERR] = obj.rm.setRef(nsewtb, temp);
+            ERR = 0;
+            if (isnan(temp)) || (~isreal(temp))
+                ERR = -2;
+            else
+                obj.rm = obj.rm.setRef(nsewtb, temp);
+            end
         end
         
         % Get the maximum dimensions of boxes, txs, or rxs
