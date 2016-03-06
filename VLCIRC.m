@@ -31,30 +31,29 @@ h_t = zeros(length(Rxs),ARRAY_LEN);
 if (Res.MAX_BOUNCE == 1)
     % Single bounce only. Only requires 1 reflector matrix.
     try
-        THE_MATRIX   = zeros(NUM_ELTS,ARRAY_LEN,1);
-        start_prev   = ARRAY_LEN*ones(1,NUM_ELTS);
-        end_prev     = zeros(1,NUM_ELTS);
+        THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,1);
+        M_start    = ARRAY_LEN*ones(1,NUM_ELTS);
+        M_end      = zeros(1,NUM_ELTS);
     catch
         warning('Insufficient Memory to run simulation.');
         return;
     end
-% elseif (Res.MAX_BOUNCE > 1)
-%     % Multiple reflections. Requires a second reflector matrices.
-%     try
-%         THE_MATRIX  = zeros(NUM_ELTS,ARRAY_LEN,2);
-%         start_prev   = ARRAY_LEN*ones(1,NUM_ELTS);
-%         end_prev     = zeros(1,NUM_ELTS);
-%         start_next  = ARRAY_LEN*ones(1,NUM_ELTS);
-%         end_next    = zeros(1,NUM_ELTS);            
-%     catch
-%         warning('Insufficient Memory to run multi-reflection simulation.');
-%         return;
-%     end
+elseif (Res.MAX_BOUNCE > 1)
+    % Multiple reflections. Requires a second reflector matrices.
+    try
+        THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,2);
+        M_start    = ARRAY_LEN*ones(2,NUM_ELTS);
+        M_end      = zeros(2,NUM_ELTS);
+    catch
+        warning('Insufficient Memory to run multi-reflection simulation.');
+        return;
+    end
 end
-% These are essentially pointers for the previous and next matrix indices
-% in the variable THE_MATRIX
-prev_mat = 1; 
-next_mat = 2;
+
+% These are essentially pointers for the current and next matrix indices
+% in the variables THE_MATRIX, mat_start, and mat_end
+c_M = 1; % Current Matrix
+n_M = 2; % Next Matrix
 
 %% Evaluate impulse response
 % Calculate LOS response only if the 0 bounce is included
@@ -67,37 +66,36 @@ end
 
 if (Res.MAX_BOUNCE > 0)
     % Calculate single bounce.
-    [THE_MATRIX, start_prev, end_prev] = ...
-        first_bounce_matrix(Txs, plane_list, Res, ...
-                            THE_MATRIX, start_prev, end_prev, WAITBAR);
-    [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, ...
-                            start_prev, end_prev, prev_mat, WAITBAR);
+    [THE_MATRIX(:,:,c_M), M_start(c_M,:), M_end(c_M,:)] = ...
+        first_bounce_matrix(Txs, plane_list, Res, THE_MATRIX(:,:,c_M), ...
+                            M_start(c_M,:), M_end(c_M,:), WAITBAR);
+                        
+    % Update Rxs with received power from the current matrix
+    if (Res.MIN_BOUNCE <= 1)
+        [h_t, Prx] = update_Prx(h_t, Prx, Rxs, Res, plane_list, ...
+                            THE_MATRIX(:,:,c_M), M_start(c_M,:), M_end(c_M,:), WAITBAR);
+    end
     
-%     for bounce_no = 2:Res.MAX_BOUNCE
-%         % Calculate multiple reflections.
-%         THE_MATRIX(:,:,next_mat) = zeros(NUM_ELTS,ARRAY_LEN);
-%         
-%         start_next = ARRAY_LEN*ones(1,NUM_ELTS);
-%         end_next   = zeros(1,NUM_ELTS);    
-%         
-%         [THE_MATRIX] = update_matrix(THE_MATRIX);
-%         
-%         temp_start = start_prev;
-%         start_prev = start_next;
-%         start_next = temp_start;
-%         
-%         temp_end   = end_prev;
-%         end_prev   = end_next;
-%         end_next   = temp_end;
-%         
-%         if (Res.MIN_BOUNCE <= bounce_no)
-%             Prx = update_Prx(Prx);
-%         end
-%         
-%         temp_mat = prev_mat;
-%         prev_mat = next_mat;
-%         next_mat = temp_mat;
-%     end
+    % Calculate multiple reflections.
+    for bounce_no = 2:Res.MAX_BOUNCE
+        % Clear the next matrix
+        THE_MATRIX(:,:,n_M) = zeros(NUM_ELTS,ARRAY_LEN);
+        M_start(n_M,:) = ARRAY_LEN*ones(1,NUM_ELTS);
+        M_end(n_M,:)   = zeros(1,NUM_ELTS);    
+        
+        % Calculate Matrix to Matrix reflections
+        [THE_MATRIX, M_start, M_end] = ...
+            update_matrix(plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M, WAITBAR, bounce_no);
+                      
+        % Swap the pointer to the current and next matrices
+        [n_M,c_M] = deal(c_M, n_M);
+        
+        % Update Rxs with received power from the current matrix
+        if (Res.MIN_BOUNCE <= bounce_no)
+            [h_t, Prx] = update_Prx(h_t, Prx, Rxs, Res, plane_list, ...
+                            THE_MATRIX(:,:,c_M), M_start(c_M,:), M_end(c_M,:), WAITBAR);
+        end
+    end
 
 end
 
@@ -249,13 +247,194 @@ end
 
 %% update_matrix - Calculate response from reflectors to other reflectors
 % -------------------------------------------------------------------------
-% function [THE_MATRIX] = update_matrix(THE_MATRIX)
-% 
-% end
+function [THE_MATRIX, M_start, M_end] = update_matrix(plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M, WAITBAR, BOUNCE)
+    rx_element = candles_classes.rx_ps();
+    deltas.x    = 0; deltas.y    = 0; deltas.z    = 0;
+    start_pos.x = 0; start_pos.y = 0; start_pos.z = 0;
+    
+    rx_element_no = 0;
+    
+    if (WAITBAR); wb = waitbar(0,[num2str(BOUNCE) 'Bounce calculation...']); end
+    for plane_no = 1:length(plane_list)
+        % Determine the first element in the given plane along with the
+        % corresponding deltas (difference in position for each element
+        % in the plane) and the start position of the first element.
+        [rx_element, deltas, start_pos] = ...
+            get_element(plane_list(plane_no),rx_element, deltas, start_pos);
+        
+        if (WAITBAR)
+            waitbar((plane_no-1)/(length(plane_list)),wb);
+            wb_min = (plane_no-1)/(length(plane_list));
+            wb_max = (plane_no)/(length(plane_list));
+        end                
+
+        %---- Z Plane ----%
+        if ((deltas.x ~= 0) && (deltas.y ~= 0))  
+            rx_element = rx_element.set_z(start_pos.z);
+            rx_element = rx_element.set_A(deltas.x*deltas.y);
+            for row = 1:plane_list(plane_no).num_div_l
+                rx_element = rx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
+                
+                if (WAITBAR)
+                    waitbar(wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_l,wb);
+                end                
+                
+                for col = 1:plane_list(plane_no).num_div_w
+                    rx_element = rx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
+                    rx_element_no = rx_element_no + 1;
+                    [THE_MATRIX, M_start, M_end] = ...
+                        update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                end
+            end
+            
+        %---- Y Plane ----%
+        elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
+            rx_element = rx_element.set_y(start_pos.y);
+            rx_element = rx_element.set_A(deltas.x*deltas.z);
+            for row = 1:plane_list(plane_no).num_div_h
+                rx_element = rx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
+                
+                if (WAITBAR)
+                    waitbar(wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_h,wb);
+                end                
+                
+                for col = 1:plane_list(plane_no).num_div_l
+                    rx_element = rx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
+                    rx_element_no = rx_element_no + 1;
+                    [THE_MATRIX, M_start, M_end] = ...
+                        update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                end
+            end
+            
+        %---- X Plane ----%
+        elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
+            rx_element = rx_element.set_x(start_pos.x);
+            rx_element = rx_element.set_A(deltas.y*deltas.z);
+            for row = 1:plane_list(plane_no).num_div_w
+                rx_element = rx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
+                
+                if (WAITBAR)
+                    waitbar(wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_w,wb);
+                end                
+                
+                for col = 1:plane_list(plane_no).num_div_h
+                    rx_element = rx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
+                    rx_element_no = rx_element_no + 1;
+                    [THE_MATRIX, M_start, M_end] = ...
+                        update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                end
+            end
+        end % End if X/Y/Z plane
+    end % End plane loop
+    if (WAITBAR); close(wb); end
+end
+
+%% update_element - update element of next MAT power from current MAT elements.
+% -------------------------------------------------------------------------
+function [THE_MATRIX, M_start, M_end] = update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M)
+    tx_element = candles_classes.tx_ps();
+    deltas.x    = 0; deltas.y    = 0; deltas.z    = 0;
+    start_pos.x = 0; start_pos.y = 0; start_pos.z = 0;
+    
+    tx_element_no = 0;
+
+    for plane_no = 1:length(plane_list)
+        [tx_element, deltas, start_pos] = ...
+            get_element(plane_list(plane_no),tx_element, deltas, start_pos);
+
+        %---- Z Plane ----%
+        if ((deltas.x ~= 0) && (deltas.y ~= 0))  
+            tx_element = tx_element.set_z(start_pos.z);
+            for row = 1:plane_list(plane_no).num_div_l
+                tx_element = tx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
+                for col = 1:plane_list(plane_no).num_div_w
+                    tx_element = tx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
+                    tx_element_no = tx_element_no + 1;
+                    
+                    % Update rx_element in THE_MATRIX
+                    [THE_MATRIX, M_start, M_end] = ...
+                        update_element_impulse(THE_MATRIX, M_start, M_end, ...
+                                               c_M, n_M, Res, ...
+                                               plane_list, plane_no, ...
+                                               tx_element, tx_element_no, ...
+                                               rx_element, rx_element_no);
+                end
+            end
+            
+        %---- Y Plane ----%
+        elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
+            tx_element = tx_element.set_y(start_pos.y);
+            for row = 1:plane_list(plane_no).num_div_h
+                tx_element = tx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
+                for col = 1:plane_list(plane_no).num_div_l
+                    tx_element = tx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
+                    tx_element_no = tx_element_no + 1;
+                    
+                    % Update rx_element in THE_MATRIX
+                    [THE_MATRIX, M_start, M_end] = ...
+                        update_element_impulse(THE_MATRIX, M_start, M_end, ...
+                                               c_M, n_M, Res, ...
+                                               plane_list, plane_no, ...
+                                               tx_element, tx_element_no, ...
+                                               rx_element, rx_element_no);
+                end
+            end
+            
+        %---- X Plane ----%
+        elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
+            tx_element = tx_element.set_x(start_pos.x);
+            for row = 1:plane_list(plane_no).num_div_w
+                tx_element = tx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
+                for col = 1:plane_list(plane_no).num_div_h
+                    tx_element = tx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
+                    tx_element_no = tx_element_no + 1;
+                    
+                    % Update rx_element in THE_MATRIX
+                    [THE_MATRIX, M_start, M_end] = ...
+                        update_element_impulse(THE_MATRIX, M_start, M_end, ...
+                                               c_M, n_M, Res, ...
+                                               plane_list, plane_no, ...
+                                               tx_element, tx_element_no, ...
+                                               rx_element, rx_element_no);
+                end
+            end
+            
+        end % End if X/Y/Z plane
+    end % End plane loop
+end
+
+%% update_matrix_element - Update rx elements impulse received impulse.
+% -------------------------------------------------------------------------
+function [THE_MATRIX, M_start, M_end] = update_element_impulse(THE_MATRIX, M_start, M_end, c_M, n_M, Res, plane_list, plane_no, tx_element, tx_element_no, rx_element, rx_element_no)
+
+    % Get attenuation & delay from tx_element to rx_element
+    [visible, attenuation, delay] = get_atten_delay(tx_element, rx_element, plane_list);
+    if (visible && (plane_list(plane_no).ref ~= 0))
+        attenuation = plane_list(plane_no).ref * attenuation;
+        t_i = get_array_loc(delay, Res.del_t);
+    else
+        attenuation = 0;
+        t_i = 1; % This prevents M_start & M_end from increasing unneccessarily
+    end                    
+
+    % Update rx_element in THE_MATRIX
+    start_i = M_start(c_M,tx_element_no);
+    end_i   = M_end(c_M,tx_element_no);
+    for temp_count = start_i:end_i
+        THE_MATRIX(rx_element_no,temp_count+t_i,n_M) = ...
+            THE_MATRIX(rx_element_no,temp_count+t_i,n_M) + ...
+            THE_MATRIX(tx_element_no,temp_count,c_M)*attenuation;
+    end                    
+
+    % Update the range of values in the new matrix
+    M_start(n_M,rx_element_no) = min(M_start(n_M,rx_element_no), start_i+t_i);
+    M_end(n_M,rx_element_no)   = max(  M_end(n_M,rx_element_no),   end_i+t_i);
+
+end
 
 %% update_Prx - 
 % -------------------------------------------------------------------------
-function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, start_prev, end_prev, prev_mat, WAITBAR)
+function [h_t, Prx] = update_Prx(h_t, Prx, Rxs, Res, plane_list, THE_MATRIX, M_start, M_end, WAITBAR)
     element = candles_classes.tx_ps();
     deltas.x    = 0; deltas.y    = 0; deltas.z    = 0;
     start_pos.x = 0; start_pos.y = 0; start_pos.z = 0;
@@ -283,22 +462,11 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
                         element = element.set_y(start_pos.y + (col - 0.5)*deltas.y);
                         element_no = element_no + 1;
                         
-                        % Get attenuation and delay from the element to rx
-                        [visible, attenuation, delay] = ...
-                            get_atten_delay(element, Rxs(rx_no), plane_list);
-                        if (visible && (plane_list(plane_no).ref ~= 0))
-                            attenuation = plane_list(plane_no).ref * attenuation;
-                            t_i = get_array_loc(delay, Res.del_t);
-                        else
-                            attenuation = 0;
-                            t_i = 1;
-                        end
-                        
                         % Update h_t for the path from the element to rx
-                        for temp_count = start_prev(element_no):end_prev(element_no)
-                            h_t(rx_no, temp_count + t_i) = h_t(rx_no, temp_count + t_i) + ...
-                                                            attenuation*THE_MATRIX(element_no,temp_count,prev_mat);
-                        end
+                        h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
+                                                plane_list, plane_no, ...
+                                                element, element_no, ...
+                                                Rxs, rx_no);
                     end
                 end
                 
@@ -311,22 +479,11 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
                         element = element.set_x(start_pos.x + (col - 0.5)*deltas.x);
                         element_no = element_no + 1;
                         
-                        % Get attenuation and delay from the element to rx
-                        [visible, attenuation, delay] = ...
-                            get_atten_delay(element, Rxs(rx_no), plane_list);
-                        if (visible && (plane_list(plane_no).ref ~= 0))
-                            attenuation = plane_list(plane_no).ref * attenuation;
-                            t_i = get_array_loc(delay, Res.del_t);
-                        else
-                            attenuation = 0;
-                            t_i = 1;
-                        end
-                        
                         % Update h_t for the path from the element to rx
-                        for temp_count = start_prev(element_no):end_prev(element_no)
-                            h_t(rx_no, temp_count + t_i) = h_t(rx_no, temp_count + t_i) + ...
-                                                            attenuation*THE_MATRIX(element_no,temp_count,prev_mat);
-                        end
+                        h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
+                                                plane_list, plane_no, ...
+                                                element, element_no, ...
+                                                Rxs, rx_no);
                     end
                 end
                 
@@ -339,22 +496,11 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
                         element = element.set_z(start_pos.z + (col - 0.5)*deltas.z);
                         element_no = element_no + 1;
                         
-                        % Get attenuation and delay from the element to rx
-                        [visible, attenuation, delay] = ...
-                            get_atten_delay(element, Rxs(rx_no), plane_list);
-                        if (visible && (plane_list(plane_no).ref ~= 0))
-                            attenuation = plane_list(plane_no).ref * attenuation;
-                            t_i = get_array_loc(delay, Res.del_t);
-                        else
-                            attenuation = 0;
-                            t_i = 1;
-                        end
-                        
                         % Update h_t for the path from the element to rx
-                        for temp_count = start_prev(element_no):end_prev(element_no)
-                            h_t(rx_no, temp_count + t_i) = h_t(rx_no, temp_count + t_i) + ...
-                                                            attenuation*THE_MATRIX(element_no,temp_count,prev_mat);
-                        end
+                        h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
+                                                plane_list, plane_no, ...
+                                                element, element_no, ...
+                                                Rxs, rx_no);
                     end
                 end
             end % End Plane Check
@@ -363,6 +509,27 @@ function [h_t, Prx] = update_Prx(Rxs, THE_MATRIX, Res, plane_list, h_t, Prx, sta
     if (WAITBAR); close(wb); end
 end
 
+%% update_rx_impulse - Update rx impulse received impulse.
+% -------------------------------------------------------------------------
+function [h_t] = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, plane_list, plane_no, element, element_no, Rxs, rx_no)
+    % Get attenuation and delay from the element to rx
+    [visible, attenuation, delay] = ...
+        get_atten_delay(element, Rxs(rx_no), plane_list);
+    if (visible && (plane_list(plane_no).ref ~= 0))
+        attenuation = plane_list(plane_no).ref * attenuation;
+        t_i = get_array_loc(delay, Res.del_t);
+    else
+        attenuation = 0;
+        t_i = 1;
+    end
+
+    % Update h_t for the path from the element to rx
+    for temp_count = M_start(element_no):M_end(element_no)
+        h_t(rx_no, temp_count + t_i) = h_t(rx_no, temp_count + t_i) + ...
+                                        attenuation*THE_MATRIX(element_no,temp_count);
+    end
+
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%% SETUP FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
