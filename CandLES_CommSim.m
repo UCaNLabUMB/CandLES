@@ -31,7 +31,7 @@ function varargout = CandLES_CommSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_CommSim
 
-% Last Modified by GUIDE v2.5 26-Feb-2016 15:09:30
+% Last Modified by GUIDE v2.5 07-Mar-2016 15:23:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,8 +78,14 @@ setappdata(0, 'h_GUI_CandlesCommSim', hObject);
 % that it can be edited without modifying the main environment until saved.
 mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
 CommSimEnv = mainEnv;
+RESULTS_PRX  = [];
+RESULTS_H    = [];
+RX_SELECT    = 0;
+setappdata(hObject, 'RESULTS_PRX', RESULTS_PRX);
+setappdata(hObject, 'RESULTS_H', RESULTS_H);
+setappdata(hObject, 'RX_SELECT', RX_SELECT);
 setappdata(hObject, 'CommSimEnv', CommSimEnv);
-
+set_values(); % Set the values and display environment
 
 % --- Outputs from this function are returned to the command line.
 function varargout = CandLES_CommSim_OutputFcn(hObject, ~, handles) 
@@ -110,3 +116,73 @@ if strcmp(response,'Yes')
     rmappdata(0, 'h_GUI_CandlesCommSim');
     delete(hObject);
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% EDIT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Executes on button press in pushbutton_GenRes.
+function pushbutton_GenRes_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_GenRes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    h_GUI_CandlesCommSim    = getappdata(0,'h_GUI_CandlesCommSim');
+    CommSimEnv              = getappdata(h_GUI_CandlesCommSim,'CommSimEnv');
+    [RESULTS_PRX,RESULTS_H] = CommSimEnv.run();
+    setappdata(h_GUI_CandlesCommSim, 'RESULTS_PRX', RESULTS_PRX);
+    setappdata(h_GUI_CandlesCommSim, 'RESULTS_H', RESULTS_H);
+    set_values(); % Set the values and update axes
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS DISPLAY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --- Executes on selection change in popup_rx_select.
+function popup_rx_select_Callback(hObject, eventdata, handles)
+% hObject    handle to popup_rx_select (see GCBO)
+    h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
+    RX_SELECT            = get(hObject,'Value') - 1;
+    setappdata(h_GUI_CandlesCommSim, 'RX_SELECT', RX_SELECT);
+    set_values(); % Set the values and update axes
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set the values within the GUI
+% --------------------------------------------------------------------
+function set_values()
+    h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
+    CommSimEnv           = getappdata(h_GUI_CandlesCommSim,'CommSimEnv');
+    RESULTS_PRX          = getappdata(h_GUI_CandlesCommSim,'RESULTS_PRX');
+    RESULTS_H            = getappdata(h_GUI_CandlesCommSim,'RESULTS_H');
+    RX_SELECT            = getappdata(h_GUI_CandlesCommSim,'RX_SELECT');
+    handles              = guidata(h_GUI_CandlesCommSim);
+    
+    % Display room with selected Plane
+    SYS_display_room(handles.axes_room, CommSimEnv, 2, RX_SELECT);
+    
+    if (isempty(RESULTS_H))
+        % Display a message on the Results Axis
+        cla(handles.axes_results,'reset')
+        MSG = sprintf(['Results have not been generated \n' ...
+                       '           for this configuration.']);
+        text(0.23, 0.5, MSG, 'Parent', handles.axes_results);
+        
+    else
+        my_ax = handles.axes_results;
+        if (RX_SELECT == 0)
+            my_results = RESULTS_H;
+        else
+            my_results = RESULTS_H(RX_SELECT,:);
+        end
+        CommSimEnv.plotCommImpulse(my_results,my_ax);
+    end
+
+    % Set Selection Boxes
+    set(handles.popup_rx_select,'String',{'All Rxs'; 1:1:length(CommSimEnv.rxs)});
+    set(handles.popup_rx_select,'Value',RX_SELECT+1);
+    
+    

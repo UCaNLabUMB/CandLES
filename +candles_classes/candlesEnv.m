@@ -48,7 +48,7 @@ classdef candlesEnv
 
             obj.del_t = 1e-10; 
             obj.del_s = 0.25;
-            obj.del_p = 0.25;
+            obj.del_p = 0.5;
             obj.MIN_BOUNCE = 0;
             obj.MAX_BOUNCE = 0;
             obj.DISP_WAITBAR = 1;
@@ -426,6 +426,17 @@ classdef candlesEnv
         
         %% Environment Simulation Functions
         % *****************************************************************
+        % Calculate Impulse responses and Prx for Rxs in the environment
+        % -----------------------------------------------------------------
+        function [P_rx,h_t] = run(obj)
+            Res.del_t = obj.del_t;
+            Res.del_s = obj.del_s;
+            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
+            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
+            [P_rx,h_t]     = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, ...
+                                    Res, obj.DISP_WAITBAR);
+        end
+        
         % Calculate Illumination at height Z
         % -----------------------------------------------------------------
         function [Illum, grid] = getIllum(obj,Z)
@@ -498,6 +509,20 @@ classdef candlesEnv
         
         %% Environment Simulation Results - Plots
         % *****************************************************************
+        
+        % Plot the impulse response
+        % -----------------------------------------------------------------
+        function plotCommImpulse(obj,h_t,my_ax)
+            t = (0:size(h_t,2)-1)*obj.del_t;
+            
+            axes(my_ax);
+            plot(t*1e9,h_t);
+            title('Normalized Impulse Response');
+            xlabel('Time (ns)');
+            ylabel('% of Prx');
+            axis([0,max(t)*1e9,0,1]);
+        end
+        
         % Plot the Illumination results at a specified plane
         % -----------------------------------------------------------------
         function plotIllumPlane(obj,Illum,plane,my_ax)
