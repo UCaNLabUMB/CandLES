@@ -175,18 +175,12 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
                         element = element.set_y(start_pos.y + (col - 0.5)*deltas.y);
                         element_no = element_no + 1;
                         
-                        % Calculate attenuation & delay and add to the
-                        % appropriate element in THE_MATRIX
-                        [visible, attenuation, delay] = ...
-                            get_atten_delay(Txs(tx_no), element, plane_list);
-                        if (visible)
-                            % Determine location in impulse response
-                            t_i = get_array_loc(delay, Res.del_t);
-                            THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
-                                                        (Txs(tx_no).Ps * attenuation);
-                            start_prev(element_no)   = min(start_prev(element_no), t_i);
-                            end_prev(element_no)     = max(  end_prev(element_no), t_i);
-                        end
+                        % Update impulse response for element in matrix
+                        [THE_MATRIX, start_prev, end_prev] = ...
+                            update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
+                                              plane_list, plane_no, ...
+                                              Txs, tx_no, ...
+                                              element, element_no);
                     end
                 end
                 
@@ -200,18 +194,12 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
                         element = element.set_x(start_pos.x + (col - 0.5)*deltas.x);
                         element_no = element_no + 1;
                         
-                        % Calculate attenuation & delay and add to the
-                        % appropriate element in THE_MATRIX
-                        [visible, attenuation, delay] = ...
-                            get_atten_delay(Txs(tx_no), element, plane_list);
-                        if (visible)
-                            % Determine location in impulse response
-                            t_i = get_array_loc(delay, Res.del_t);
-                            THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
-                                                        (Txs(tx_no).Ps * attenuation);
-                            start_prev(element_no)   = min(start_prev(element_no), t_i);
-                            end_prev(element_no)     = max(  end_prev(element_no), t_i);
-                        end
+                        % Update impulse response for element in matrix
+                        [THE_MATRIX, start_prev, end_prev] = ...
+                            update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
+                                              plane_list, plane_no, ...
+                                              Txs, tx_no, ...
+                                              element, element_no);
                     end
                 end
                 
@@ -225,24 +213,36 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
                         element = element.set_z(start_pos.z + (col - 0.5)*deltas.z);
                         element_no = element_no + 1;
                         
-                        % Calculate attenuation & delay and add to the
-                        % appropriate element in THE_MATRIX
-                        [visible, attenuation, delay] = ...
-                            get_atten_delay(Txs(tx_no), element, plane_list);
-                        if (visible)
-                            % Determine location in impulse response
-                            t_i = get_array_loc(delay, Res.del_t);
-                            THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
-                                                        (Txs(tx_no).Ps * attenuation);
-                            start_prev(element_no)   = min(start_prev(element_no), t_i);
-                            end_prev(element_no)     = max(  end_prev(element_no), t_i);
-                        end
+                        % Update impulse response for element in matrix
+                        [THE_MATRIX, start_prev, end_prev] = ...
+                            update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
+                                              plane_list, plane_no, ...
+                                              Txs, tx_no, ...
+                                              element, element_no);
                     end
                 end
             end % End Plane Check
         end % End loop through planes
     end % End loop through sources
     if (WAITBAR); close(wb); end
+end
+
+%% update_element_impulse - Update matrix element's for first bounce impulse
+% -------------------------------------------------------------------------
+function [THE_MATRIX, start_prev, end_prev] = update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, plane_list, plane_no, Txs, tx_no, element, element_no)
+    % Calculate attenuation & delay and add to the
+    % appropriate element in THE_MATRIX
+    [visible, attenuation, delay] = get_atten_delay(Txs(tx_no), element, plane_list);
+    if (visible)
+        % Determine location in impulse response
+        t_i = get_array_loc(delay, Res.del_t);
+        THE_MATRIX(element_no,t_i) = THE_MATRIX(element_no,t_i) + ...
+                                    (Txs(tx_no).Ps * attenuation);
+                                
+        start_prev(element_no)   = min(start_prev(element_no), t_i);
+        end_prev(element_no)     = max(  end_prev(element_no), t_i);
+    end
+
 end
 
 %% update_matrix - Calculate response from reflectors to other reflectors
@@ -403,7 +403,7 @@ function [THE_MATRIX, M_start, M_end] = update_element(rx_element, rx_element_no
     end % End plane loop
 end
 
-%% update_matrix_element - Update rx elements impulse received impulse.
+%% update_element_impulse - Update rx elements impulse received impulse.
 % -------------------------------------------------------------------------
 function [THE_MATRIX, M_start, M_end] = update_element_impulse(THE_MATRIX, M_start, M_end, c_M, n_M, Res, plane_list, plane_no, tx_element, tx_element_no, rx_element, rx_element_no)
 
