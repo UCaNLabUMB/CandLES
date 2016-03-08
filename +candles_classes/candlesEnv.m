@@ -15,7 +15,8 @@ classdef candlesEnv
         boxes       % Boxes in the environment
         
         % Tx Group Properties
-        Sprime      % Normalized PSD
+        num_groups  % Number of grouped transmitters
+        Sprime      % Normalized PSD (for each group)
         lambda      % wavelengths of Sprime
         
         % Simulation Properties
@@ -36,6 +37,7 @@ classdef candlesEnv
             obj.txs   = candles_classes.tx_ps(2.5,2,2.5);
             obj.rxs   = candles_classes.rx_ps(2.5,2,1);
             obj.boxes = candles_classes.box.empty;
+            obj.num_groups = 1;
             
             % This is a simple base PSD... Update for LEDs to be used
             LAMBDAMIN=200; LAMBDAMAX=1100; DLAMBDA=1;
@@ -148,6 +150,9 @@ classdef candlesEnv
                         obj.txs(TX_NUM) = obj.txs(TX_NUM).set_m(temp);
                     case 'theta' % Set in degrees
                         obj.txs(TX_NUM) = obj.txs(TX_NUM).set_theta(temp);
+                    case 'ng'
+                        temp = max(min(temp,obj.num_groups),0);
+                        obj.txs(TX_NUM) = obj.txs(TX_NUM).set_ng(temp);
                     otherwise
                         ERR = -3;
                 end
@@ -176,6 +181,29 @@ classdef candlesEnv
             my_axes.YTick = 0:50:100;
         end
 
+        % Add a new Network Group
+        % -----------------------------------------------------------------
+        function [obj] = addNetGroup(obj)
+            obj.num_groups = obj.num_groups + 1;
+        end        
+        
+        % Remove a new Network Group
+        % -----------------------------------------------------------------
+        function [obj] = removeNetGroup(obj,ng)
+            if (obj.num_groups > 1)
+                obj.num_groups = obj.num_groups - 1;
+                
+                % Set any Txs with group = ng to 0 and update others
+                for i = 1:length(obj.txs)
+                    if (obj.txs(i).ng == ng)
+                        obj.txs(i) = obj.txs(i).set_ng(1);
+                    elseif (obj.txs(i).ng > ng)
+                        obj.txs(i) = obj.txs(i).set_ng(obj.txs(i).ng - 1);
+                    end
+                end
+            end
+        end
+        
         %% Receiver Functions
         % *****************************************************************
         % Add a new receiver

@@ -158,7 +158,7 @@ function plot_transmitters(txs, disp_type, arg)
   
   for i=1:length(txs)
     r = 0.1; % Distance to corners and peak
-    tx_color = my_colors((txs(i).net_group + 1),:);
+    tx_color = my_colors((txs(i).ng + 1),:);
     if (i == tx_select)
         tx_lw = 1.5;
     else

@@ -9,8 +9,7 @@ classdef tx_ps < candles_classes.point_source
         theta  % Semiangle at half power (degrees)
         m      % Transmitter Lambertian Order
 
-        % FIXME - no functionality yet
-        net_group = 1;  % TX group for resource allocation
+        ng     % TX network group for resource allocation
     end
     
     %% Class Methods
@@ -19,12 +18,13 @@ classdef tx_ps < candles_classes.point_source
         %% Constructor
         % *****************************************************************
         % -----------------------------------------------------------------
-        function obj = tx_ps(x,y,z,az,el,Ps,m)
+        function obj = tx_ps(x,y,z,az,el,Ps,m,ng)
             d_Ps  = 1;           % Default optical power
             d_m   = 1;           % Default Lambertian order
             d_pos = {0.1,0.1,0}; % Default position
             d_az  = 0;           % Default azimuth
             d_el  = 3*pi/2;      % Default elevation
+            d_ng  = 1;           % Default Network Group
 
             % Setup and call superclass constructor
             if (nargin == 0); my_args = [    d_pos(1:3), {d_az,d_el}]; end
@@ -39,6 +39,7 @@ classdef tx_ps < candles_classes.point_source
             if (exist('Ps','var')); obj.Ps = Ps; else obj.Ps = d_Ps; end
             if (exist( 'm','var')); obj.m  =  m; else obj.m  =  d_m; end
             obj.theta = acosd(exp(-log(2)/obj.m));
+            if (exist('ng','var')); obj.ng = ng; else obj.ng = d_ng; end
         end
         
         %% Set property values
@@ -67,6 +68,13 @@ classdef tx_ps < candles_classes.point_source
                 obj.m = -log(2)/log(cosd(theta)); % -ln2/ln(cos(theta))
             end
         end        
+        
+        % Set Transmitter Network Group
+        % -----------------------------------------------------------------
+        function obj = set_ng(obj,ng)
+            ng = max(ng,0); % Check Bound
+            obj.ng = ng;
+        end             
     end
     
 end

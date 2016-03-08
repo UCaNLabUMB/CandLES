@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 03-Mar-2016 16:46:59
+% Last Modified by GUIDE v2.5 07-Mar-2016 22:39:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -214,7 +214,39 @@ function menu_deleteTx_Callback(hObject, eventdata, handles)
         set_values(); % Set the values and display room with selected TX
     end
 
+    
+% --------------------------------------------------------------------
+function menu_addTxGroup_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_addTxGroup (see GCBO)
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    txSetEnv           = txSetEnv.addNetGroup();
 
+    h = msgbox('New Tx Group Added Successfully');
+    uiwait(h);
+    
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
+
+% --------------------------------------------------------------------
+function menu_removeTxGroup_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_removeTxGroup (see GCBO)
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    
+    groups = 1:txSetEnv.num_groups;
+    ng = listdlg('ListString',num2str(groups'), ...
+                     'SelectionMode','single',...
+                     'Name','Select Group to Remove', ...
+                     'ListSize',[160 60]);
+
+    if (~isempty(ng))
+        txSetEnv           = txSetEnv.removeNetGroup(ng);
+    end
+    
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,6 +258,18 @@ function popup_tx_select_Callback(hObject, ~, ~)
     set_values(); % Set the values and display room with selected TX
 
 
+function popup_group_assign_Callback(hObject, ~, ~)
+% hObject    handle to popup_group_assign (see GCBO)
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    
+    txSetEnv           = txSetEnv.setTxParam(TX_SELECT,'ng',get(hObject,'Value'));
+    
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    set_values(); % Set the values and display room with selected TX
+
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% TX LOCATION FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,6 +427,10 @@ function set_values()
     set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
     set(handles.popup_tx_select,'Value',TX_SELECT);
 
+    % Set Group Assignment box
+    set(handles.popup_group_assign,'String',1:txSetEnv.num_groups);
+    set(handles.popup_group_assign,'Value',txSetEnv.txs(TX_SELECT).ng);
+    
     % Set Tx Parameters
     set(handles.edit_Tx_Ps,   'string', num2str(txSetEnv.txs(TX_SELECT).Ps));
     set(handles.edit_Tx_m,    'string', num2str(txSetEnv.txs(TX_SELECT).m));
@@ -391,7 +439,5 @@ function set_values()
     
   
     
-
-
 
 
