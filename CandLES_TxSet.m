@@ -166,29 +166,39 @@ function menu_addTxLayout_Callback(hObject, eventdata, handles)
                                     num2str(txSetEnv.rm.height)};
 
         ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
-
-        % NOTE: If changing to str2num, need to modify error check below.
-        vals = [str2double(ans_dlg(1)), ...
-                str2double(ans_dlg(2)), ...
-                str2double(ans_dlg(3)), ...
-                str2double(ans_dlg(4)), ...
-                str2double(ans_dlg(5)), ...
-                str2double(ans_dlg(6))];
-
-        if (isnan(sum(vals)))
-            warndlg('Inputs must be numeric values', ...
-                    'Warning: Invalid Input');
-        elseif (any(mod(vals(1:2),1)))
-            warndlg('Number of TXs must be an integer value', ...
-                    'Warning: Invalid Input');
+        
+        if (txSetEnv.num_groups > 1)
+            groups = 1:txSetEnv.num_groups;
+            [ng, ok] = listdlg('ListString',num2str(groups'), ...
+                               'SelectionMode','Single', ...
+                               'ListSize',[160,60]);
         else
-            replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
-            [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), ...
-                                                         vals(5), vals(6), layout, replace);
+            ok = 1;
+            ng = 1;
+        end
+        
+        if (~isempty(ans_dlg) && ok)
 
-            setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-            setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-            set_values(); % Set the values and display room with selected TX
+            % NOTE: If changing to str2num, need to modify error check below.
+            vals = [str2double(ans_dlg(1)), str2double(ans_dlg(2)), ...
+                    str2double(ans_dlg(3)), str2double(ans_dlg(4)), ...
+                    str2double(ans_dlg(5)), str2double(ans_dlg(6))];
+
+            if (isnan(sum(vals)))
+                warndlg('Inputs must be numeric values', ...
+                        'Warning: Invalid Input');
+            elseif (any(mod(vals(1:2),1)))
+                warndlg('Number of TXs must be an integer value', ...
+                        'Warning: Invalid Input');
+            else
+                replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
+                [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), ...
+                                                             vals(5), vals(6), layout, ng, replace);
+
+                setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+                setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+                set_values(); % Set the values and display room with selected TX
+            end
         end
     end
 

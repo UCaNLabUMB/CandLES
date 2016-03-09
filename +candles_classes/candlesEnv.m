@@ -76,8 +76,9 @@ classdef candlesEnv
         %       C_y:  Center point in Y direction.
         %   Z_plane:  Location of grid in Z dimension
         %    layout:  (1) Grid (2) Cell1 (3) Cell2
+        %        ng:  Net Group
         %   replace:  (0) keep existing TXs (1) replace TXs.
-        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, C_x, C_y, Z_plane, layout, replace)
+        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, C_x, C_y, Z_plane, layout, ng, replace)
             
             % Error check for empty grid
             if (N_x*N_y == 0)
@@ -102,6 +103,9 @@ classdef candlesEnv
                 
                 obj.txs(TX_NUM+new_tx_num) = ...
                        candles_classes.tx_ps(my_x,my_y,my_z);
+                   
+                obj.txs(TX_NUM+new_tx_num) = ...
+                       obj.txs(TX_NUM+new_tx_num).set_ng(ng);
             end
             
             % Set TX_NUM to the first TX in the grid
