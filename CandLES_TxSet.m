@@ -457,33 +457,31 @@ function tx_values_update()
         
     % Set Location boxes --------------------------------------------------
     set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x), 'Enable', 'on');
+    set(handles.slider_Tx_x,'value',txSetEnv.txs(TX_SELECT).x, ...
+                            'Min',0,'Max',txSetEnv.rm.length, ...
+                            'SliderStep',[0.1/txSetEnv.rm.length, 1/txSetEnv.rm.length], ...
+                            'Enable', 'on');
     set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y), 'Enable', 'on');
+    set(handles.slider_Tx_y,'value',txSetEnv.txs(TX_SELECT).y, ...
+                            'Min',0,'Max',txSetEnv.rm.width, ...
+                            'SliderStep',[0.1/txSetEnv.rm.width, 1/txSetEnv.rm.width], ...
+                            'Enable', 'on');
     set(handles.edit_Tx_z,'string',num2str(txSetEnv.txs(TX_SELECT).z), 'Enable', 'on');
-    set(handles.slider_Tx_x,'value',txSetEnv.txs(TX_SELECT).x, 'Enable', 'on');
-    set(handles.slider_Tx_y,'value',txSetEnv.txs(TX_SELECT).y, 'Enable', 'on');
-    set(handles.slider_Tx_z,'value',txSetEnv.txs(TX_SELECT).z, 'Enable', 'on');
-    set(handles.slider_Tx_x,'Min',0);
-    set(handles.slider_Tx_y,'Min',0);
-    set(handles.slider_Tx_z,'Min',0);
-    set(handles.slider_Tx_x,'Max',txSetEnv.rm.length);
-    set(handles.slider_Tx_y,'Max',txSetEnv.rm.width);
-    set(handles.slider_Tx_z,'Max',txSetEnv.rm.height);
-    set(handles.slider_Tx_x,'SliderStep',[0.1/txSetEnv.rm.length, 1/txSetEnv.rm.length]);
-    set(handles.slider_Tx_y,'SliderStep',[0.1/txSetEnv.rm.width, 1/txSetEnv.rm.width]);
-    set(handles.slider_Tx_z,'SliderStep',[0.1/txSetEnv.rm.height, 1/txSetEnv.rm.height]);
+    set(handles.slider_Tx_z,'value',txSetEnv.txs(TX_SELECT).z, ...
+                            'Min',0,'Max',txSetEnv.rm.height, ...
+                            'SliderStep',[0.1/txSetEnv.rm.height, 1/txSetEnv.rm.height], ...
+                            'Enable', 'on');
 
     % Set Rotation boxes --------------------------------------------------
     [my_az,my_el] = txSetEnv.txs(TX_SELECT).get_angle_deg();
     set(handles.edit_Tx_az,'string',num2str(my_az), 'Enable', 'on');
+    set(handles.slider_Tx_az,'value',my_az, 'Enable', 'on', ...
+                             'Min',0,'Max',360, ...
+                             'SliderStep',[1/360, 1/36]);
     set(handles.edit_Tx_el,'string',num2str(my_el), 'Enable', 'on');
-    set(handles.slider_Tx_az,'value',my_az, 'Enable', 'on');
-    set(handles.slider_Tx_el,'value',my_el, 'Enable', 'on');
-    set(handles.slider_Tx_az,'Min',0);
-    set(handles.slider_Tx_el,'Min',0);
-    set(handles.slider_Tx_az,'Max',360);
-    set(handles.slider_Tx_el,'Max',360);
-    set(handles.slider_Tx_az,'SliderStep',[1/360, 1/36]);
-    set(handles.slider_Tx_el,'SliderStep',[1/360, 1/36]);
+    set(handles.slider_Tx_el,'value',my_el, 'Enable', 'on', ...
+                             'Min',0,'Max',360, ...
+                             'SliderStep',[1/360, 1/36]);
     
     % Set Tx Parameters ---------------------------------------------------
     set(handles.edit_Tx_Ps,   'string', num2str(txSetEnv.txs(TX_SELECT).Ps), 'Enable', 'on');
@@ -507,13 +505,13 @@ function group_values_update()
     SYS_display_room(handles.axes_room, txSetEnv, 1, tx_nums);    
 
     % Set Group Selection box (same box as Tx Select) ---------------------
-    set(handles.popup_tx_select,'String',1:1:txSetEnv.num_groups);
-    set(handles.popup_tx_select,'Value',GROUP_SELECT);
+    set(handles.popup_tx_select,'String',1:1:txSetEnv.num_groups, ...
+                                'Value',GROUP_SELECT);
     
     % Set Group Assignment box --------------------------------------------
-    set(handles.popup_group_assign,'String',1:txSetEnv.num_groups);
-    set(handles.popup_group_assign,'Value',GROUP_SELECT);
-    set(handles.popup_group_assign,'Enable','off');
+    set(handles.popup_group_assign,'String',1:txSetEnv.num_groups, ...
+                                   'Value',GROUP_SELECT, ...
+                                   'Enable','off');
     
     % Check if no Txs in group --------------------------------------------
     no_txs = isempty(my_txs);
@@ -555,18 +553,22 @@ function group_values_update()
 % --------------------------------------------------------------------
 function check_group_edit(vals,my_handle,group_value)
     if (range(vals)>0)
-        set(my_handle, 'string', '--', 'Enable', 'on');
+        set(my_handle, 'string', '--', ...
+                       'Enable', 'on');
     else
-        set(my_handle, 'string', num2str(group_value), 'Enable', 'on');
+        set(my_handle, 'string', num2str(group_value), ...
+                       'Enable', 'on');
     end
 
 % Check if all values are equivalent before updating slider
 % --------------------------------------------------------------------
 function check_group_slider(vals,my_handle,group_value)
     if (range(vals)>0)
-        set(my_handle, 'value', 0, 'Enable', 'on');
+        set(my_handle, 'value', 0, ...
+                       'Enable', 'on');
     else
-        set(my_handle, 'value', group_value, 'Enable', 'on');
+        set(my_handle, 'value', group_value, ...
+                       'Enable', 'on');
     end
     
 % Set all boxes and sliders to indicate no transmitter
