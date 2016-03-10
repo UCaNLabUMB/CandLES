@@ -162,6 +162,18 @@ classdef candlesEnv
                 end
             end
         end
+
+        % Set the parameters of all transmitters in the specified group
+        % -----------------------------------------------------------------
+        function [obj,ERR] = setGroupParam(obj,GROUP_NUM,param,temp) 
+            %FIXME: Add errors from setTxParam ?
+            ERR = 0;
+            for tx_num = 1:length(obj.txs)
+                if (obj.txs(tx_num).ng == GROUP_NUM)
+                    obj = obj.setTxParam(tx_num,param,temp);
+                end
+            end
+        end
         
         % Plot the normalized emission pattern of the specified Tx
         % -----------------------------------------------------------------
@@ -206,6 +218,15 @@ classdef candlesEnv
                     end
                 end
             end
+        end
+        
+        % Get the set of transmitters belonging to group ng
+        % -----------------------------------------------------------------
+        function [my_txs, my_locs] = getGroup(obj,ng)
+            temp = [obj.txs(:).ng];
+            tx_nums = 1:length(obj.txs);
+            my_locs = tx_nums(temp == ng);
+            my_txs  = obj.txs(temp == ng);
         end
         
         %% Receiver Functions

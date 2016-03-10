@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 07-Mar-2016 22:39:05
+% Last Modified by GUIDE v2.5 08-Mar-2016 22:55:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -79,8 +79,10 @@ setappdata(0, 'h_GUI_CandlesTxSet', hObject);
 mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
 txSetEnv  = mainEnv;
 TX_SELECT = 1;
+GROUP_SELECT = 1;
 setappdata(hObject, 'txSetEnv', txSetEnv);
 setappdata(hObject, 'TX_SELECT', TX_SELECT);
+setappdata(hObject, 'GROUP_SELECT', GROUP_SELECT);
 set_values(); % Set the values and display environment
 
 
@@ -263,11 +265,25 @@ function menu_removeTxGroup_Callback(hObject, eventdata, handles)
 function popup_tx_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_tx_select (see GCBO)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
-    TX_SELECT = get(hObject,'Value');
-    setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    handles            = guidata(h_GUI_CandlesTxSet);
+    view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
+    if strcmp(view,'Tx')
+        TX_SELECT = get(hObject,'Value');
+        setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+    elseif strcmp(view,'Group')
+        GROUP_SELECT = get(hObject,'Value');
+        setappdata(h_GUI_CandlesTxSet, 'GROUP_SELECT', GROUP_SELECT);
+    end    
     set_values(); % Set the values and display room with selected TX
 
+function radiobutton_tx_Callback(hObject, ~, ~)
+% hObject    handle to radiobutton_tx (see GCBO)
+    set_values();
 
+function radiobutton_group_Callback(hObject, ~, ~)
+% hObject    handle to radiobutton_group (see GCBO)
+    set_values();    
+    
 function popup_group_assign_Callback(hObject, ~, ~)
 % hObject    handle to popup_group_assign (see GCBO)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
@@ -356,10 +372,18 @@ function edit_Tx_theta_Callback(hObject, ~, ~)
 function update_edit(hObject, param)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    handles            = guidata(h_GUI_CandlesTxSet);
     temp               = str2double(get(hObject,'String'));
 
-    [txSetEnv, ERR] = txSetEnv.setTxParam(TX_SELECT,param,temp);
+    view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
+    if strcmp(view,'Tx')
+        [txSetEnv, ERR] = txSetEnv.setTxParam(TX_SELECT,param,temp);
+    elseif strcmp(view,'Group')
+        [txSetEnv, ERR] = txSetEnv.setGroupParam(GROUP_SELECT,param,temp);
+    end    
+    
     % FIXME: Add warning boxes for ERR and bring to front after set_values
     if (ERR == 0)
         setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
@@ -372,10 +396,18 @@ function update_edit(hObject, param)
 function update_slider(hObject, param)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
+    GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    handles            = guidata(h_GUI_CandlesTxSet);
     temp               = get(hObject,'Value');
 
-    txSetEnv = txSetEnv.setTxParam(TX_SELECT,param,temp);
+    view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
+    if strcmp(view,'Tx')
+        txSetEnv = txSetEnv.setTxParam(TX_SELECT,param,temp);
+    elseif strcmp(view,'Group')
+        txSetEnv = txSetEnv.setGroupParam(GROUP_SELECT,param,temp);
+    end       
+    
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     set_values();
 
@@ -393,23 +425,43 @@ function update_main_env()
 % --------------------------------------------------------------------
 function set_values()
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    handles            = guidata(h_GUI_CandlesTxSet);
+    
+    view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
+    if strcmp(view,'Tx')
+        tx_values_update();
+    elseif strcmp(view,'Group')
+        group_values_update();
+    end
+    
+
+% Update the GUI values for the selected Tx
+% --------------------------------------------------------------------
+function tx_values_update()
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
     handles            = guidata(h_GUI_CandlesTxSet);
-    
-    % Display room with selected Tx
+
+    % Display room with selected Tx ---------------------------------------
     SYS_display_room(handles.axes_room, txSetEnv, 1, TX_SELECT);
     
-    % Display emission pattern of selected Tx
-    txSetEnv.plotTxEmission(TX_SELECT,handles.axes_tx);
-    
-    % Set Location boxes
-    set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x));
-    set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y));
-    set(handles.edit_Tx_z,'string',num2str(txSetEnv.txs(TX_SELECT).z));
-    set(handles.slider_Tx_x,'value',txSetEnv.txs(TX_SELECT).x);
-    set(handles.slider_Tx_y,'value',txSetEnv.txs(TX_SELECT).y);
-    set(handles.slider_Tx_z,'value',txSetEnv.txs(TX_SELECT).z);
+    % Set Tx Selection box ------------------------------------------------
+    set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs), ...
+                                'Value',TX_SELECT);
+
+    % Set Group Assignment box --------------------------------------------
+    set(handles.popup_group_assign,'String',1:txSetEnv.num_groups, ...
+                                   'Value',txSetEnv.txs(TX_SELECT).ng, ...
+                                   'Enable','on');
+        
+    % Set Location boxes --------------------------------------------------
+    set(handles.edit_Tx_x,'string',num2str(txSetEnv.txs(TX_SELECT).x), 'Enable', 'on');
+    set(handles.edit_Tx_y,'string',num2str(txSetEnv.txs(TX_SELECT).y), 'Enable', 'on');
+    set(handles.edit_Tx_z,'string',num2str(txSetEnv.txs(TX_SELECT).z), 'Enable', 'on');
+    set(handles.slider_Tx_x,'value',txSetEnv.txs(TX_SELECT).x, 'Enable', 'on');
+    set(handles.slider_Tx_y,'value',txSetEnv.txs(TX_SELECT).y, 'Enable', 'on');
+    set(handles.slider_Tx_z,'value',txSetEnv.txs(TX_SELECT).z, 'Enable', 'on');
     set(handles.slider_Tx_x,'Min',0);
     set(handles.slider_Tx_y,'Min',0);
     set(handles.slider_Tx_z,'Min',0);
@@ -420,12 +472,12 @@ function set_values()
     set(handles.slider_Tx_y,'SliderStep',[0.1/txSetEnv.rm.width, 1/txSetEnv.rm.width]);
     set(handles.slider_Tx_z,'SliderStep',[0.1/txSetEnv.rm.height, 1/txSetEnv.rm.height]);
 
-    % Set Rotation boxes
+    % Set Rotation boxes --------------------------------------------------
     [my_az,my_el] = txSetEnv.txs(TX_SELECT).get_angle_deg();
-    set(handles.edit_Tx_az,'string',num2str(my_az));
-    set(handles.edit_Tx_el,'string',num2str(my_el));
-    set(handles.slider_Tx_az,'value',my_az);
-    set(handles.slider_Tx_el,'value',my_el);
+    set(handles.edit_Tx_az,'string',num2str(my_az), 'Enable', 'on');
+    set(handles.edit_Tx_el,'string',num2str(my_el), 'Enable', 'on');
+    set(handles.slider_Tx_az,'value',my_az, 'Enable', 'on');
+    set(handles.slider_Tx_el,'value',my_el, 'Enable', 'on');
     set(handles.slider_Tx_az,'Min',0);
     set(handles.slider_Tx_el,'Min',0);
     set(handles.slider_Tx_az,'Max',360);
@@ -433,21 +485,107 @@ function set_values()
     set(handles.slider_Tx_az,'SliderStep',[1/360, 1/36]);
     set(handles.slider_Tx_el,'SliderStep',[1/360, 1/36]);
     
-    % Set Tx Selection box
-    set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs));
-    set(handles.popup_tx_select,'Value',TX_SELECT);
+    % Set Tx Parameters ---------------------------------------------------
+    set(handles.edit_Tx_Ps,   'string', num2str(txSetEnv.txs(TX_SELECT).Ps), 'Enable', 'on');
+    set(handles.edit_Tx_m,    'string', num2str(txSetEnv.txs(TX_SELECT).m), 'Enable', 'on');
+    set(handles.edit_Tx_theta,'string', num2str(txSetEnv.txs(TX_SELECT).theta), 'Enable', 'on');
 
-    % Set Group Assignment box
+    % Display emission pattern of selected Tx -----------------------------
+    txSetEnv.plotTxEmission(TX_SELECT,handles.axes_tx);
+
+% Update the GUI values for the selected Group
+% --------------------------------------------------------------------
+function group_values_update()
+    h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
+    GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
+    txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    handles            = guidata(h_GUI_CandlesTxSet);
+
+    [my_txs,tx_nums] = txSetEnv.getGroup(GROUP_SELECT);
+    
+    % Display room with selected Tx
+    SYS_display_room(handles.axes_room, txSetEnv, 1, tx_nums);    
+
+    % Set Group Selection box (same box as Tx Select) ---------------------
+    set(handles.popup_tx_select,'String',1:1:txSetEnv.num_groups);
+    set(handles.popup_tx_select,'Value',GROUP_SELECT);
+    
+    % Set Group Assignment box --------------------------------------------
     set(handles.popup_group_assign,'String',1:txSetEnv.num_groups);
-    set(handles.popup_group_assign,'Value',txSetEnv.txs(TX_SELECT).ng);
+    set(handles.popup_group_assign,'Value',GROUP_SELECT);
+    set(handles.popup_group_assign,'Enable','off');
     
-    % Set Tx Parameters
-    set(handles.edit_Tx_Ps,   'string', num2str(txSetEnv.txs(TX_SELECT).Ps));
-    set(handles.edit_Tx_m,    'string', num2str(txSetEnv.txs(TX_SELECT).m));
-    set(handles.edit_Tx_theta,'string', num2str(txSetEnv.txs(TX_SELECT).theta));
-
+    % Check if no Txs in group --------------------------------------------
+    no_txs = isempty(my_txs);
+    if (no_txs)
+        disable_all_selections(handles);
+        return
+    end
     
-  
+    % Set Location boxes --------------------------------------------------
+    check_group_edit(  [my_txs.x],   handles.edit_Tx_x, txSetEnv.txs(tx_nums(1)).x);
+    check_group_slider([my_txs.x], handles.slider_Tx_x, txSetEnv.txs(tx_nums(1)).x);
+    check_group_edit(  [my_txs.y],   handles.edit_Tx_y, txSetEnv.txs(tx_nums(1)).y);
+    check_group_slider([my_txs.y], handles.slider_Tx_y, txSetEnv.txs(tx_nums(1)).y);
+    check_group_edit(  [my_txs.z],   handles.edit_Tx_z, txSetEnv.txs(tx_nums(1)).z);
+    check_group_slider([my_txs.z], handles.slider_Tx_z, txSetEnv.txs(tx_nums(1)).z);
     
+    % Set Rotation boxes --------------------------------------------------
+    [my_az,my_el] = txSetEnv.txs(tx_nums(1)).get_angle_deg();
+    check_group_edit(  [my_txs.az],   handles.edit_Tx_az, my_az);
+    check_group_slider([my_txs.az], handles.slider_Tx_az, my_az);
+    check_group_edit(  [my_txs.el],   handles.edit_Tx_el, my_el);
+    check_group_slider([my_txs.el], handles.slider_Tx_el, my_el);
+    
+    % Set Tx Parameters ---------------------------------------------------
+    check_group_edit(   [my_txs.Ps],    handles.edit_Tx_Ps, txSetEnv.txs(tx_nums(1)).Ps   );
+    check_group_edit(    [my_txs.m],     handles.edit_Tx_m, txSetEnv.txs(tx_nums(1)).m    );
+    check_group_edit([my_txs.theta], handles.edit_Tx_theta, txSetEnv.txs(tx_nums(1)).theta);
+    
+    % Display emission pattern of selected Tx -----------------------------
+    if (range([my_txs.m])>0)
+        cla(handles.axes_tx,'reset')
+        MSG = sprintf('Group has multiple\n emission patterns.');
+        text(0.2, 0.5, MSG, 'Parent', handles.axes_tx);
+    else
+        txSetEnv.plotTxEmission(tx_nums(1),handles.axes_tx);
+    end
 
+% Check if all values are equivalent before updating edit box
+% --------------------------------------------------------------------
+function check_group_edit(vals,my_handle,group_value)
+    if (range(vals)>0)
+        set(my_handle, 'string', '--', 'Enable', 'on');
+    else
+        set(my_handle, 'string', num2str(group_value), 'Enable', 'on');
+    end
 
+% Check if all values are equivalent before updating slider
+% --------------------------------------------------------------------
+function check_group_slider(vals,my_handle,group_value)
+    if (range(vals)>0)
+        set(my_handle, 'value', 0, 'Enable', 'on');
+    else
+        set(my_handle, 'value', group_value, 'Enable', 'on');
+    end
+    
+% Set all boxes and sliders to indicate no transmitter
+% --------------------------------------------------------------------
+function disable_all_selections(handles)    
+    set(handles.edit_Tx_x,     'string', '--', 'Enable', 'off');
+    set(handles.slider_Tx_x,    'value',    0, 'Enable', 'off');
+    set(handles.edit_Tx_y,     'string', '--', 'Enable', 'off');
+    set(handles.slider_Tx_y,    'value',    0, 'Enable', 'off');
+    set(handles.edit_Tx_z,     'string', '--', 'Enable', 'off');
+    set(handles.slider_Tx_z,    'value',    0, 'Enable', 'off');
+    set(handles.edit_Tx_az,    'string', '--', 'Enable', 'off');
+    set(handles.slider_Tx_az,   'value',    0, 'Enable', 'off');
+    set(handles.edit_Tx_el,    'string', '--', 'Enable', 'off');
+    set(handles.slider_Tx_el,   'value',    0, 'Enable', 'off');
+    set(handles.edit_Tx_Ps,    'string', '--', 'Enable', 'off');
+    set(handles.edit_Tx_m,     'string', '--', 'Enable', 'off');
+    set(handles.edit_Tx_theta, 'string', '--', 'Enable', 'off');
+    
+    cla(handles.axes_tx,'reset')
+    MSG = sprintf('Group has no\n transmitters.');
+    text(0.28, 0.5, MSG, 'Parent', handles.axes_tx);

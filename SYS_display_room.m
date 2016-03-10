@@ -8,7 +8,7 @@
 %
 %     disp_type values:
 %           0 - Normal display
-%           1 - Highlight tx(arg)
+%           1 - Highlight tx(arg), arg may be a list 
 %           2 - Highlight rx(arg)
 %           3 - Highlight box(arg)
 %           4 - No receivers, just highlight z = arg
@@ -159,7 +159,7 @@ function plot_transmitters(txs, disp_type, arg)
   for i=1:length(txs)
     r = 0.1; % Distance to corners and peak
     tx_color = my_colors((txs(i).ng + 1),:);
-    if (i == tx_select)
+    if (any(i == tx_select))
         tx_lw = 1.5;
     else
         tx_lw = 0.5;
