@@ -104,14 +104,15 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global STR
 h_GUI_CandlesMain   = getappdata(0,'h_GUI_CandlesMain');
 h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
 mainEnv             = getappdata(h_GUI_CandlesMain,'mainEnv');
 boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
 
 if (~isequal(mainEnv,boxSetEnv))
-    response = questdlg('Keep updates?', '','Yes','No','Yes');
-    if strcmp(response,'Yes')
+    response = questdlg(STR.MSG5, '',STR.YES,STR.NO,STR.YES);
+    if strcmp(response,STR.YES)
         update_main_env();
     end
 end
@@ -406,6 +407,7 @@ function update_main_env()
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
+    global STR
     h_GUI_CandlesBoxSet  = getappdata(0,'h_GUI_CandlesBoxSet');
     BOX_SELECT           = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
     boxSetEnv            = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
@@ -540,7 +542,7 @@ function set_values()
         set(handles.slider_RefBottom,'value',     1);        
         
         % Set Box Selection box
-        set(handles.popup_box_select,'String','BOX SELECT');
+        set(handles.popup_box_select,'String',STR.MSG28);
         set(handles.popup_box_select,'Value',1);
     end
 

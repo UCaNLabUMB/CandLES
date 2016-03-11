@@ -102,14 +102,16 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global STR
+
 h_GUI_CandlesMain  = getappdata(0,'h_GUI_CandlesMain');
 h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
 mainEnv            = getappdata(h_GUI_CandlesMain,'mainEnv');
 txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
 if (~isequal(mainEnv,txSetEnv))
-    response = questdlg('Keep updates?', '','Yes','No','Yes');
-    if strcmp(response,'Yes')
+    response = questdlg(STR.MSG5, '',STR.YES,STR.NO,STR.YES);
+    if strcmp(response,STR.YES)
         update_main_env();
     end
 end
@@ -142,32 +144,25 @@ function menu_addTx_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_addTxLayout_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addTxLayout (see GCBO)
+    global STR 
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
-    dlg_title    = 'Tx Layout Settings';
-
     % NOTE: Grid layout = 1. Cell layout 1 = 2. Cell layout 2 = 3.
-    layout = listdlg('ListString',{'Grid Layout', ...
-                                   'Cell Layout 1', ...
-                                   'Cell Layout 2'}, ...
+    layout = listdlg('ListString',{STR.MSG6, STR.MSG7, STR.MSG8}, ...
                      'SelectionMode','single',...
-                     'Name',dlg_title, ...
+                     'Name',STR.MSG9, ...
                      'ListSize',[160 60]);
 
     if (~isempty(layout))
         num_lines    = 1;
-        prompt       = {'Number of TXs in X dimension:', ...
-                        'Number of TXs in Y dimension:', ...
-                        'Distance between TXs (m):', ...
-                        'Center in X dimension (m):', ...
-                        'Center in Y dimension (m):', ...
-                        'Z Plane (m):'};
+        prompt       = {STR.MSG10, STR.MSG11, STR.MSG12, ...
+                        STR.MSG13, STR.MSG14, STR.MSG15};
         default_vals = {'2','2','1',num2str(txSetEnv.rm.length/2), ...
                                     num2str(txSetEnv.rm.width/2), ...
                                     num2str(txSetEnv.rm.height)};
 
-        ans_dlg = inputdlg(prompt,dlg_title,num_lines,default_vals);
+        ans_dlg = inputdlg(prompt,STR.MSG9,num_lines,default_vals);
         
         if (txSetEnv.num_groups > 1)
             groups = 1:txSetEnv.num_groups;
@@ -187,13 +182,11 @@ function menu_addTxLayout_Callback(hObject, eventdata, handles)
                     str2double(ans_dlg(5)), str2double(ans_dlg(6))];
 
             if (isnan(sum(vals)))
-                warndlg('Inputs must be numeric values', ...
-                        'Warning: Invalid Input');
+                warndlg(STR.MSG17, STR.MSG16);
             elseif (any(mod(vals(1:2),1)))
-                warndlg('Number of TXs must be an integer value', ...
-                        'Warning: Invalid Input');
+                warndlg(STR.MSG18, STR.MSG16);
             else
-                replace = strcmp(questdlg('Replace existing TXs?',dlg_title,'Yes','No','Yes'),'Yes');
+                replace = strcmp(questdlg(STR.MSG19,STR.MSG9,STR.YES,STR.NO,STR.YES),STR.YES);
                 [txSetEnv, TX_SELECT]  = txSetEnv.addTxGroup(vals(1), vals(2), vals(3), vals(4), ...
                                                              vals(5), vals(6), layout, ng, replace);
 
@@ -208,18 +201,18 @@ function menu_addTxLayout_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_deleteTx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteTx (see GCBO)
-    global C
+    global C STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
     handles            = guidata(h_GUI_CandlesTxSet);
 
     view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
-    if strcmp(view,'Tx')
+    if strcmp(view,STR.TX)
         [txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
         TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
         if(ERR == C.ERR_RM_OBJ)
-            errordlg('CandLES environment must contain a Tx.','Tx Delete');
+            errordlg(STR.MSG20);
         else
             % NOTE: Do this in the else statement so that the error box doesn't 
             % get hidden when the GUI is updated in set_values()
@@ -227,8 +220,8 @@ function menu_deleteTx_Callback(hObject, eventdata, handles)
             setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
             set_values(); % Set the values and display room with selected TX
         end
-    elseif strcmp(view,'Group')
-        h = warndlg('Txs can not be removed in Group view.');
+    elseif strcmp(view,STR.GROUP)
+        h = warndlg(STR.MSG21);
         uiwait(h);
     end   
 
@@ -238,16 +231,16 @@ function menu_deleteTx_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_addTxGroup_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addTxGroup (see GCBO)
-    global C
+    global C STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
     [txSetEnv,ERR]     = txSetEnv.addNetGroup();
 
     if (ERR == C.NO_ERR)
-        h = msgbox('New Tx Group Added Successfully');
+        h = msgbox(STR.MSG22);
         uiwait(h);
     elseif (ERR == C.ERR_MAX_NG)
-        h = warndlg('Maximum Number of Tx Groups Reached.');
+        h = warndlg(STR.MSG23);
         uiwait(h);
     end
     
@@ -257,17 +250,18 @@ function menu_addTxGroup_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_removeTxGroup_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_removeTxGroup (see GCBO)
+    global STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
     
     groups = 1:txSetEnv.num_groups;
     ng = listdlg('ListString',num2str(groups'), ...
-                     'SelectionMode','single',...
-                     'Name','Select Group to Remove', ...
-                     'ListSize',[160 60]);
+                 'SelectionMode','single',...
+                 'Name',STR.MSG24, ...
+                 'ListSize',[160 60]);
 
     if (~isempty(ng))
-        txSetEnv           = txSetEnv.removeNetGroup(ng);
+        txSetEnv = txSetEnv.removeNetGroup(ng);
     end
     
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
@@ -278,13 +272,14 @@ function menu_removeTxGroup_Callback(hObject, eventdata, handles)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function popup_tx_select_Callback(hObject, ~, ~)
 % hObject    handle to popup_tx_select (see GCBO)
+    global STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     handles            = guidata(h_GUI_CandlesTxSet);
     view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
-    if strcmp(view,'Tx')
+    if strcmp(view,STR.TX)
         TX_SELECT = get(hObject,'Value');
         setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-    elseif strcmp(view,'Group')
+    elseif strcmp(view,STR.GROUP)
         GROUP_SELECT = get(hObject,'Value');
         setappdata(h_GUI_CandlesTxSet, 'GROUP_SELECT', GROUP_SELECT);
     end    
@@ -384,7 +379,7 @@ function edit_Tx_theta_Callback(hObject, ~, ~)
 %    param = {'x', 'y', 'z', 'az', 'el', 'Ps', 'm', 'theta'}
 % --------------------------------------------------------------------
 function update_edit(hObject, param)
-    global C
+    global C STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
@@ -393,9 +388,9 @@ function update_edit(hObject, param)
     temp               = str2double(get(hObject,'String'));
 
     view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
-    if strcmp(view,'Tx')
+    if strcmp(view,STR.TX)
         [txSetEnv, ERR] = txSetEnv.setTxParam(TX_SELECT,param,temp);
-    elseif strcmp(view,'Group')
+    elseif strcmp(view,STR.GROUP)
         [txSetEnv, ERR] = txSetEnv.setGroupParam(GROUP_SELECT,param,temp);
     end    
     
@@ -409,6 +404,7 @@ function update_edit(hObject, param)
 %    param = {'x', 'y', 'z', 'az', 'el', 'Ps', 'm', 'theta'}
 % --------------------------------------------------------------------
 function update_slider(hObject, param)
+    global STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
@@ -417,9 +413,9 @@ function update_slider(hObject, param)
     temp               = get(hObject,'Value');
 
     view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
-    if strcmp(view,'Tx')
+    if strcmp(view,STR.TX)
         txSetEnv = txSetEnv.setTxParam(TX_SELECT,param,temp);
-    elseif strcmp(view,'Group')
+    elseif strcmp(view,STR.GROUP)
         txSetEnv = txSetEnv.setGroupParam(GROUP_SELECT,param,temp);
     end       
     
@@ -514,6 +510,7 @@ function tx_values_update()
 % Update the GUI values for the selected Group
 % --------------------------------------------------------------------
 function group_values_update()
+    global STR
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
@@ -563,8 +560,7 @@ function group_values_update()
     % Display emission pattern of selected Tx -----------------------------
     if (range([my_txs.m])>0)
         cla(handles.axes_tx,'reset')
-        MSG = sprintf('Group has multiple\n emission patterns.');
-        text(0.2, 0.5, MSG, 'Parent', handles.axes_tx);
+        text(0.2, 0.5, sprintf(STR.MSG25), 'Parent', handles.axes_tx);
     else
         txSetEnv.plotTxEmission(tx_nums(1),handles.axes_tx);
     end
@@ -594,6 +590,8 @@ function check_group_slider(vals,my_handle,group_value)
 % Set all boxes and sliders to indicate no transmitter
 % --------------------------------------------------------------------
 function disable_all_selections(handles)    
+    global STR
+    
     set(handles.edit_Tx_x,     'string', '--', 'Enable', 'off');
     set(handles.slider_Tx_x,    'value',    0, 'Enable', 'off');
     set(handles.edit_Tx_y,     'string', '--', 'Enable', 'off');
@@ -609,5 +607,4 @@ function disable_all_selections(handles)
     set(handles.edit_Tx_theta, 'string', '--', 'Enable', 'off');
     
     cla(handles.axes_tx,'reset')
-    MSG = sprintf('Group has no\n transmitters.');
-    text(0.28, 0.5, MSG, 'Parent', handles.axes_tx);
+    text(0.28, 0.5, sprintf(STR.MSG26), 'Parent', handles.axes_tx);

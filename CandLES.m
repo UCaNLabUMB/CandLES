@@ -88,11 +88,14 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global STR
 
-response = questdlg('Are you sure you want to exit?', '','Yes','No','Yes');
-if strcmp(response,'Yes')
-    % Remove the handle value of the main figure from root (handle 0) and
-    % delete (close) the figure
+response = questdlg(STR.MSG1, '',STR.YES,STR.NO,STR.YES);
+if strcmp(response,STR.YES)
+    % Remove the global constants structures, C & STR, and the handle value
+    % of the main fig from root (handle 0), then delete (close) the fig.
+    clearvars -global C
+    clearvars -global STR
     rmappdata(0, 'h_GUI_CandlesMain');
     delete(hObject);
 end
@@ -124,26 +127,29 @@ function menu_Save_Callback(hObject, eventdata, handles)
 
 function menu_Load_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Load (see GCBO)
+    global STR
+    
     [FileName, PathName] = uigetfile('*.mat');
     if FileName ~= 0
         load([PathName FileName])
-        % FIXME: Should validate the content of the loaded mainEnv
+        % FIXME: Should validate the content/version of the loaded mainEnv
         if exist('mainEnv','var')
             h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
             setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
             set_values();
         else
-            warndlg('Invalid .mat file. CandLES Environment does not exist');
+            warndlg(STR.MSG2);
         end
     end
 
 function menu_Clear_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Clear (see GCBO)
-    response = questdlg('Clear the current configuration?', ...
-                        'Clear Configuration', 'Yes', 'No', 'Yes');
+    global STR
+    
+    response = questdlg(STR.MSG3,'',STR.YES,STR.NO,STR.YES);
     % NOTE: Apparently questdlg alway returns the default when 'Enter' is
     % pressed, even if you tab to a different selection. (Spacebar works)
-    if strcmp(response,'Yes')
+    if strcmp(response,STR.YES)
         mainEnv = candles_classes.candlesEnv();
         h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
         setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
@@ -153,7 +159,8 @@ function menu_Clear_Callback(hObject, eventdata, handles)
 function menu_Print_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_Print (see GCBO)
     % FIXME: Add Print feature
-    helpdlg('This feature has not yet been added.');
+    global STR
+    helpdlg(STR.MSG4);
 
 % Edit Menu ----------------------------------------------------------
 % --------------------------------------------------------------------
@@ -187,10 +194,8 @@ function menu_CommSim_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_About_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_About (see GCBO)
-helpdlg(['CandLES is a simulation tool for indoor optical wireless ' ...
-         'communication systems. The software was developed at Boston '...
-         'University as part of the NSF funded Smart Lighting '...
-         'Engineering Research Center. '], 'About CandLES');
+    global STR
+    helpdlg(STR.MSG_HELP, STR.MSG_ABOUT);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

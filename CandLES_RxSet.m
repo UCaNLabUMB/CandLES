@@ -100,14 +100,15 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global STR
 h_GUI_CandlesMain  = getappdata(0,'h_GUI_CandlesMain');
 h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
 mainEnv            = getappdata(h_GUI_CandlesMain,'mainEnv');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
 if (~isequal(mainEnv,rxSetEnv))
-    response = questdlg('Keep updates?', '','Yes','No','Yes');
-    if strcmp(response,'Yes')
+    response = questdlg(STR.MSG5, '',STR,YES,STR.NO,STR.YES);
+    if strcmp(response,STR.YES)
         update_main_env();
     end
 end
@@ -140,7 +141,7 @@ function menu_addRx_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_deleteRx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteRx (see GCBO)
-    global C
+    global C STR
     h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
     RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
     rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
@@ -148,7 +149,7 @@ function menu_deleteRx_Callback(hObject, eventdata, handles)
     [rxSetEnv, ERR]  = rxSetEnv.removeRx(RX_SELECT);
     RX_SELECT = min(RX_SELECT, length(rxSetEnv.rxs));
     if(ERR == C.ERR_RM_OBJ)
-        errordlg('CandLES environment must contain a Rx.','Rx Delete');
+        errordlg(STR.MSG27);
     else
         % NOTE: Do this in the else statement so that the error box doesn't 
         % get hidden when the GUI is updated in set_values()

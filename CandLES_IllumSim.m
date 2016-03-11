@@ -104,10 +104,10 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global STR
 
-% Hint: delete(hObject) closes the figure
-response = questdlg('Close Page?', '','Yes','No','Yes');
-if strcmp(response,'Yes')
+response = questdlg(STR.MSG29, '',STR.YES,STR.NO,STR.YES);
+if strcmp(response,STR.YES)
     % FIXME: Need to add option to save results and add a variable to
     % indicate if the most recent results have been saved.
     
@@ -185,6 +185,7 @@ set_values()
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
+    global STR
     h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
     IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
     PLANE_SELECT          = getappdata(h_GUI_CandlesIllumSim,'PLANE_SELECT');
@@ -200,9 +201,7 @@ function set_values()
     if (isempty(RES_PLANES) || ~any(RES_PLANES == PLANE_SELECT))
         % Display a message on the Results Axis
         cla(handles.axes_results,'reset')
-        MSG = sprintf(['Results have not been generated \n' ...
-                       '           for this configuration.']);
-        text(0.23, 0.5, MSG, 'Parent', handles.axes_results);
+        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', handles.axes_results);
         
     else
         my_ax = handles.axes_results;

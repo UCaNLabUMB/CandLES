@@ -103,10 +103,9 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hint: delete(hObject) closes the figure
-response = questdlg('Close Page?', '','Yes','No','Yes');
-if strcmp(response,'Yes')
+global STR 
+response = questdlg(STR.MSG29, '',STR.YES,STR.NO,STR.YES);
+if strcmp(response,STR.YES)
     % FIXME: Need to store the updated info back to mainEnv or have a save
     % option where this becomes a question "Close without save" and only
     % shows up if changes have been made and not saved yet.
@@ -154,6 +153,7 @@ function popup_rx_select_Callback(hObject, eventdata, handles)
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
+    global STR
     h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
     CommSimEnv           = getappdata(h_GUI_CandlesCommSim,'CommSimEnv');
     RESULTS_PRX          = getappdata(h_GUI_CandlesCommSim,'RESULTS_PRX');
@@ -167,9 +167,7 @@ function set_values()
     if (isempty(RESULTS_H))
         % Display a message on the Results Axis
         cla(handles.axes_results,'reset')
-        MSG = sprintf(['Results have not been generated \n' ...
-                       '           for this configuration.']);
-        text(0.23, 0.5, MSG, 'Parent', handles.axes_results);
+        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', handles.axes_results);
         
     else
         my_ax = handles.axes_results;
@@ -182,7 +180,7 @@ function set_values()
     end
 
     % Set Selection Boxes
-    set(handles.popup_rx_select,'String',{'All Rxs'; 1:1:length(CommSimEnv.rxs)});
+    set(handles.popup_rx_select,'String',{STR.MSG31; 1:1:length(CommSimEnv.rxs)});
     set(handles.popup_rx_select,'Value',RX_SELECT+1);
     
     
