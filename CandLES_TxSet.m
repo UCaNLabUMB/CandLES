@@ -212,18 +212,27 @@ function menu_deleteTx_Callback(hObject, eventdata, handles)
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    handles            = guidata(h_GUI_CandlesTxSet);
 
-    [txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
-    TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
-    if(ERR == C.ERR_RM_OBJ)
-        errordlg('CandLES environment must contain a Tx.','Tx Delete');
-    else
-        % NOTE: Do this in the else statement so that the error box doesn't 
-        % get hidden when the GUI is updated in set_values()
-        setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
-        setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
-        set_values(); % Set the values and display room with selected TX
-    end
+    view = get(get(handles.panel_TxGroupSelect,'SelectedObject'),'String');
+    if strcmp(view,'Tx')
+        [txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
+        TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
+        if(ERR == C.ERR_RM_OBJ)
+            errordlg('CandLES environment must contain a Tx.','Tx Delete');
+        else
+            % NOTE: Do this in the else statement so that the error box doesn't 
+            % get hidden when the GUI is updated in set_values()
+            setappdata(h_GUI_CandlesTxSet, 'TX_SELECT', TX_SELECT);
+            setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+            set_values(); % Set the values and display room with selected TX
+        end
+    elseif strcmp(view,'Group')
+        h = warndlg('Txs can not be removed in Group view.');
+        uiwait(h);
+    end   
+
+
 
     
 % --------------------------------------------------------------------
