@@ -22,11 +22,16 @@ classdef box
     methods
         %% Constructor
         % *****************************************************************
-        % -----------------------------------------------------------------
         function obj = box(x,y,z,l,w,h,ref)
-            d_pos  = [  0,   0,   0]; % Default Position
-            d_size = [0.1, 0.1, 0.1]; % Default Size
-            d_ref  = [1,1; 1,1; 1,1]; % Default Reflectivity
+            %Initialize the global constants in C
+            global C
+            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
+                SYS_define_constants();
+            end
+            
+            d_pos  = C.D_BOX_POS;  % Default Position
+            d_size = C.D_BOX_SIZE; % Default Size
+            d_ref  = C.D_BOX_REF;  % Default Reflectivity
             %FIXME: Error check invalid types (NaN, complex, etc.)
             if (exist('x','var')); obj.x      = x; else obj.x      =  d_pos(1); end
             if (exist('y','var')); obj.y      = y; else obj.y      =  d_pos(2); end
@@ -36,7 +41,7 @@ classdef box
             if (exist('h','var')); obj.height = h; else obj.height = d_size(3); end
             if (exist('ref','var') && isequal(size(ref),[3,2])) 
                 % Constrain reflectivities to 0 <= ref <= 1
-                obj.ref = max(min(ref,1),0);
+                obj.ref = max(min(ref,C.MAX_REF),0);
             else
                 obj.ref = d_ref;
             end
@@ -44,6 +49,7 @@ classdef box
         
         %% Set property values
         % *****************************************************************
+        
         % Set the X,Y,Z location of the box
         % -----------------------------------------------------------------
         function obj = set_location(obj,x,y,z)
@@ -73,25 +79,30 @@ classdef box
         % Set the length of the box
         % -----------------------------------------------------------------
         function obj = set_length(obj,length)
-            if (length > 0); obj.length = length; end % Set length (m)
+            global C
+            if (length >= C.MIN_BOX_DIM); obj.length = length; end % Set length (m)
         end
         
         % Set the width of the box
         % -----------------------------------------------------------------
         function obj = set_width(obj,width)
-            if (width > 0); obj.width = width; end    % Set width (m)
+            global C
+            if (width >= C.MIN_BOX_DIM); obj.width = width; end    % Set width (m)
         end
         
         % Set the height of the box
         % -----------------------------------------------------------------
         function obj = set_height(obj,height)
-            if (height > 0); obj.height = height; end % Set height (m)
+            global C
+            if (height >= C.MIN_BOX_DIM); obj.height = height; end % Set height (m)
         end        
         
         % Set the height of the box
         % -----------------------------------------------------------------
         function obj = set_ref(obj,nsewtb,ref)
-            ref = max(min(ref,1),0);
+            global C
+
+            ref = max(min(ref,C.MAX_REF),0);
             switch nsewtb
                 case 'ref_N'; obj.ref(1,1) = ref;
                 case 'ref_S'; obj.ref(1,2) = ref;
@@ -102,8 +113,9 @@ classdef box
             end
         end
         
-        %% Set property values
+        %% Get property values
         % *****************************************************************
+        
         % Get the planes related to this box
         % -----------------------------------------------------------------
         function plane_list = get_planes(obj,del_s)

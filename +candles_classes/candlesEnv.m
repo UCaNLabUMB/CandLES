@@ -26,20 +26,32 @@ classdef candlesEnv
         MIN_BOUNCE  % First reflection considered (0 for LOS)
         MAX_BOUNCE  % Last reflection considered
         DISP_WAITBAR % Display waitbar when running simulations
+        
     end
     
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        % Constructor - Set default values for CandLES here!
+        %% Constructor 
+        % *****************************************************************
         function obj = candlesEnv()
-            obj.rm    = candles_classes.room(5,4,3);
-            obj.txs   = candles_classes.tx_ps(2.5,2,2.5);
-            obj.rxs   = candles_classes.rx_ps(2.5,2,1);
+            %Initialize the global constants in C
+            global C
+            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
+                SYS_define_constants();
+            end
+            
+            d_rm_size = num2cell(C.D_RM_SIZE);
+            d_tx_pos  = num2cell(C.D_ENV_TX_POS);
+            d_rx_pos  = num2cell(C.D_ENV_RX_POS);
+            obj.rm    = candles_classes.room(d_rm_size{:});
+            obj.txs   = candles_classes.tx_ps(d_tx_pos{:});
+            obj.rxs   = candles_classes.rx_ps(d_rx_pos{:});
             obj.boxes = candles_classes.box.empty;
-            obj.num_groups = 1;
+            obj.num_groups = C.D_NUM_NET_GROUPS;
             
             % This is a simple base PSD... Update for LEDs to be used
+            % FIXME: Need to do something with this...
             LAMBDAMIN=200; LAMBDAMAX=1100; DLAMBDA=1;
             obj.lambda=LAMBDAMIN:DLAMBDA:LAMBDAMAX;
             s1=18; m1=450; a1=1; s2=60; m2=555; a2=2.15*a1; s3=25; m3=483; a3=-0.2*a1;
@@ -48,16 +60,17 @@ classdef candlesEnv
                      a3/(sqrt(2*pi)*s3)*exp(-(obj.lambda-m3).^2/(2*s3^2));
             obj.Sprime=Sprime/sum(Sprime);  %Normalized PSD
 
-            obj.del_t = 1e-10; 
-            obj.del_s = 0.25;
-            obj.del_p = 0.5;
-            obj.MIN_BOUNCE = 0;
-            obj.MAX_BOUNCE = 0;
-            obj.DISP_WAITBAR = 1;
+            obj.del_t        = C.D_DEL_T; 
+            obj.del_s        = C.D_DEL_S;
+            obj.del_p        = C.D_DEL_P;
+            obj.MIN_BOUNCE   = C.D_MIN_BOUNCE;
+            obj.MAX_BOUNCE   = C.D_MAX_BOUNCE;
+            obj.DISP_WAITBAR = C.D_DISP_WAITBAR;
         end
         
-        %% Transmitter Functions
+        %% Transmitter Functions 
         % *****************************************************************
+        
         % Add a new transmitter
         % -----------------------------------------------------------------
         function [obj, TX_NUM] = addTx(obj)
@@ -93,13 +106,13 @@ classdef candlesEnv
                 end
             end
             
-            % Determine the X and Y locations
-            TX_NUM = length(obj.txs);
+            % Determine the X/Y locations and create new Txs
+            TX_NUM  = length(obj.txs);
             my_grid = SYS_grid_cell_locs(C_x, C_y, N_x,N_y,d,layout);
             for new_tx_num = 1:size(my_grid,2)
-                my_x = max(min(my_grid(1,new_tx_num),obj.rm.length),0);
-                my_y = max(min(my_grid(2,new_tx_num),obj.rm.width),0);
-                my_z = max(min(Z_plane,obj.rm.height),0);
+                my_x = max(min(my_grid(1,new_tx_num), obj.rm.length), 0);
+                my_y = max(min(my_grid(2,new_tx_num),  obj.rm.width), 0);
+                my_z = max(min(              Z_plane, obj.rm.height), 0);
                 
                 obj.txs(TX_NUM+new_tx_num) = ...
                        candles_classes.tx_ps(my_x,my_y,my_z);
@@ -114,23 +127,27 @@ classdef candlesEnv
         
         % Remove the specified transmitter
         % -----------------------------------------------------------------
-        % ERR = 1 means there's only 1 TX left
         function [obj,ERR] = removeTx(obj, TX_NUM)
-            ERR = 1;
-            if (length(obj.txs) > 1)
-                ERR = 0;
+            global C
+            
+            if (length(obj.txs) > C.MIN_TX)
+                ERR = C.NO_ERR;
                 obj.txs(TX_NUM) = [];
+            else
+                ERR = C.ERR_RM_OBJ;
             end
         end
         
         % Set the parameters of the specified transmitter
         % -----------------------------------------------------------------
         function [obj,ERR] = setTxParam(obj,TX_NUM,param,temp) 
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (TX_NUM < 1) || (TX_NUM > length(obj.txs))
-                ERR = -1;
+                ERR = C.ERR_INV_SELECT;
             elseif (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
+                ERR = C.ERR_INV_STRING;
             else
                 switch param
                     case 'x'
@@ -158,7 +175,7 @@ classdef candlesEnv
                         temp = max(min(temp,obj.num_groups),0);
                         obj.txs(TX_NUM) = obj.txs(TX_NUM).set_ng(temp);
                     otherwise
-                        ERR = -3;
+                        ERR = C.ERR_INV_PARAM;
                 end
             end
         end
@@ -166,8 +183,10 @@ classdef candlesEnv
         % Set the parameters of all transmitters in the specified group
         % -----------------------------------------------------------------
         function [obj,ERR] = setGroupParam(obj,GROUP_NUM,param,temp) 
+            global C
+            
             %FIXME: Add errors from setTxParam ?
-            ERR = 0;
+            ERR = C.NO_ERR;
             for tx_num = 1:length(obj.txs)
                 if (obj.txs(tx_num).ng == GROUP_NUM)
                     obj = obj.setTxParam(tx_num,param,temp);
@@ -199,8 +218,15 @@ classdef candlesEnv
 
         % Add a new Network Group
         % -----------------------------------------------------------------
-        function [obj] = addNetGroup(obj)
-            obj.num_groups = obj.num_groups + 1;
+        function [obj,ERR] = addNetGroup(obj)
+            global C
+            
+            if obj.num_groups < C.MAX_NET_GROUPS
+                obj.num_groups = obj.num_groups + 1;
+                ERR = C.NO_ERR;
+            else
+                ERR = C.ERR_MAX_NG;
+            end
         end        
         
         % Remove a new Network Group
@@ -231,6 +257,7 @@ classdef candlesEnv
         
         %% Receiver Functions
         % *****************************************************************
+        
         % Add a new receiver
         % -----------------------------------------------------------------
         function [obj, RX_NUM] = addRx(obj)
@@ -242,22 +269,27 @@ classdef candlesEnv
         % Remove the specified receiver
         % -----------------------------------------------------------------
         function [obj,ERR] = removeRx(obj, RX_NUM)
-            ERR = 1;
+            global C
+            
             if (length(obj.rxs) > 1)
-                ERR = 0;
+                ERR = C.NO_ERR;
                 obj.rxs(RX_NUM) = [];
+            else
+                ERR = C.ERR_RM_OBJ;
             end
         end
         
         % Set the position of the specified receiver
         % -----------------------------------------------------------------
         function [obj,ERR] = setRxParam(obj,RX_NUM,param,temp)
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (RX_NUM < 1) || (RX_NUM > length(obj.rxs))
-                ERR = -1;
+                ERR = C.ERR_INV_SELECT;
             else
                 if (isnan(temp)) || (~isreal(temp))
-                    ERR = -2;
+                    ERR = C.ERR_INV_STRING;
                 else
                     switch param
                         case 'x'
@@ -284,7 +316,7 @@ classdef candlesEnv
                         case 'n' 
                             obj.rxs(RX_NUM) = obj.rxs(RX_NUM).set_n(temp);
                         otherwise
-                            ERR = -3;
+                            ERR = C.ERR_INV_PARAM;
                     end
                 end
             end
@@ -292,6 +324,7 @@ classdef candlesEnv
         
         %% Box Functions
         % *****************************************************************
+        
         % Add a new box
         % -----------------------------------------------------------------
         function [obj, BOX_NUM] = addBox(obj)
@@ -311,11 +344,13 @@ classdef candlesEnv
         % Set the position of the specified box
         % -----------------------------------------------------------------
         function [obj,ERR] = setBoxParam(obj,BOX_NUM,param,temp)
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
-                ERR = -1;
+                ERR = C.ERR_INV_SELECT;
             elseif (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
+                ERR = C.ERR_INV_STRING;
             else
                 switch param
                     case 'x'
@@ -333,18 +368,18 @@ classdef candlesEnv
                         obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_z(temp);
                     case 'l'
                         temp = max(min(temp,obj.rm.length ...
-                                            - obj.boxes(BOX_NUM).x),0.1);
+                                            - obj.boxes(BOX_NUM).x),C.MIN_BOX_DIM);
                         obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_length(temp);
                     case 'w'
                         temp = max(min(temp,obj.rm.width ...
-                                            - obj.boxes(BOX_NUM).y),0.1);
+                                            - obj.boxes(BOX_NUM).y),C.MIN_BOX_DIM);
                         obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_width(temp);
                     case 'h'
                         temp = max(min(temp,obj.rm.height ...
-                                            - obj.boxes(BOX_NUM).z),0.1);
+                                            - obj.boxes(BOX_NUM).z),C.MIN_BOX_DIM);
                         obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_height(temp);
                     otherwise
-                        ERR = -3;
+                        ERR = C.ERR_INV_PARAM;
                 end
             end
         end
@@ -352,11 +387,13 @@ classdef candlesEnv
         % Set the reflectivities of the specified box
         % -----------------------------------------------------------------
         function [obj,ERR] = setBoxRef(obj,BOX_NUM,nsewtb,temp)
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (BOX_NUM < 1) || (BOX_NUM > length(obj.boxes))
-                ERR = -1;
+                ERR = C.ERR_INV_SELECT;
             elseif (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
+                ERR = C.ERR_INV_STRING;
             else
                 obj.boxes(BOX_NUM) = obj.boxes(BOX_NUM).set_ref(nsewtb,temp);
             end
@@ -364,32 +401,35 @@ classdef candlesEnv
             
         %% Room Functions
         % *****************************************************************
+        
         % Set the dimensions of the room
         % -----------------------------------------------------------------
         % Do not make dimensions such that objects are outside the room.
-        % FIXME: For now, cap  room length at 10m. For computational speed, 
+        % FIXME: For now, cap room l,w,h. For computational speed, the
         % resolution needs to be lowered when increasing room size.
         function [obj,ERR] = setRoomDim(obj,param,temp)
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
+                ERR = C.ERR_INV_STRING;
             else
                 switch param
                     case 'l'
                         % FIXME: Add ERR for out of range x, y, or z
                         [x,~,~] = obj.min_room_dims();
-                        temp = max(min(temp,10),x);
+                        temp = max(min(temp,C.MAX_ROOM_DIM),x);
                         obj.rm = obj.rm.setLength(temp);
                     case 'w'
                         [~,y,~] = obj.min_room_dims();
-                        temp = max(min(temp,10),y);
+                        temp = max(min(temp,C.MAX_ROOM_DIM),y);
                         obj.rm = obj.rm.setWidth(temp);
                     case 'h'
                         [~,~,z] = obj.min_room_dims();
-                        temp = max(min(temp,10),z);
+                        temp = max(min(temp,C.MAX_ROOM_DIM),z);
                         obj.rm = obj.rm.setHeight(temp);
                     otherwise
-                        ERR = -3;
+                        ERR = C.ERR_INV_PARAM;
                 end
             end
         end
@@ -398,9 +438,11 @@ classdef candlesEnv
         % -----------------------------------------------------------------
         % nsewtb indicates north, south, east, west, top, or bottom wall
         function [obj,ERR] = setRoomRef(obj,nsewtb,temp)
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
+                ERR = C.ERR_INV_STRING;
             else
                 obj.rm = obj.rm.setRef(nsewtb, temp);
             end
@@ -434,12 +476,15 @@ classdef candlesEnv
         
         %% Environment Simulation Setting Functions
         % *****************************************************************
+        
         % Set the specified simulation setting
         % -----------------------------------------------------------------
         function [obj,ERR] = setSimSetting(obj,param,temp) 
-            ERR = 0;
+            global C
+            
+            ERR = C.NO_ERR;
             if (isnan(temp)) || (~isreal(temp))
-                ERR = -2;
+                ERR = C.ERR_INV_STRING;
             else
                 switch param
                     case 'del_t'
@@ -459,26 +504,14 @@ classdef candlesEnv
                             obj.DISP_WAITBAR = temp;
                         end
                     otherwise
-                        ERR = -3;
+                        ERR = C.ERR_INV_PARAM;
                 end
-            end
-        end
-
-        % Set the Min and Max number of reflections (i.e., bounces)
-        % -----------------------------------------------------------------
-        function [obj,ERR] = setBounces(obj,temp1,temp2)
-            ERR = 0;
-            if (isnan(temp1)) || (~isreal(temp1) ...
-                || isnan(temp2)) || (~isreal(temp2))
-                ERR = -2;
-            else
-                obj.MIN_BOUNCE = temp1;
-                obj.MAX_BOUNCE = temp2;
             end
         end
         
         %% Environment Simulation Functions
         % *****************************************************************
+        
         % Calculate Impulse responses and Prx for Rxs in the environment
         % -----------------------------------------------------------------
         function [P_rx,h_t] = run(obj)
@@ -608,14 +641,20 @@ classdef candlesEnv
         % Get the error message associated with error ERR
         % -----------------------------------------------------------------
         function [msg] = getErrorMessage(~,ERR)
+            global C
+            
             switch ERR
-                case 1
+                case C.NO_ERR
+                    msg = '';
+                case C.ERR_RM_OBJ
                     msg = 'Environment Requires at least 1 Tx and 1 Rx.';
-                case -1
+                case C.ERR_MAX_NG
+                    msg = 'Max number of network groups reached.';
+                case C.ERR_INV_SELECT
                     msg = 'Invalid item selection.';
-                case -2
+                case C.ERR_INV_STRING
                     msg = 'Invalid value entry (NaN or Complex).';
-                case -3
+                case C.ERR_INV_PARAM
                     msg = 'Invalid parameter selection.';
                 otherwise
                     msg = 'Unknown Error.';

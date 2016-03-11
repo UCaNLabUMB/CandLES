@@ -19,12 +19,18 @@ classdef tx_ps < candles_classes.point_source
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = tx_ps(x,y,z,az,el,Ps,m,ng)
-            d_Ps  = 1;           % Default optical power
-            d_m   = 1;           % Default Lambertian order
-            d_pos = {0.1,0.1,0}; % Default position
-            d_az  = 0;           % Default azimuth
-            d_el  = 3*pi/2;      % Default elevation
-            d_ng  = 1;           % Default Network Group
+            %Initialize the global constants in C
+            global C
+            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
+                SYS_define_constants();
+            end
+            
+            d_pos = num2cell(C.D_TX_POS);  % Default position
+            d_az  = C.D_TX_AZ;   % Default azimuth
+            d_el  = C.D_TX_EL;   % Default elevation
+            d_Ps  = C.D_TX_PS;   % Default optical power
+            d_m   = C.D_TX_M;    % Default Lambertian order
+            d_ng  = C.D_TX_NG;   % Default Network Group
 
             % Setup and call superclass constructor
             if (nargin == 0); my_args = [    d_pos(1:3), {d_az,d_el}]; end
@@ -38,8 +44,10 @@ classdef tx_ps < candles_classes.point_source
             % Set Tx power and Lambertian Order if given
             if (exist('Ps','var')); obj.Ps = Ps; else obj.Ps = d_Ps; end
             if (exist( 'm','var')); obj.m  =  m; else obj.m  =  d_m; end
-            obj.theta = acosd(exp(-log(2)/obj.m));
             if (exist('ng','var')); obj.ng = ng; else obj.ng = d_ng; end
+            
+            % Set Tx Semiangle for the specified Lambertian Order
+            obj = obj.update_theta();            
         end
         
         %% Set property values
@@ -56,7 +64,7 @@ classdef tx_ps < candles_classes.point_source
         function obj = set_m(obj,m)
             if (m > 0)
                 obj.m = m;
-                obj.theta = acosd(exp(-log(2)/m));
+                obj = obj.update_theta();
             end
         end        
         
@@ -68,6 +76,12 @@ classdef tx_ps < candles_classes.point_source
                 obj.m = -log(2)/log(cosd(theta)); % -ln2/ln(cos(theta))
             end
         end        
+        
+        % Update Transmitter Semiangle at half power for the objects m
+        % -----------------------------------------------------------------
+        function obj = update_theta(obj)
+            obj.theta = acosd(exp(-log(2)/obj.m));
+        end
         
         % Set Transmitter Network Group
         % -----------------------------------------------------------------

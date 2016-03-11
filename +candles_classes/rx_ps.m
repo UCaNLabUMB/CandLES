@@ -18,12 +18,18 @@ classdef rx_ps < candles_classes.point_source
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = rx_ps(x,y,z,az,el,A,FOV,n)
-            d_A   = 0.0001;      % Default receiver area
-            d_FOV = pi/4;        % Default receiver FOV
-            d_n   = 1.5;         % Default contrator refractive index
-            d_pos = {0.1,0.1,0}; % Default position
-            d_az  = 0;           % Default azimuth
-            d_el  = pi/2;        % Default elevation
+            %Initialize the global constants in C
+            global C
+            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
+                SYS_define_constants();
+            end
+            
+            d_pos = num2cell(C.D_RX_POS);  % Default position
+            d_az  = C.D_RX_AZ;   % Default azimuth
+            d_el  = C.D_RX_EL;   % Default elevation
+            d_A   = C.D_RX_A;    % Default receiver area
+            d_FOV = C.D_RX_FOV;  % Default receiver FOV
+            d_n   = C.D_RX_N;    % Default contrator refractive index
 
             % Setup and call superclass constructor
             if (nargin == 0); my_args = [    d_pos(1:3), {d_az,d_el}]; end
@@ -39,8 +45,8 @@ classdef rx_ps < candles_classes.point_source
             if (exist('FOV','var'));  obj.FOV = FOV; else obj.FOV = d_FOV; end
             if (exist(  'n','var'));  obj.n   = n;   else obj.n   =   d_n; end
 
-            % Set concentrator gain (n^2/(sin(FOV))^2)
-            obj.gc  = (obj.n/sin(obj.FOV))^2;      
+            % Set concentrator gain
+            obj = obj.set_gc();    
         end
         
         %% Set property values

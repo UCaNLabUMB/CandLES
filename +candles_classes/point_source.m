@@ -22,8 +22,14 @@ classdef point_source
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = point_source(x,y,z,az,el)
-            d_pos = [0, 0, 0]; % Default Position
-            d_or  = [0, 0];    % Default Orientation (az, el)
+            %Initialize the global constants in C
+            global C
+            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
+                SYS_define_constants();
+            end
+            
+            d_pos = C.D_PS_POS; % Default Position
+            d_or  = C.D_PS_OR;  % Default Orientation (az, el)
             %FIXME: Error check invalid types (NaN, complex, etc.)
             if (exist('x','var'));  obj.x  = x;  else obj.x  = d_pos(1); end
             if (exist('y','var'));  obj.y  = y;  else obj.y  = d_pos(2); end
@@ -31,13 +37,8 @@ classdef point_source
             if (exist('az','var')); obj.az = az; else obj.az =  d_or(1); end
             if (exist('el','var')); obj.el = el; else obj.el =  d_or(2); end
             
-            % Convert to degrees for exact calculation using sind and cosd.
-            temp_az = (180/pi)*obj.az;
-            temp_el = (180/pi)*obj.el;
-            % Calculate unit vector for az, el
-            obj.x_hat = 1*cosd(temp_el)*cosd(temp_az);
-            obj.y_hat = 1*cosd(temp_el)*sind(temp_az);
-            obj.z_hat = 1*sind(temp_el);
+            % Set the unit vector for the given az/el
+            obj = obj.update_unit_vector();
         end
         
         %% Set property values
@@ -74,13 +75,8 @@ classdef point_source
             obj.az = az; % Set Azimuth Angle (rad)
             obj.el = el; % Set Elevation Angle (rad)
             
-            % Convert to degrees for exact calculation using sind and cosd.
-            az = (180/pi)*az;
-            el = (180/pi)*el;
-            % Calculate unit vector for az, el
-            obj.x_hat = 1*cosd(el)*cosd(az);
-            obj.y_hat = 1*cosd(el)*sind(az);
-            obj.z_hat = 1*sind(el);
+            % Set the unit vector for the given az/el
+            obj = obj.update_unit_vector();
         end
         
         % Set the unit vector and associated rotation angles (radians)
@@ -98,6 +94,18 @@ classdef point_source
             if(obj.el < 0); obj.el = obj.el + 2*pi; end
             if(obj.az < 0); obj.az = obj.az + 2*pi; end
 
+        end
+        
+        % Update the unit vector for the objects rotation angles (radians)
+        % -----------------------------------------------------------------
+        function obj = update_unit_vector(obj)
+            % Convert to degrees for exact calculation using sind and cosd.
+            my_az = (180/pi)*obj.az;
+            my_el = (180/pi)*obj.el;
+            % Calculate unit vector for az, el
+            obj.x_hat = 1*cosd(my_el)*cosd(my_az);
+            obj.y_hat = 1*cosd(my_el)*sind(my_az);
+            obj.z_hat = 1*sind(my_el);
         end
         
         % Set the azimuth of the point source object

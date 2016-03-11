@@ -21,15 +21,21 @@ classdef room
         % *****************************************************************
         % -----------------------------------------------------------------
         function obj = room(l,w,h,ref)
-            d_size = [  4,   4,     3]; % Default Size
-            d_ref  = [1,1; 1,1; 1,0.5]; % Default Reflectivity
+            %Initialize the global constants in C
+            global C
+            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
+                SYS_define_constants();
+            end
+            
+            d_size = C.D_RM_SIZE; % Default Size
+            d_ref  = C.D_RM_REF;  % Default Reflectivity
             %FIXME: Error check invalid types (NaN, complex, etc.)
             if (exist('l','var')); obj.length = l; else obj.length = d_size(1); end
             if (exist('w','var')); obj.width  = w; else obj.width  = d_size(2); end
             if (exist('h','var')); obj.height = h; else obj.height = d_size(3); end
             if (exist('ref','var') && isequal(size(ref),[3,2])) 
                 % Constrain reflectivities to 0 <= ref <= 1
-                obj.ref = max(min(ref,1),0);
+                obj.ref = max(min(ref,C.MAX_REF),0);
             else
                 obj.ref = d_ref;
             end
@@ -60,7 +66,9 @@ classdef room
         % -----------------------------------------------------------------
         % nsewtb indicates north, south, east, west, top, or bottom wall
         function obj = setRef(obj, nsewtb, temp)
-            temp = max(min(temp,1),0);
+            global C
+            
+            temp = max(min(temp,C.MAX_REF),0);
             switch nsewtb
                 case 'ref_N'; obj.ref(1,1) = temp;
                 case 'ref_S'; obj.ref(1,2) = temp;

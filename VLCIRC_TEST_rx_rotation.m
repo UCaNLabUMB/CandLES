@@ -20,7 +20,8 @@ myEnv = myEnv.setRoomRef('ref_B',1);
 
 myEnv = myEnv.setDelT(TIME_RES);
 myEnv = myEnv.setSimSetting('del_s',SPATIAL_RES);
-myEnv = myEnv.setBounces(MIN_BOUNCE,MAX_BOUNCE);
+myEnv = myEnv.setSimSetting('min_b',MIN_BOUNCE);
+myEnv = myEnv.setSimSetting('max_b',MAX_BOUNCE);
 
 % Downward facing Tx - Center of room, 0.5m below ceiling.
 myEnv = myEnv.setTxParam(1, 'x',   RM_L/2);
