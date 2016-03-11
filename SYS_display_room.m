@@ -219,6 +219,12 @@ function plot_transmitters(txs, disp_type, arg)
              P1_(3) P2_(3) P3_(3) P4_(3);
              P2_(3) P3_(3) P4_(3) P1_(3)];
     patch(xdata,ydata,zdata, tx_color, 'LineWidth', tx_lw);
+    
+    % DEBUG: Show the unit vector from Tx
+%     xdata = [C_x; C_x; C_x+0.5*txs(i).x_hat; C_x+0.5*txs(i).x_hat];
+%     ydata = [C_y; C_y; C_y+0.5*txs(i).y_hat; C_y+0.5*txs(i).y_hat];
+%     zdata = [C_z; C_z; C_z+0.5*txs(i).z_hat; C_z+0.5*txs(i).z_hat];    
+%     patch(xdata,ydata,zdata, 'k');
 
   end
 
@@ -311,6 +317,12 @@ function plot_receivers(room, rxs, disp_type, arg)
          
       patch(xdata,ydata,zdata,rx_color,'LineWidth',rx_lw);   
 
+    % DEBUG: Show the unit vector from Rx
+%     xdata = [C_x; C_x; C_x+0.5*rxs(i).x_hat; C_x+0.5*rxs(i).x_hat];
+%     ydata = [C_y; C_y; C_y+0.5*rxs(i).y_hat; C_y+0.5*rxs(i).y_hat];
+%     zdata = [C_z; C_z; C_z+0.5*rxs(i).z_hat; C_z+0.5*rxs(i).z_hat];    
+%     patch(xdata,ydata,zdata, 'k');
+    
     end
   end
   
