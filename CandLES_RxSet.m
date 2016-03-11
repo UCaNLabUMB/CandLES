@@ -140,13 +140,14 @@ function menu_addRx_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_deleteRx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteRx (see GCBO)
+    global C
     h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
     RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
     rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
     [rxSetEnv, ERR]  = rxSetEnv.removeRx(RX_SELECT);
     RX_SELECT = min(RX_SELECT, length(rxSetEnv.rxs));
-    if(ERR == 1)
+    if(ERR == C.ERR_RM_OBJ)
         errordlg('CandLES environment must contain a Rx.','Rx Delete');
     else
         % NOTE: Do this in the else statement so that the error box doesn't 
@@ -241,6 +242,7 @@ function edit_Rx_n_Callback(hObject, eventdata, handles)
 %    param = {'x', 'y', 'z', 'az', 'el'}
 % --------------------------------------------------------------------
 function update_edit(hObject, param)
+    global C
     h_GUI_CandlesRxSet = getappdata(0,'h_GUI_CandlesRxSet');
     RX_SELECT          = getappdata(h_GUI_CandlesRxSet,'RX_SELECT');
     rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
@@ -248,7 +250,7 @@ function update_edit(hObject, param)
 
     [rxSetEnv, ERR] = rxSetEnv.setRxParam(RX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesRxSet, 'rxSetEnv', rxSetEnv);
     end
     set_values();

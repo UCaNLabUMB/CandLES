@@ -208,15 +208,14 @@ function menu_addTxLayout_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_deleteTx_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_deleteTx (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+    global C
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
 
     [txSetEnv, ERR]  = txSetEnv.removeTx(TX_SELECT);
     TX_SELECT = min(TX_SELECT, length(txSetEnv.txs));
-    if(ERR == 1)
+    if(ERR == C.ERR_RM_OBJ)
         errordlg('CandLES environment must contain a Tx.','Tx Delete');
     else
         % NOTE: Do this in the else statement so that the error box doesn't 
@@ -230,12 +229,18 @@ function menu_deleteTx_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_addTxGroup_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_addTxGroup (see GCBO)
+    global C
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
-    txSetEnv           = txSetEnv.addNetGroup();
+    [txSetEnv,ERR]     = txSetEnv.addNetGroup();
 
-    h = msgbox('New Tx Group Added Successfully');
-    uiwait(h);
+    if (ERR == C.NO_ERR)
+        h = msgbox('New Tx Group Added Successfully');
+        uiwait(h);
+    elseif (ERR == C.ERR_MAX_NG)
+        h = warndlg('Maximum Number of Tx Groups Reached.');
+        uiwait(h);
+    end
     
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     set_values(); % Set the values and display room with selected TX
@@ -370,6 +375,7 @@ function edit_Tx_theta_Callback(hObject, ~, ~)
 %    param = {'x', 'y', 'z', 'az', 'el', 'Ps', 'm', 'theta'}
 % --------------------------------------------------------------------
 function update_edit(hObject, param)
+    global C
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     TX_SELECT          = getappdata(h_GUI_CandlesTxSet,'TX_SELECT');
     GROUP_SELECT       = getappdata(h_GUI_CandlesTxSet,'GROUP_SELECT');
@@ -385,7 +391,7 @@ function update_edit(hObject, param)
     end    
     
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     end
     set_values();

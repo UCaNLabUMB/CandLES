@@ -143,13 +143,14 @@ function edit_max_bounce_Callback(hObject, eventdata, handles)
 %    param = {'del_t', 'del_s', 'del_p', 'min_b', 'max_b', 'disp'}
 % --------------------------------------------------------------------
 function update_edit(hObject, param)
+    global C
     h_GUI_CandlesSimSet = getappdata(0,'h_GUI_CandlesSimSet');
     simSetEnv           = getappdata(h_GUI_CandlesSimSet,'simSetEnv');
     temp                = str2double(get(hObject,'String'));
     
     [simSetEnv, ERR] = simSetEnv.setSimSetting(param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesSimSet, 'simSetEnv', simSetEnv);
     end
     set_values();
@@ -188,9 +189,9 @@ function set_values()
     %Set Text Boxes
     set(handles.edit_del_t,      'string', num2str(simSetEnv.del_t));
     set(handles.edit_del_s,      'string', num2str(simSetEnv.del_s));
-    set(handles.edit_max_bounce, 'string', num2str(simSetEnv.MAX_BOUNCE));
+    set(handles.edit_max_bounce, 'string', num2str(simSetEnv.max_bounce));
     
-    set(handles.checkbox_waitbar, 'value', simSetEnv.DISP_WAITBAR);
+    set(handles.checkbox_waitbar, 'value', simSetEnv.disp_wb);
     
 
 

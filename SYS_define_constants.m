@@ -47,7 +47,7 @@ function SYS_define_constants( )
     C.VER = SYS_version();
     
     % Constraints of the environment
-    C.MAX_NET_GROUPS   = 5;
+    C.MAX_NET_GROUPS   = 10;
     C.MIN_TX           = 1;
     C.MIN_BOX_DIM      = 0.1;
     C.MAX_ROOM_DIM     = 10;

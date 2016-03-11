@@ -225,10 +225,11 @@ function update_size_edit(hObject, param)
     h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
     temp              = str2double(get(hObject,'String'));
+    global C
 
     [mainEnv, ERR] = mainEnv.setRoomDim(param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
     end
     set_values();
@@ -301,10 +302,11 @@ function update_ref_edit(hObject, param)
     h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
     temp              = str2double(get(hObject,'String'));
+    global C
 
     [mainEnv, ERR] = mainEnv.setRoomRef(param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesMain, 'mainEnv', mainEnv);
     end
     set_values();

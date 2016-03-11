@@ -226,6 +226,7 @@ function update_pos_slider(hObject, param)
 %    param = {'x', 'y', 'z'}
 % --------------------------------------------------------------------
 function update_pos_edit(hObject, param)
+    global C
     h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
     BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
@@ -233,7 +234,7 @@ function update_pos_edit(hObject, param)
 
     [boxSetEnv,ERR] = boxSetEnv.setBoxParam(BOX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
     end
     set_values(); % update GUI
@@ -284,6 +285,7 @@ function update_size_slider(hObject, param)
 %    param = {'l', 'w', 'h'}
 % --------------------------------------------------------------------
 function update_size_edit(hObject, param)
+    global C
     h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
     BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
@@ -291,7 +293,7 @@ function update_size_edit(hObject, param)
 
     [boxSetEnv,ERR] = boxSetEnv.setBoxParam(BOX_SELECT,param,temp);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
     end
     set_values(); % update GUI
@@ -358,6 +360,7 @@ function edit_RefBottom_Callback(hObject, ~, ~)
 %    param = {'ref_N', 'ref_S', 'ref_E', 'ref_W', 'ref_T', 'ref_B'}
 % --------------------------------------------------------------------
 function update_ref_slider(hObject, param)
+    global C
     h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
     BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
@@ -365,7 +368,7 @@ function update_ref_slider(hObject, param)
 
     [boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,param,ref);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
     end
     set_values(); % update GUI
@@ -374,6 +377,7 @@ function update_ref_slider(hObject, param)
 %    param = {'ref_N', 'ref_S', 'ref_E', 'ref_W', 'ref_T', 'ref_B'}
 % --------------------------------------------------------------------
 function update_ref_edit(hObject, param)
+    global C
     h_GUI_CandlesBoxSet = getappdata(0,'h_GUI_CandlesBoxSet');
     BOX_SELECT          = getappdata(h_GUI_CandlesBoxSet,'BOX_SELECT');
     boxSetEnv           = getappdata(h_GUI_CandlesBoxSet,'boxSetEnv');
@@ -381,7 +385,7 @@ function update_ref_edit(hObject, param)
 
     [boxSetEnv,ERR] = boxSetEnv.setBoxRef(BOX_SELECT,param,ref);
     % FIXME: Add warning boxes for ERR and bring to front after set_values
-    if (ERR == 0)
+    if (ERR == C.NO_ERR)
         setappdata(h_GUI_CandlesBoxSet, 'boxSetEnv', boxSetEnv);
     end
     set_values(); % update GUI

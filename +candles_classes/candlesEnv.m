@@ -23,9 +23,9 @@ classdef candlesEnv
         del_t       % Time resolution (sec)
         del_s       % Spatial resolution of surface (m)
         del_p       % Spatial resolution of simulated plane (m)
-        MIN_BOUNCE  % First reflection considered (0 for LOS)
-        MAX_BOUNCE  % Last reflection considered
-        DISP_WAITBAR % Display waitbar when running simulations
+        min_bounce  % First reflection considered (0 for LOS)
+        max_bounce  % Last reflection considered
+        disp_wb     % Display waitbar when running simulations
         
     end
     
@@ -63,9 +63,9 @@ classdef candlesEnv
             obj.del_t        = C.D_DEL_T; 
             obj.del_s        = C.D_DEL_S;
             obj.del_p        = C.D_DEL_P;
-            obj.MIN_BOUNCE   = C.D_MIN_BOUNCE;
-            obj.MAX_BOUNCE   = C.D_MAX_BOUNCE;
-            obj.DISP_WAITBAR = C.D_DISP_WAITBAR;
+            obj.min_bounce   = C.D_MIN_BOUNCE;
+            obj.max_bounce   = C.D_MAX_BOUNCE;
+            obj.disp_wb      = C.D_DISP_WAITBAR;
         end
         
         %% Transmitter Functions 
@@ -495,13 +495,13 @@ classdef candlesEnv
                         if (temp > 0); obj.del_p = temp; end
                     case 'min_b'
                         temp = floor(temp);
-                        if (temp >= 0); obj.MIN_BOUNCE = temp; end
+                        if (temp >= 0); obj.min_bounce = temp; end
                     case 'max_b'
                         temp = floor(temp);
-                        if (temp >= 0); obj.MAX_BOUNCE = temp; end
+                        if (temp >= 0); obj.max_bounce = temp; end
                     case 'disp'
                         if((temp == 0) || (temp == 1)) 
-                            obj.DISP_WAITBAR = temp;
+                            obj.disp_wb = temp;
                         end
                     otherwise
                         ERR = C.ERR_INV_PARAM;
@@ -517,10 +517,10 @@ classdef candlesEnv
         function [P_rx,h_t] = run(obj)
             Res.del_t = obj.del_t;
             Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
-            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
+            Res.MIN_BOUNCE = obj.min_bounce;
+            Res.MAX_BOUNCE = obj.max_bounce;
             [P_rx,h_t]     = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, ...
-                                    Res, obj.DISP_WAITBAR);
+                                    Res, obj.disp_wb);
         end
         
         % Calculate Illumination at height Z
@@ -547,10 +547,10 @@ classdef candlesEnv
             
             Res.del_t = obj.del_t;
             Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
-            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
+            Res.MIN_BOUNCE = obj.min_bounce;
+            Res.MAX_BOUNCE = obj.max_bounce;
             [P_rx,~]       = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
-                                    Res, obj.DISP_WAITBAR);
+                                    Res, obj.disp_wb);
             
             
             Irrad = P_rx./(obj.del_p)^2; 
@@ -572,9 +572,9 @@ classdef candlesEnv
                         
             Res.del_t = obj.del_t;
             Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
-            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
-            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.DISP_WAITBAR);
+            Res.MIN_BOUNCE = obj.min_bounce;
+            Res.MAX_BOUNCE = obj.max_bounce;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.disp_wb);
         end
         
         % Calculate rx power with receiver RX_NUM at various orientations
@@ -588,9 +588,9 @@ classdef candlesEnv
                         
             Res.del_t = obj.del_t;
             Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.MIN_BOUNCE;
-            Res.MAX_BOUNCE = obj.MAX_BOUNCE;
-            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.DISP_WAITBAR);
+            Res.MIN_BOUNCE = obj.min_bounce;
+            Res.MAX_BOUNCE = obj.max_bounce;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.disp_wb);
         end
         
         %% Environment Simulation Results - Plots
