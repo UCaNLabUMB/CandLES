@@ -246,6 +246,20 @@ classdef candlesEnv
             end
         end
         
+        % Remove a new Network Group
+        % -----------------------------------------------------------------
+        function [obj] = removeUnusedNetGroups(obj)
+            ng = 1;
+            while ng <= obj.num_groups
+                % Check if group is unused
+                my_txs = obj.getGroup(ng);
+                if (isempty(my_txs))
+                    obj = obj.removeNetGroup(ng);
+                else
+                    ng = ng + 1;
+                end
+            end
+        end
         % Get the set of transmitters belonging to group ng
         % -----------------------------------------------------------------
         function [my_txs, my_locs] = getGroup(obj,ng)

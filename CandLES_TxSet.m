@@ -432,6 +432,11 @@ function update_main_env()
     h_GUI_CandlesMain  = getappdata(0,'h_GUI_CandlesMain');
     h_GUI_CandlesTxSet = getappdata(0,'h_GUI_CandlesTxSet');
     txSetEnv           = getappdata(h_GUI_CandlesTxSet,'txSetEnv');
+    
+    % Remove unused groups before saving
+    txSetEnv = txSetEnv.removeUnusedNetGroups();
+    setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
+    
     feval(getappdata(h_GUI_CandlesMain,'fhUpdateMain'),txSetEnv);
     figure(h_GUI_CandlesTxSet); %Bring the TX GUI back to the front
 
