@@ -17,7 +17,7 @@
 function SYS_display_room(my_axes, env, disp_type, arg)
 
   axes(my_axes);
-  cla;
+  cla(my_axes,'reset');
   if ~exist('disp_type', 'var')
       disp_type = 0;
   end

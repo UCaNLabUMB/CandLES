@@ -107,7 +107,7 @@ mainEnv            = getappdata(h_GUI_CandlesMain,'mainEnv');
 rxSetEnv           = getappdata(h_GUI_CandlesRxSet,'rxSetEnv');
 
 if (~isequal(mainEnv,rxSetEnv))
-    response = questdlg(STR.MSG5, '',STR,YES,STR.NO,STR.YES);
+    response = questdlg(STR.MSG5, '',STR.YES,STR.NO,STR.YES);
     if strcmp(response,STR.YES)
         update_main_env();
     end

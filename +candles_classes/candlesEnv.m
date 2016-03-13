@@ -205,7 +205,7 @@ classdef candlesEnv
             emission = (my_tx.m+1)*cos(angles_rad).^(my_tx.m)/(2*pi);
             emission_norm = 100*emission/max(emission);
             
-            axes(my_axes); cla;
+            axes(my_axes); cla(my_axes,'reset');
             plot(angles_deg,emission_norm);
             axis([-90 90 0 105]);
             set(my_axes,'FontSize',8);
@@ -630,14 +630,20 @@ classdef candlesEnv
             y = 0:obj.del_p:obj.rm.width;
             
             axes(my_ax);
-            contourf(x,y,Illum);
-            xlabel('X (m)');
-            ylabel('Y (m)');
-            title(['Surface Illumination (Lux) at ' ...
-                     num2str(plane) 'm']);
-            view([0 90]);
-            caxis([0 max(max(Illum))]);
-            colorbar;
+            if (max(max(Illum)) > 0)
+                contourf(x,y,Illum);
+                xlabel('X (m)');
+                ylabel('Y (m)');
+                title(['Surface Illumination (Lux) at ' ...
+                         num2str(plane) 'm']);
+                view([0 90]);
+                caxis([0 max(max(Illum))]);
+                colorbar;
+            else
+                cla(my_ax,'reset');
+                text(0.38, 0.5, sprintf('No Illumination'), 'Parent', my_ax);
+
+            end
         end
         
         % Plot the CDF of the Illumination results at a specified plane
