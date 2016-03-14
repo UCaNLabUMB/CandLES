@@ -32,9 +32,10 @@ classdef candlesEnv
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor 
-        % *****************************************************************
+        %% ****************************************************************
         function obj = candlesEnv()
+        % Constructor 
+
             %Initialize the global constants in C
             global C
             if (~exist('C.VER','var') || (C.VER ~= SYS_version))
@@ -63,16 +64,17 @@ classdef candlesEnv
         %% Transmitter Functions 
         % *****************************************************************
         
-        % Add a new transmitter
         % -----------------------------------------------------------------
         function [obj, TX_NUM] = addTx(obj)
+        % Add a new transmitter
             TX_NUM = length(obj.txs)+1;
             obj.txs(TX_NUM) = candles_classes.tx_ps();
             % FIXME: Check room to make sure the new TX is in room
         end
         
-        % Add a specified layout of transmitters.
         % -----------------------------------------------------------------
+        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, C_x, C_y, Z_plane, layout, ng, replace)
+        % Add a specified layout of transmitters.
         % Any Txs outside room boundaries gets shifted to the room edge.
         %       N_x:  Number of TXs in X direction.
         %       N_y:  Number of TXs in Y direction.
@@ -83,7 +85,6 @@ classdef candlesEnv
         %    layout:  (1) Grid (2) Cell1 (3) Cell2
         %        ng:  Net Group
         %   replace:  (0) keep existing TXs (1) replace TXs.
-        function [obj, TX_NUM] = addTxGroup(obj, N_x, N_y, d, C_x, C_y, Z_plane, layout, ng, replace)
             
             % Error check for empty grid
             if (N_x*N_y == 0)
@@ -117,9 +118,9 @@ classdef candlesEnv
             TX_NUM = TX_NUM+1;
         end
         
-        % Remove the specified transmitter
         % -----------------------------------------------------------------
         function [obj,ERR] = removeTx(obj, TX_NUM)
+        % Remove the specified transmitter
             global C
             
             if (length(obj.txs) > C.MIN_TX)
@@ -130,9 +131,9 @@ classdef candlesEnv
             end
         end
         
-        % Set the parameters of the specified transmitter
         % -----------------------------------------------------------------
         function [obj,ERR] = setTxParam(obj,TX_NUM,param,temp) 
+        % Set the parameters of the specified transmitter
             global C
             
             ERR = C.NO_ERR;
@@ -172,9 +173,9 @@ classdef candlesEnv
             end
         end
 
-        % Set the parameters of all transmitters in the specified group
         % -----------------------------------------------------------------
         function [obj,ERR] = setGroupParam(obj,GROUP_NUM,param,temp) 
+        % Set the parameters of all transmitters in the specified group
             global C
             
             %FIXME: Add errors from setTxParam ?
@@ -186,9 +187,9 @@ classdef candlesEnv
             end
         end
         
-        % Plot the normalized emission pattern of the specified Tx
         % -----------------------------------------------------------------
         function plotTxEmission(obj,TX_SELECT,my_axes) 
+        % Plot the normalized emission pattern of the specified Tx
             my_tx = obj.txs(TX_SELECT);
 
             angles_deg = -90:90;
@@ -208,9 +209,9 @@ classdef candlesEnv
             my_axes.YTick = 0:50:100;
         end
 
-        % Add a new Network Group
         % -----------------------------------------------------------------
         function [obj,ERR] = addNetGroup(obj)
+        % Add a new Network Group
             global C
             
             if obj.num_groups < C.MAX_NET_GROUPS
@@ -222,9 +223,9 @@ classdef candlesEnv
             end
         end        
         
-        % Remove a new Network Group
         % -----------------------------------------------------------------
         function [obj] = removeNetGroup(obj,ng)
+        % Remove a new Network Group
             if (obj.num_groups > 1)
                 obj.num_groups = obj.num_groups - 1;
                 obj.Sprime(ng,:) = [];
@@ -240,9 +241,9 @@ classdef candlesEnv
             end
         end
         
-        % Remove a new Network Group
         % -----------------------------------------------------------------
         function [obj] = removeUnusedNetGroups(obj)
+        % Remove all Network Groups without an associated Tx
             ng = 1;
             while ng <= obj.num_groups
                 % Check if group is unused
@@ -254,9 +255,10 @@ classdef candlesEnv
                 end
             end
         end
-        % Get the set of transmitters belonging to group ng
+        
         % -----------------------------------------------------------------
         function [my_txs, my_locs] = getGroup(obj,ng)
+        % Get the set of transmitters belonging to group ng
             temp = [obj.txs(:).ng];
             tx_nums = 1:length(obj.txs);
             my_locs = tx_nums(temp == ng);
@@ -266,17 +268,17 @@ classdef candlesEnv
         %% Receiver Functions
         % *****************************************************************
         
-        % Add a new receiver
         % -----------------------------------------------------------------
         function [obj, RX_NUM] = addRx(obj)
+        % Add a new receiver
             RX_NUM = length(obj.rxs)+1;
             obj.rxs(RX_NUM) = candles_classes.rx_ps();
             % FIXME: Check room to make sure the new TX is in room
         end
         
-        % Remove the specified receiver
         % -----------------------------------------------------------------
         function [obj,ERR] = removeRx(obj, RX_NUM)
+        % Remove the specified receiver
             global C
             
             if (length(obj.rxs) > 1)
@@ -287,9 +289,9 @@ classdef candlesEnv
             end
         end
         
-        % Set the position of the specified receiver
         % -----------------------------------------------------------------
         function [obj,ERR] = setRxParam(obj,RX_NUM,param,temp)
+        % Set the position of the specified receiver
             global C
             
             ERR = C.NO_ERR;
@@ -333,25 +335,25 @@ classdef candlesEnv
         %% Box Functions
         % *****************************************************************
         
-        % Add a new box
         % -----------------------------------------------------------------
         function [obj, BOX_NUM] = addBox(obj)
+        % Add a new box
             BOX_NUM = length(obj.boxes)+1;
             obj.boxes(BOX_NUM) = candles_classes.box();
             % FIXME: Check room to make sure the new TX is in room
         end
         
-        % Remove the specified box
         % -----------------------------------------------------------------
         function [obj] = removeBox(obj, BOX_NUM)
+        % Remove the specified box
             if (~isempty(obj.boxes))
                 obj.boxes(BOX_NUM) = [];
             end
         end
 
-        % Set the position of the specified box
         % -----------------------------------------------------------------
         function [obj,ERR] = setBoxParam(obj,BOX_NUM,param,temp)
+        % Set the position of the specified box
             global C
             
             ERR = C.NO_ERR;
@@ -392,9 +394,9 @@ classdef candlesEnv
             end
         end
 
-        % Set the reflectivities of the specified box
         % -----------------------------------------------------------------
         function [obj,ERR] = setBoxRef(obj,BOX_NUM,nsewtb,temp)
+        % Set the reflectivities of the specified box
             global C
             
             ERR = C.NO_ERR;
@@ -410,12 +412,12 @@ classdef candlesEnv
         %% Room Functions
         % *****************************************************************
         
-        % Set the dimensions of the room
         % -----------------------------------------------------------------
+        function [obj,ERR] = setRoomDim(obj,param,temp)
+        % Set the dimensions of the room
         % Do not make dimensions such that objects are outside the room.
         % FIXME: For now, cap room l,w,h. For computational speed, the
         % resolution needs to be lowered when increasing room size.
-        function [obj,ERR] = setRoomDim(obj,param,temp)
             global C
             
             ERR = C.NO_ERR;
@@ -442,10 +444,10 @@ classdef candlesEnv
             end
         end
         
-        % Set the room reflectivities
         % -----------------------------------------------------------------
-        % nsewtb indicates north, south, east, west, top, or bottom wall
         function [obj,ERR] = setRoomRef(obj,nsewtb,temp)
+        % Set the room reflectivities
+        % nsewtb indicates north, south, east, west, top, or bottom wall
             global C
             
             ERR = C.NO_ERR;
@@ -456,9 +458,9 @@ classdef candlesEnv
             end
         end
         
-        % Get the maximum dimensions of boxes, txs, or rxs
         % -----------------------------------------------------------------
         function [min_x,min_y,min_z] = min_room_dims(obj)
+        % Get the maximum dimensions of boxes, txs, or rxs
             % Minimum bounding box for txs and rxs
             txrx_max_x = max(max([obj.txs.x]),max([obj.rxs.x]));
             txrx_max_y = max(max([obj.txs.y]),max([obj.rxs.y]));
@@ -485,9 +487,9 @@ classdef candlesEnv
         %% Environment Simulation Setting Functions
         % *****************************************************************
         
-        % Set the specified simulation setting
         % -----------------------------------------------------------------
         function [obj,ERR] = setSimSetting(obj,param,temp) 
+        % Set the specified simulation setting
             global C
             
             ERR = C.NO_ERR;
@@ -520,9 +522,9 @@ classdef candlesEnv
         %% Environment Simulation Functions
         % *****************************************************************
         
-        % Calculate Impulse responses and Prx for Rxs in the environment
         % -----------------------------------------------------------------
         function [P_rx,h_t] = run(obj)
+        % Calculate Impulse responses and Prx for Rxs in the environment
             Res.del_t = obj.del_t;
             Res.del_s = obj.del_s;
             Res.MIN_BOUNCE = obj.min_bounce;
@@ -531,9 +533,9 @@ classdef candlesEnv
                                     Res, obj.disp_wb);
         end
         
-        % Calculate Illumination at height Z
         % -----------------------------------------------------------------
         function [Illum, grid] = getIllum(obj,Z)
+        % Calculate Illumination at height Z
             
             % Setup X,Y locations
             x = 0:obj.del_p:obj.rm.length;
@@ -569,9 +571,9 @@ classdef candlesEnv
             grid = [x_locs;y_locs];
         end
         
-        % Calculate rx power with receiver RX_NUM at the various positions
         % -----------------------------------------------------------------
         function [P, H] = calcMotionPath(obj,RX_NUM,x_locs,y_locs)
+        % Calculate rx power with receiver RX_NUM at the various positions
             obj.rxs(1:length(x_locs)) = obj.rxs(RX_NUM);
             for i = 1:length(x_locs)
                 obj.rxs(i) = obj.rxs(i).set_x(x_locs(i));
@@ -585,9 +587,9 @@ classdef candlesEnv
             [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.disp_wb);
         end
         
-        % Calculate rx power with receiver RX_NUM at various orientations
         % -----------------------------------------------------------------
         function [P, H] = calcRotation(obj,RX_NUM,azs,els)
+        % Calculate rx power with receiver RX_NUM at various orientations
             obj.rxs(1:length(azs)) = obj.rxs(RX_NUM);
             for i = 1:length(azs)
                 obj.rxs(i) = obj.rxs(i).set_az(max(min(azs(i),360),0)*(pi/180));
@@ -604,9 +606,9 @@ classdef candlesEnv
         %% Environment Simulation Results - Plots
         % *****************************************************************
         
-        % Plot the impulse response
         % -----------------------------------------------------------------
         function plotCommImpulse(obj,h_t,my_ax)
+        % Plot the impulse response
             t = (0:size(h_t,2)-1)*obj.del_t;
             
             axes(my_ax);
@@ -617,9 +619,9 @@ classdef candlesEnv
             axis([0,max(t)*1e9,0,1]);
         end
         
-        % Plot the Illumination results at a specified plane
         % -----------------------------------------------------------------
         function plotIllumPlane(obj,Illum,plane,my_ax)
+        % Plot the Illumination results at a specified plane
             x = 0:obj.del_p:obj.rm.length;
             y = 0:obj.del_p:obj.rm.width;
             
@@ -640,9 +642,9 @@ classdef candlesEnv
             end
         end
         
-        % Plot the CDF of the Illumination results at a specified plane
         % -----------------------------------------------------------------
         function plotIllumPlaneCDF(~,Illum,plane,my_ax)
+        % Plot the CDF of the Illumination results at a specified plane
             axes(my_ax);
             temp = reshape(Illum,[1,size(Illum,1)*size(Illum,2)]);
             cdfplot(temp);
@@ -652,9 +654,9 @@ classdef candlesEnv
                      num2str(plane) 'm']);
         end        
         
-        % Get the error message associated with error ERR
         % -----------------------------------------------------------------
         function [msg] = getErrorMessage(~,ERR)
+        % Get the error message associated with error ERR
             global C
             
             switch ERR

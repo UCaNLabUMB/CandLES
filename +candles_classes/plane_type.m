@@ -23,10 +23,10 @@ classdef plane_type
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor
-        % *****************************************************************
+        %% ****************************************************************
         % -----------------------------------------------------------------
         function obj = plane_type(x,y,z,l,w,h,xh,yh,zh,ref,res)
+        % Constructor
             d_pos   = [  0,   0, 0]; % Default position
             d_size  = [0.1, 0.1, 0]; % Default size
             d_dir   = [  0,   0, 1]; % Default reflection direction 

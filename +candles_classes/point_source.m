@@ -18,10 +18,11 @@ classdef point_source
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor
-        % *****************************************************************
+        %% ****************************************************************
         % -----------------------------------------------------------------
         function obj = point_source(x,y,z,az,el)
+        % Constructor
+        
             %Initialize the global constants in C
             global C
             if (~exist('C.VER','var') || (C.VER ~= SYS_version))
@@ -43,35 +44,36 @@ classdef point_source
         
         %% Set property values
         % *****************************************************************
-        % Set the X,Y,Z location of the point source object
+        
         % -----------------------------------------------------------------
         function obj = set_location(obj,x,y,z)
+        % Set the X,Y,Z location of the point source object
             obj.x = x; % Set X location (m)
             obj.y = y; % Set X location (m)
             obj.z = z; % Set X location (m)
         end
         
-        % Set the X location of the point source object
         % -----------------------------------------------------------------
         function obj = set_x(obj,x)
+        % Set the X location of the point source object
             obj.x = x; % Set X location (m)
         end
         
-        % Set the Y location of the point source object
         % -----------------------------------------------------------------
         function obj = set_y(obj,y)
+        % Set the Y location of the point source object
             obj.y = y; % Set Y location (m)
         end
         
-        % Set the Z location of the point source object
         % -----------------------------------------------------------------
         function obj = set_z(obj,z)
+        % Set the Z location of the point source object
             obj.z = z; % Set Z location (m)
         end
         
-        % Set the rotation angles (radians)
         % -----------------------------------------------------------------
         function obj = set_rotation(obj,az,el)
+        % Set the rotation angles (radians)
             obj.az = az; % Set Azimuth Angle (rad)
             obj.el = el; % Set Elevation Angle (rad)
             
@@ -79,9 +81,9 @@ classdef point_source
             obj = obj.update_unit_vector();
         end
         
-        % Set the unit vector and associated rotation angles (radians)
         % -----------------------------------------------------------------
         function obj = set_unit_vector(obj,x,y,z)
+        % Set the unit vector and associated rotation angles (radians)
             % Calculate unit vector
             obj.x_hat = x/sqrt(x^2 + y^2 + z^2);
             obj.y_hat = y/sqrt(x^2 + y^2 + z^2);
@@ -96,9 +98,9 @@ classdef point_source
 
         end
         
-        % Update the unit vector for the objects rotation angles (radians)
         % -----------------------------------------------------------------
         function obj = update_unit_vector(obj)
+        % Update the unit vector for the objects rotation angles
             % Convert to degrees for exact calculation using sind and cosd.
             my_az = (180/pi)*obj.az;
             my_el = (180/pi)*obj.el;
@@ -108,9 +110,9 @@ classdef point_source
             obj.z_hat = 1*sind(my_el);
         end
         
-        % Set the azimuth of the point source object
         % -----------------------------------------------------------------
         function obj = set_az(obj,az)
+        % Set the azimuth of the point source object (radians)
             az = max(min(az,2*pi),0); % Confirm 0 <= az <= 2pi
             obj.az = az; % Set Azimuth Angle (rad)
             
@@ -124,9 +126,9 @@ classdef point_source
             obj.z_hat = 1*sind(my_el);
         end
         
-        % Set the elevation of the point source object
         % -----------------------------------------------------------------
         function obj = set_el(obj,el)
+        % Set the elevation of the point source object (radians)
             el = max(min(el,2*pi),0); % Confirm 0 <= el <= 2pi
             obj.el = el; % Set Elevation Angle (rad)
             
@@ -142,16 +144,17 @@ classdef point_source
         
         %% Get property values
         % *****************************************************************
-        % get azimuth and elevation angles in radians
+        
         % -----------------------------------------------------------------
         function [my_az,my_el] = get_angle_rad(obj)
+        % get azimuth and elevation angles in radians
             my_az = obj.az;
             my_el = obj.el;
         end
         
-        % get azimuth and elevation angles in degrees
         % -----------------------------------------------------------------
         function [my_az,my_el] = get_angle_deg(obj)
+        % get azimuth and elevation angles in degrees
             my_az = (180/pi)*obj.az;
             my_el = (180/pi)*obj.el;
         end

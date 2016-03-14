@@ -15,10 +15,11 @@ classdef tx_ps < candles_classes.point_source
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor
-        % *****************************************************************
+        %% ****************************************************************
         % -----------------------------------------------------------------
         function obj = tx_ps(x,y,z,az,el,Ps,m,ng)
+        % Constructor
+
             %Initialize the global constants in C
             global C
             if (~exist('C.VER','var') || (C.VER ~= SYS_version))
@@ -52,42 +53,41 @@ classdef tx_ps < candles_classes.point_source
         
         %% Set property values
         % *****************************************************************
-        % Set Transmit Optical Power (W)
+        
         % -----------------------------------------------------------------
         function obj = set_Ps(obj,Ps)
-            Ps = max(Ps,0); % Check Bound
-            obj.Ps = Ps;
+        % Set Transmit Optical Power (W)
+            obj.Ps = max(Ps,0); % Check Bound
         end
         
-        % Set Transmitter Lambertian Order
         % -----------------------------------------------------------------
         function obj = set_m(obj,m)
+        % Set Transmitter Lambertian Order
             if (m > 0)
                 obj.m = m;
                 obj = obj.update_theta();
             end
         end        
         
-        % Set Transmitter Semiangle at half power
         % -----------------------------------------------------------------
         function obj = set_theta(obj,theta)
+        % Set Transmitter Semiangle at half power
             if (theta > 0) && (theta < 90)
                 obj.theta = theta;
                 obj.m = -log(2)/log(cosd(theta)); % -ln2/ln(cos(theta))
             end
         end        
         
-        % Update Transmitter Semiangle at half power for the objects m
         % -----------------------------------------------------------------
         function obj = update_theta(obj)
+        % Update Transmitter Semiangle at half power for the objects m
             obj.theta = acosd(exp(-log(2)/obj.m));
         end
         
-        % Set Transmitter Network Group
         % -----------------------------------------------------------------
         function obj = set_ng(obj,ng)
-            ng = max(ng,0); % Check Bound
-            obj.ng = ng;
+        % Set Transmitter Network Group
+            obj.ng = max(ng,0); % Check Bound
         end             
     end
     

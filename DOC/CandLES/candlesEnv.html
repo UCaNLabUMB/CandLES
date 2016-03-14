@@ -1,0 +1,338 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="file:///C:/Program Files/MATLAB/R2015b/toolbox/matlab/helptools/private/helpwin.css">
+      <title>MATLAB File Help: candles_classes.candlesEnv</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">MATLAB File Help: candles_classes.candlesEnv</td>
+            <td class="subheader-left"><a href="matlab:edit candles_classes.candlesEnv">View code for candles_classes.candlesEnv</a></td>
+            <td class="subheader-left"><a href="matlab:doc candles_classes.candlesEnv">Go to online doc for candles_classes.candlesEnv</a></td>
+            <td class="subheader-right"><a href="matlab:doc">Default Topics</a></td>
+         </tr>
+      </table>
+      <div class="title">candles_classes.candlesEnv</div>
+      <div class="helptext"><pre><!--helptext --> <span class="helptopic">candlesEnv</span> CandLES environment class
+    A <span class="helptopic">candlesEnv</span> object stores the environment variables for a CandLES
+    GUI. This includes the room parameters and simulation parameters.</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.candlesEnv')">candlesEnv</a></td>
+            <td class="m-help">Constructor &nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.Sprime')">Sprime</a></td>
+            <td class="m-help">Normalized PSD (for each group)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.boxes')">boxes</a></td>
+            <td class="m-help">Boxes in the environment&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.del_p')">del_p</a></td>
+            <td class="m-help">Spatial resolution of simulated plane (m)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.del_s')">del_s</a></td>
+            <td class="m-help">Spatial resolution of surface (m)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.del_t')">del_t</a></td>
+            <td class="m-help">Simulation Properties&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.disp_wb')">disp_wb</a></td>
+            <td class="m-help">Display waitbar when running simulations&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.lambda')">lambda</a></td>
+            <td class="m-help">wavelengths of Sprime&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.max_bounce')">max_bounce</a></td>
+            <td class="m-help">Last reflection considered&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.min_bounce')">min_bounce</a></td>
+            <td class="m-help">First reflection considered (0 for LOS)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.num_groups')">num_groups</a></td>
+            <td class="m-help">Tx Group Properties&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.rm')">rm</a></td>
+            <td class="m-help">Simulation Environment Properties&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.rxs')">rxs</a></td>
+            <td class="m-help">Receivers in the environment&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.txs')">txs</a></td>
+            <td class="m-help">Transmitters in the environment&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.addBox')">addBox</a></td>
+            <td class="m-help">Add a new box&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.addNetGroup')">addNetGroup</a></td>
+            <td class="m-help">Add a new Network Group&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.addRx')">addRx</a></td>
+            <td class="m-help">Add a new receiver&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.addTx')">addTx</a></td>
+            <td class="m-help">Add a new transmitter&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.addTxGroup')">addTxGroup</a></td>
+            <td class="m-help">Add a specified layout of transmitters.&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.calcMotionPath')">calcMotionPath</a></td>
+            <td class="m-help">Calculate rx power with receiver RX_NUM at the various positions&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.calcRotation')">calcRotation</a></td>
+            <td class="m-help">Calculate rx power with receiver RX_NUM at various orientations&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.getErrorMessage')">getErrorMessage</a></td>
+            <td class="m-help">Get the error message associated with error ERR&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.getGroup')">getGroup</a></td>
+            <td class="m-help">Get the set of transmitters belonging to group ng&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.getIllum')">getIllum</a></td>
+            <td class="m-help">Calculate Illumination at height Z&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.min_room_dims')">min_room_dims</a></td>
+            <td class="m-help">Get the maximum dimensions of boxes, txs, or rxs&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.plotCommImpulse')">plotCommImpulse</a></td>
+            <td class="m-help">Plot the impulse response&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.plotIllumPlane')">plotIllumPlane</a></td>
+            <td class="m-help">Plot the Illumination results at a specified plane&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.plotIllumPlaneCDF')">plotIllumPlaneCDF</a></td>
+            <td class="m-help">Plot the CDF of the Illumination results at a specified plane&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.plotTxEmission')">plotTxEmission</a></td>
+            <td class="m-help">Plot the normalized emission pattern of the specified Tx&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.removeBox')">removeBox</a></td>
+            <td class="m-help">Remove the specified box&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.removeNetGroup')">removeNetGroup</a></td>
+            <td class="m-help">Remove a new Network Group&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.removeRx')">removeRx</a></td>
+            <td class="m-help">Remove the specified receiver&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.removeTx')">removeTx</a></td>
+            <td class="m-help">Remove the specified transmitter&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.removeUnusedNetGroups')">removeUnusedNetGroups</a></td>
+            <td class="m-help">Remove all Network Groups without an associated Tx&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.run')">run</a></td>
+            <td class="m-help">Calculate Impulse responses and Prx for Rxs in the environment&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setBoxParam')">setBoxParam</a></td>
+            <td class="m-help">Set the position of the specified box&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setBoxRef')">setBoxRef</a></td>
+            <td class="m-help">Set the reflectivities of the specified box&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setGroupParam')">setGroupParam</a></td>
+            <td class="m-help">Set the parameters of all transmitters in the specified group&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setRoomDim')">setRoomDim</a></td>
+            <td class="m-help">Set the dimensions of the room&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setRoomRef')">setRoomRef</a></td>
+            <td class="m-help">Set the room reflectivities&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setRxParam')">setRxParam</a></td>
+            <td class="m-help">Set the position of the specified receiver&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setSimSetting')">setSimSetting</a></td>
+            <td class="m-help">Set the specified simulation setting&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('candles_classes.candlesEnv.setTxParam')">setTxParam</a></td>
+            <td class="m-help">Set the parameters of the specified transmitter&nbsp;</td>
+         </tr>
+      </table>
+   </body>
+</html>

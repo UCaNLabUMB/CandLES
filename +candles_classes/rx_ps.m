@@ -14,10 +14,11 @@ classdef rx_ps < candles_classes.point_source
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor
-        % *****************************************************************
+        %% ****************************************************************
         % -----------------------------------------------------------------
         function obj = rx_ps(x,y,z,az,el,A,FOV,n)
+        % Constructor
+
             %Initialize the global constants in C
             global C
             if (~exist('C.VER','var') || (C.VER ~= SYS_version))
@@ -46,40 +47,39 @@ classdef rx_ps < candles_classes.point_source
             if (exist(  'n','var'));  obj.n   = n;   else obj.n   =   d_n; end
 
             % Set concentrator gain
-            obj = obj.set_gc();    
+            obj = obj.update_gc();    
         end
         
         %% Set property values
         % *****************************************************************
-        % Set Receiver Area (m^2)
+        
         % -----------------------------------------------------------------
         function obj = set_A(obj,A)
-            if (A > 0)
-                obj.A = A;
-            end
+        % Set Receiver Area (m^2)
+            if (A > 0); obj.A = A; end
         end
         
-        % Set Receiver Field of View (rad)
         % -----------------------------------------------------------------
         function obj = set_FOV(obj,FOV)
+        % Set Receiver Field of View (rad)
             if (FOV > 0) && (FOV <= pi/2)
                 obj.FOV = FOV;
-                obj = obj.set_gc();
+                obj = obj.update_gc();
             end
         end         
         
-        % Set optics refractive index
         % -----------------------------------------------------------------
         function obj = set_n(obj,n)
+        % Set optics refractive index
             if (n > 0)
                 obj.n = n;
-                obj = obj.set_gc();
+                obj = obj.update_gc();
             end
         end
 
-        % Set concentrator gain (n^2/(sin(FOV))^2)
         % -----------------------------------------------------------------
-        function obj = set_gc(obj)
+        function obj = update_gc(obj)
+        % Set concentrator gain (n^2/(sin(FOV))^2)
             obj.gc  = (obj.n/sin(obj.FOV))^2;   
         end
     end

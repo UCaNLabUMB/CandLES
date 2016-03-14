@@ -17,10 +17,10 @@ classdef room
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor
-        % *****************************************************************
+        %% ****************************************************************
         % -----------------------------------------------------------------
         function obj = room(l,w,h,ref)
+        % Constructor
             %Initialize the global constants in C
             global C
             if (~exist('C.VER','var') || (C.VER ~= SYS_version))
@@ -44,28 +44,28 @@ classdef room
         %% Set property values
         % *****************************************************************
 
-        % Set the length of the room
         % -----------------------------------------------------------------
         function obj = setLength(obj, temp)
+        % Set the length of the room
             if (temp > 0); obj.length = temp; end
         end
         
-        % Set the width of the room
         % -----------------------------------------------------------------
         function obj = setWidth(obj, temp)
+        % Set the width of the room
             if (temp > 0); obj.width  = temp; end
         end
         
-        % Set the height of the room
         % -----------------------------------------------------------------
         function obj = setHeight(obj, temp)
+        % Set the height of the room
             if (temp > 0); obj.height = temp; end
         end
         
-        % Set Reflectivities of the walls
         % -----------------------------------------------------------------
-        % nsewtb indicates north, south, east, west, top, or bottom wall
         function obj = setRef(obj, nsewtb, temp)
+        % Set Reflectivities of the walls
+        % nsewtb indicates north, south, east, west, top, or bottom wall
             global C
             
             temp = max(min(temp,C.MAX_REF),0);
@@ -79,11 +79,12 @@ classdef room
             end
         end
         
-        %% Set property values
+        %% Get property values
         % *****************************************************************
-        % Get the planes related to the room
+        
         % -----------------------------------------------------------------
         function plane_list = get_planes(obj, del_s)
+        % Get the planes related to the room
             plane_list = candles_classes.plane_type.empty;
             
             % North Plane

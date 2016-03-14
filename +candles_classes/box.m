@@ -20,9 +20,10 @@ classdef box
     %% Class Methods
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods
-        %% Constructor
-        % *****************************************************************
+        %% ****************************************************************
         function obj = box(x,y,z,l,w,h,ref)
+        % Constructor
+            
             %Initialize the global constants in C
             global C
             if (~exist('C.VER','var') || (C.VER ~= SYS_version))
@@ -50,56 +51,56 @@ classdef box
         %% Set property values
         % *****************************************************************
         
-        % Set the X,Y,Z location of the box
         % -----------------------------------------------------------------
         function obj = set_location(obj,x,y,z)
+        % Set the X,Y,Z location of the box
             obj.x = x; % Set X location (m)
             obj.y = y; % Set X location (m)
             obj.z = z; % Set X location (m)
         end
         
-        % Set the X location of the box
         % -----------------------------------------------------------------
         function obj = set_x(obj,x)
+        % Set the X location of the box
             obj.x = x; % Set X location (m)
         end
         
-        % Set the Y location of the box
         % -----------------------------------------------------------------
         function obj = set_y(obj,y)
+        % Set the Y location of the box
             obj.y = y; % Set Y location (m)
         end
         
-        % Set the Z location of the box
         % -----------------------------------------------------------------
         function obj = set_z(obj,z)
+        % Set the Z location of the box
             obj.z = z; % Set Z location (m)
         end
         
-        % Set the length of the box
         % -----------------------------------------------------------------
         function obj = set_length(obj,length)
+        % Set the length of the box
             global C
             if (length >= C.MIN_BOX_DIM); obj.length = length; end % Set length (m)
         end
         
-        % Set the width of the box
         % -----------------------------------------------------------------
         function obj = set_width(obj,width)
+        % Set the width of the box
             global C
             if (width >= C.MIN_BOX_DIM); obj.width = width; end    % Set width (m)
         end
         
-        % Set the height of the box
         % -----------------------------------------------------------------
         function obj = set_height(obj,height)
+        % Set the height of the box
             global C
             if (height >= C.MIN_BOX_DIM); obj.height = height; end % Set height (m)
         end        
         
-        % Set the height of the box
         % -----------------------------------------------------------------
         function obj = set_ref(obj,nsewtb,ref)
+        % Set the Reflectivity of box surfaces
             global C
 
             ref = max(min(ref,C.MAX_REF),0);
@@ -116,9 +117,9 @@ classdef box
         %% Get property values
         % *****************************************************************
         
-        % Get the planes related to this box
         % -----------------------------------------------------------------
         function plane_list = get_planes(obj,del_s)
+        % Get the planes related to this box
             plane_list = candles_classes.plane_type.empty;
             
             % North Plane
