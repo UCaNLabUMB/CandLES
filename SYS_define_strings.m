@@ -50,6 +50,14 @@ function SYS_define_strings( )
     STR.MSG30 = ['Results have not been generated \n' ...
                  '           for this configuration.'];
     STR.MSG31 = 'All Rxs';
+    
+    
+    % VLCIRC Strings
+    STR.IRC_MSG1 = 'Insufficient Memory to run simulation.';
+    STR.IRC_MSG2 = 'Zero Bounce calculation...';
+    STR.IRC_MSG3 = 'First Bounce calculation...';
+    STR.IRC_MSG4 = 'Bounce calculation...';
+    STR.IRC_MSG5 = 'Received Power Update...';
 
 end
 

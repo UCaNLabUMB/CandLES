@@ -69,6 +69,9 @@ function SYS_define_constants( )
     C.ERR_INV_STRING = -2;
     C.ERR_INV_PARAM  = -3;
     
+    % Non-GUI constants
+    C.SPEED_OF_LIGHT = 3e8;
+    
     %% Create the STR structure for all strings
     SYS_define_strings();
     

@@ -11,9 +11,7 @@ function [ Prx, h_t ] = VLCIRC( Txs, Rxs, Boxes, Room, Res, WAITBAR )
 %               Res.MAX_BOUNCE  First reflection considered
 %
 %   FIXME: Update to take a candlesEnv variable as input?
-
-global SPEED_OF_LIGHT 
-SPEED_OF_LIGHT = 3.0e8;
+%   FIXME: Make sure the global constant variable (C) exists when running
 
 %% Setup
 % Determine the maximum number of time slots required
@@ -28,30 +26,10 @@ NUM_ELTS  = get_num_elts(plane_list);
 % Allocate Memory
 Prx = zeros(length(Rxs),1);
 h_t = zeros(length(Rxs),ARRAY_LEN);
-if (Res.MAX_BOUNCE == 1)
-    % Single bounce only. Only requires 1 reflector matrix.
-    try
-        THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,1);
-        M_start    = ARRAY_LEN*ones(1,NUM_ELTS);
-        M_end      = zeros(1,NUM_ELTS);
-    catch
-        warning('Insufficient Memory to run simulation.');
-        return;
-    end
-elseif (Res.MAX_BOUNCE > 1)
-    % Multiple reflections. Requires a second reflector matrices.
-    try
-        THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,2);
-        M_start    = ARRAY_LEN*ones(2,NUM_ELTS);
-        M_end      = zeros(2,NUM_ELTS);
-    catch
-        warning('Insufficient Memory to run multi-reflection simulation.');
-        return;
-    end
-end
+[THE_MATRIX,M_start,M_end] = VLCIRC_allocate(NUM_ELTS,ARRAY_LEN,Res.MAX_BOUNCE);
 
 % These are essentially pointers for the current and next matrix indices
-% in the variables THE_MATRIX, mat_start, and mat_end
+% in the variables THE_MATRIX, mat_start, and mat_end when MAX_BOUNCE > 1
 c_M = 1; % Current Matrix
 n_M = 2; % Next Matrix
 
@@ -83,12 +61,9 @@ if (Res.MAX_BOUNCE > 0)
         M_start(n_M,:) = ARRAY_LEN*ones(1,NUM_ELTS);
         M_end(n_M,:)   = zeros(1,NUM_ELTS);    
         
-        % Calculate Matrix to Matrix reflections
-        [THE_MATRIX, M_start, M_end] = ...
+        % Calculate Matrix to Matrix reflections and change c_M
+        [THE_MATRIX, M_start, M_end, c_M, n_M] = ...
             update_matrix(plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M, WAITBAR, bounce_no);
-                      
-        % Swap the pointer to the current and next matrices
-        [n_M,c_M] = deal(c_M, n_M);
         
         % Update Rxs with received power from the current matrix
         if (Res.MIN_BOUNCE <= bounce_no)
@@ -96,7 +71,6 @@ if (Res.MAX_BOUNCE > 0)
                             THE_MATRIX(:,:,c_M), M_start(c_M,:), M_end(c_M,:), WAITBAR);
         end
     end
-
 end
 
 
@@ -123,11 +97,12 @@ end % EOF VLCIRC
 %% zero_bounce_power - Calculate LOS response
 % -------------------------------------------------------------------------
 function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t, WAITBAR)
-    if (WAITBAR); wb = waitbar(0,'Zero Bounce calculation...'); end
+    global STR
+    wb = wb_open(WAITBAR,STR.IRC_MSG2);
+    
     for src_cnt = 1:length(Txs)
-        if (WAITBAR)
-            waitbar((src_cnt-1)/length(Txs),wb);
-        end        
+        wb_update(wb,(src_cnt-1)/length(Txs));
+        
         for rcv_cnt = 1:length(Rxs)
             [visible, attenuation, delay] = get_atten_delay(Txs(src_cnt), ...
                                                             Rxs(rcv_cnt), ...
@@ -139,25 +114,25 @@ function [H] = zero_bounce_power(Txs, Rxs, plane_list, H, del_t, WAITBAR)
             end
         end
     end
-    if (WAITBAR); close(wb); end
+    wb_close(wb);
 end
 
 %% first_bounce_matrix - Calculate response from transmitters to reflectors
 % -------------------------------------------------------------------------
 function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_list, Res, THE_MATRIX, start_prev, end_prev, WAITBAR)
+    global STR
+    wb = wb_open(WAITBAR,STR.IRC_MSG3);
+
     % Initialize to call as "reference" to speedup performance
     element = candles_classes.rx_ps();
     deltas.x    = 0; deltas.y    = 0; deltas.z    = 0;
     start_pos.x = 0; start_pos.y = 0; start_pos.z = 0;
     
-    if (WAITBAR); wb = waitbar(0,'First Bounce calculation...'); end
     for tx_no = 1:length(Txs)
         element_no = 0;
         for plane_no = 1:length(plane_list)
-            if (WAITBAR)
-                waitbar((tx_no-1)/length(Txs) + ...
-                        (plane_no-1)/(length(plane_list)*length(Txs)),wb)
-            end
+            wb_update(wb,(tx_no-1)/length(Txs) + ...
+                        (plane_no-1)/(length(plane_list)*length(Txs)));
             
             % Determine the first element in the given plane along with the
             % corresponding deltas (difference in position for each element
@@ -221,7 +196,7 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
             end % End Plane Check
         end % End loop through planes
     end % End loop through sources
-    if (WAITBAR); close(wb); end
+    wb_close(wb)
 end
 
 %% update_fb_impulse - Update matrix element's for first bounce impulse
@@ -244,14 +219,15 @@ end
 
 %% update_matrix - Calculate response from reflectors to other reflectors
 % -------------------------------------------------------------------------
-function [THE_MATRIX, M_start, M_end] = update_matrix(plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M, WAITBAR, BOUNCE)
+function [THE_MATRIX, M_start, M_end, c_M, n_M] = update_matrix(plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M, WAITBAR, BOUNCE)
+    global STR
+    wb = wb_open(WAITBAR,[num2str(BOUNCE), STR.IRC_MSG4]);
+    
     rx_element = candles_classes.rx_ps();
     deltas.x    = 0; deltas.y    = 0; deltas.z    = 0;
     start_pos.x = 0; start_pos.y = 0; start_pos.z = 0;
-    
     rx_element_no = 0;
     
-    if (WAITBAR); wb = waitbar(0,[num2str(BOUNCE) 'Bounce calculation...']); end
     for plane_no = 1:length(plane_list)
         % Determine the first element in the given plane along with the
         % corresponding deltas (difference in position for each element
@@ -259,23 +235,18 @@ function [THE_MATRIX, M_start, M_end] = update_matrix(plane_list, Res, THE_MATRI
         [rx_element, deltas, start_pos] = ...
             get_element(plane_list(plane_no),rx_element, deltas, start_pos);
         
-        if (WAITBAR)
-            waitbar((plane_no-1)/(length(plane_list)),wb);
-            wb_min = (plane_no-1)/(length(plane_list));
-            wb_max = (plane_no)/(length(plane_list));
-        end                
+        wb_update(wb, (plane_no-1)/(length(plane_list)));
+        wb_min = (plane_no-1)/(length(plane_list));
+        wb_max = (plane_no)/(length(plane_list));
 
         %---- Z Plane ----%
         if ((deltas.x ~= 0) && (deltas.y ~= 0))  
             rx_element = rx_element.set_z(start_pos.z);
             rx_element = rx_element.set_A(deltas.x*deltas.y);
             for row = 1:plane_list(plane_no).num_div_l
+                wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_l);
+
                 rx_element = rx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
-                
-                if (WAITBAR)
-                    waitbar(wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_l,wb);
-                end                
-                
                 for col = 1:plane_list(plane_no).num_div_w
                     rx_element = rx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
                     rx_element_no = rx_element_no + 1;
@@ -289,12 +260,9 @@ function [THE_MATRIX, M_start, M_end] = update_matrix(plane_list, Res, THE_MATRI
             rx_element = rx_element.set_y(start_pos.y);
             rx_element = rx_element.set_A(deltas.x*deltas.z);
             for row = 1:plane_list(plane_no).num_div_h
+                wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_h);
+
                 rx_element = rx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
-                
-                if (WAITBAR)
-                    waitbar(wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_h,wb);
-                end                
-                
                 for col = 1:plane_list(plane_no).num_div_l
                     rx_element = rx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
                     rx_element_no = rx_element_no + 1;
@@ -308,12 +276,9 @@ function [THE_MATRIX, M_start, M_end] = update_matrix(plane_list, Res, THE_MATRI
             rx_element = rx_element.set_x(start_pos.x);
             rx_element = rx_element.set_A(deltas.y*deltas.z);
             for row = 1:plane_list(plane_no).num_div_w
+                wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_w);
+
                 rx_element = rx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
-                
-                if (WAITBAR)
-                    waitbar(wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_w,wb);
-                end                
-                
                 for col = 1:plane_list(plane_no).num_div_h
                     rx_element = rx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
                     rx_element_no = rx_element_no + 1;
@@ -323,7 +288,10 @@ function [THE_MATRIX, M_start, M_end] = update_matrix(plane_list, Res, THE_MATRI
             end
         end % End if X/Y/Z plane
     end % End plane loop
-    if (WAITBAR); close(wb); end
+    
+    % Swap the pointer to the current and next matrices
+    [n_M,c_M] = deal(c_M, n_M);
+    wb_close(wb)
 end
 
 %% update_element - update element of next MAT power from current MAT elements.
@@ -432,18 +400,19 @@ end
 %% update_Prx - 
 % -------------------------------------------------------------------------
 function [h_t, Prx] = update_Prx(h_t, Prx, Rxs, Res, plane_list, THE_MATRIX, M_start, M_end, WAITBAR)
+    global STR
+    wb = wb_open(WAITBAR,STR.IRC_MSG5);
+    
     element = candles_classes.tx_ps();
     deltas.x    = 0; deltas.y    = 0; deltas.z    = 0;
     start_pos.x = 0; start_pos.y = 0; start_pos.z = 0;
     
-    if (WAITBAR); wb = waitbar(0,'Received Power Update...'); end
     for rx_no = 1:length(Rxs)
         element_no = 0;
         for plane_no = 1:length(plane_list)
-            if (WAITBAR)
-                waitbar((rx_no-1)/length(Rxs) + ...
-                        (plane_no-1)/(length(plane_list)*length(Rxs)),wb)
-            end
+            wb_update(wb, (rx_no-1)/length(Rxs) + ...
+                        (plane_no-1)/(length(plane_list)*length(Rxs)));
+
             % Determine the first element in the given plane along with the
             % corresponding deltas (difference in position for each element
             % in the plane) and the start position of the first element.
@@ -503,7 +472,7 @@ function [h_t, Prx] = update_Prx(h_t, Prx, Rxs, Res, plane_list, THE_MATRIX, M_s
             end % End Plane Check
         end % End loop through planes
     end % End loop through receivers
-    if (WAITBAR); close(wb); end
+    wb_close(wb);
 end
 
 %% update_rx_impulse - Update rx impulse received impulse.
@@ -555,18 +524,18 @@ end
 %% get_array_len - Get the maximum number of time slots
 % -------------------------------------------------------------------------
 function [ARRAY_LENGTH] = get_array_len(Room,del_t,MAX_BOUNCE)
-    global SPEED_OF_LIGHT
+    global C
 
     ARRAY_LENGTH = ceil((MAX_BOUNCE+1)*sqrt(Room.length^2 + ...
                                             Room.width^2  +  ...
                                             Room.height^2) ...
-                                       / (del_t*SPEED_OF_LIGHT));
+                                       / (del_t*C.SPEED_OF_LIGHT));
 end
 
 %% get_atten_delay - Calculate the attenuation and delay from src to dest
 % -------------------------------------------------------------------------
 function [visible, attenuation, delay] = get_atten_delay(src, dest, plane_list)
-    global SPEED_OF_LIGHT
+    global C
 
     % Calculate distance from source to destination
     d = sqrt((src.x - dest.x)^2 + (src.y - dest.y)^2 + (src.z - dest.z)^2);
@@ -593,7 +562,7 @@ function [visible, attenuation, delay] = get_atten_delay(src, dest, plane_list)
         (VLCIRC_CheckVisibility(src,dest,plane_list)))
         % LOS path exists. Calculate delay and attenuation.
         visible = 1;
-        delay = d/SPEED_OF_LIGHT;
+        delay = d/C.SPEED_OF_LIGHT;
         attenuation = (dest.A/d^2)* ...
                       ((src.m + 1)*(cos_phi^src.m)/(2*pi))*...
                       ((dest.gc)*cos_psi); 
@@ -622,10 +591,59 @@ function [element, deltas, start_pos] = get_element(plane,element, deltas, start
     
 end
 
+%% VLCIRC_allocate - Determine location in the time array 
+% -------------------------------------------------------------------------
+function [THE_MATRIX,M_start,M_end] = VLCIRC_allocate(NUM_ELTS,ARRAY_LEN,MAX_BOUNCE)
+    global STR
+    
+    if (MAX_BOUNCE == 1)
+        try % Single bounce only. Only requires 1 reflector matrix.
+            THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,1);
+            M_start    = ARRAY_LEN*ones(1,NUM_ELTS);
+            M_end      = zeros(1,NUM_ELTS);
+        catch
+            warning(STR.IRC_MSG1);
+            return;
+        end
+    elseif (MAX_BOUNCE > 1)
+        try % Multiple reflections. Requires a second reflector matrices.
+            THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,2);
+            M_start    = ARRAY_LEN*ones(2,NUM_ELTS);
+            M_end      = zeros(2,NUM_ELTS);
+        catch
+            warning(STR.IRC_MSG1);
+            return;
+        end
+    end
+end
+
+
 %% get_array_loc - Determine location in the time array 
 % -------------------------------------------------------------------------
 function [i] = get_array_loc(t, del_t)
     % Using floor rather than round so that rounding errors don't propogate
     % and cause out of range errors where a value is set beyond ARRAY_LEN.
     i = 1 + floor(t/del_t);
+end
+
+%% wb_open - check if displaying waitbars and open if so
+% -------------------------------------------------------------------------
+function [wb] = wb_open(WAITBAR,my_str)
+    if (WAITBAR)
+        wb = waitbar(0,my_str); 
+    else
+        wb = [];
+    end
+end
+
+%% wb_update - check if wb is active and close it if so
+% -------------------------------------------------------------------------
+function wb_update(wb,val)
+    if (~isempty(wb)); waitbar(val,wb); end
+end
+
+%% wb_close - check if wb is active and close it if so
+% -------------------------------------------------------------------------
+function wb_close(wb)
+    if (~isempty(wb)); close(wb); end
 end
