@@ -45,6 +45,15 @@ function SYS_define_constants( )
     C.D_RX_FOV         = pi/4;              % New Rx FOV
     C.D_RX_N           = 1.5;               % New Rx index of refraction
     
+    % This is a simple base PSD... Update for LEDs to be used
+    % FIXME: Need to do something with this...
+    C.D_LAMBDA = 200:1:1100;
+    s1=18; m1=450; a1=1; s2=60; m2=555; a2=2.15*a1; s3=25; m3=483; a3=-0.2*a1;
+    Sprime = a1/(sqrt(2*pi)*s1)*exp(-(C.D_LAMBDA-m1).^2/(2*s1^2)) + ...
+             a2/(sqrt(2*pi)*s2)*exp(-(C.D_LAMBDA-m2).^2/(2*s2^2)) + ...
+             a3/(sqrt(2*pi)*s3)*exp(-(C.D_LAMBDA-m3).^2/(2*s3^2));
+    C.D_SPRIME = Sprime/sum(Sprime);  %Normalized PSD    
+    
     %% Constraints of the environment
     C.MAX_NET_GROUPS   = 10;                % Max # of Net Groups
     C.MIN_TX           = 1;                 % Min # of Txs in Environment

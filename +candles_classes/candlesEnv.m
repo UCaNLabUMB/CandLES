@@ -49,16 +49,8 @@ classdef candlesEnv
             obj.rxs   = candles_classes.rx_ps(d_rx_pos{:});
             obj.boxes = candles_classes.box.empty;
             obj.num_groups = C.D_NUM_NET_GROUPS;
-            
-            % This is a simple base PSD... Update for LEDs to be used
-            % FIXME: Need to do something with this...
-            LAMBDAMIN=200; LAMBDAMAX=1100; DLAMBDA=1;
-            obj.lambda=LAMBDAMIN:DLAMBDA:LAMBDAMAX;
-            s1=18; m1=450; a1=1; s2=60; m2=555; a2=2.15*a1; s3=25; m3=483; a3=-0.2*a1;
-            Sprime = a1/(sqrt(2*pi)*s1)*exp(-(obj.lambda-m1).^2/(2*s1^2)) + ...
-                     a2/(sqrt(2*pi)*s2)*exp(-(obj.lambda-m2).^2/(2*s2^2)) + ...
-                     a3/(sqrt(2*pi)*s3)*exp(-(obj.lambda-m3).^2/(2*s3^2));
-            obj.Sprime=Sprime/sum(Sprime);  %Normalized PSD
+            obj.lambda=C.D_LAMBDA;
+            obj.Sprime(1,:) = C.D_SPRIME;
 
             obj.del_t        = C.D_DEL_T; 
             obj.del_s        = C.D_DEL_S;
@@ -223,6 +215,7 @@ classdef candlesEnv
             
             if obj.num_groups < C.MAX_NET_GROUPS
                 obj.num_groups = obj.num_groups + 1;
+                obj.Sprime(obj.num_groups,:) = C.D_SPRIME;
                 ERR = C.NO_ERR;
             else
                 ERR = C.ERR_MAX_NG;
@@ -234,6 +227,7 @@ classdef candlesEnv
         function [obj] = removeNetGroup(obj,ng)
             if (obj.num_groups > 1)
                 obj.num_groups = obj.num_groups - 1;
+                obj.Sprime(ng,:) = [];
                 
                 % Set any Txs with group = ng to 0 and update others
                 for i = 1:length(obj.txs)
