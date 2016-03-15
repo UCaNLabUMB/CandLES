@@ -525,12 +525,19 @@ classdef candlesEnv
         % -----------------------------------------------------------------
         function [P_rx,h_t] = run(obj)
         % Calculate Impulse responses and Prx for Rxs in the environment
-            Res.del_t = obj.del_t;
-            Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.min_bounce;
-            Res.MAX_BOUNCE = obj.max_bounce;
-            [P_rx,h_t]     = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, ...
-                                    Res, obj.disp_wb);
+            for ng = 1:obj.num_groups
+                [my_txs, ~] = obj.getGroup(ng);
+                [P,h] = VLCIRC(my_txs, obj.rxs, obj.boxes, obj.rm, ...
+                                    obj.getRes(), obj.disp_wb);
+                % FIXME: Should allocate before, but ARRAYLEN (i.e., h2) is
+                % calculated in the VLCIRC function at the moment.
+                if (~exist('P_rx','var'))
+                    P_rx = zeros(obj.num_groups,length(obj.rxs));
+                    h_t  = zeros(obj.num_groups,length(obj.rxs),size(h,2));
+                end
+                P_rx(ng,:)  = P;
+                h_t(ng,:,:) = h;
+            end
         end
         
         % -----------------------------------------------------------------
@@ -555,12 +562,8 @@ classdef candlesEnv
                 my_rxs(i) = my_rxs(i).set_z(Z);
             end
             
-            Res.del_t = obj.del_t;
-            Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.min_bounce;
-            Res.MAX_BOUNCE = obj.max_bounce;
-            [P_rx,~]       = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
-                                    Res, obj.disp_wb);
+            [P_rx,~] = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
+                              obj.getRes(), obj.disp_wb);
             
             
             Irrad = P_rx./(obj.del_p)^2; 
@@ -580,11 +583,7 @@ classdef candlesEnv
                 obj.rxs(i) = obj.rxs(i).set_y(y_locs(i));                
             end
                         
-            Res.del_t = obj.del_t;
-            Res.del_s = obj.del_s;
-            Res.MIN_BOUNCE = obj.min_bounce;
-            Res.MAX_BOUNCE = obj.max_bounce;
-            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.disp_wb);
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, obj.getRes(), obj.disp_wb);
         end
         
         % -----------------------------------------------------------------
@@ -596,11 +595,16 @@ classdef candlesEnv
                 obj.rxs(i) = obj.rxs(i).set_el(max(min(els(i),360),0)*(pi/180));
             end
                         
-            Res.del_t = obj.del_t;
-            Res.del_s = obj.del_s;
+            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, obj.getRes(), obj.disp_wb);
+        end
+        
+        % -----------------------------------------------------------------
+        function [Res] = getRes(obj)
+        % Get the resolution information in a structure called Res
+            Res.del_t      = obj.del_t;
+            Res.del_s      = obj.del_s;
             Res.MIN_BOUNCE = obj.min_bounce;
             Res.MAX_BOUNCE = obj.max_bounce;
-            [P, H] = VLCIRC(obj.txs, obj.rxs, obj.boxes, obj.rm, Res, obj.disp_wb);
         end
         
         %% Display Functions

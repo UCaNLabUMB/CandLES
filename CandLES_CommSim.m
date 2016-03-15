@@ -31,7 +31,7 @@ function varargout = CandLES_CommSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_CommSim
 
-% Last Modified by GUIDE v2.5 07-Mar-2016 15:23:37
+% Last Modified by GUIDE v2.5 14-Mar-2016 23:42:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,9 +81,11 @@ CommSimEnv = mainEnv;
 RESULTS_PRX  = [];
 RESULTS_H    = [];
 RX_SELECT    = 0;
+TX_GRP_SELECT = 1;
 setappdata(hObject, 'RESULTS_PRX', RESULTS_PRX);
 setappdata(hObject, 'RESULTS_H', RESULTS_H);
 setappdata(hObject, 'RX_SELECT', RX_SELECT);
+setappdata(hObject, 'TX_GRP_SELECT', TX_GRP_SELECT);
 setappdata(hObject, 'CommSimEnv', CommSimEnv);
 set_values(); % Set the values and display environment
 
@@ -136,7 +138,6 @@ function pushbutton_GenRes_Callback(hObject, eventdata, handles)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS DISPLAY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% --- Executes on selection change in popup_rx_select.
 function popup_rx_select_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_rx_select (see GCBO)
     h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
@@ -144,7 +145,12 @@ function popup_rx_select_Callback(hObject, eventdata, handles)
     setappdata(h_GUI_CandlesCommSim, 'RX_SELECT', RX_SELECT);
     set_values(); % Set the values and update axes
 
-
+function popup_tx_group_select_Callback(hObject, eventdata, handles)
+% hObject    handle to popup_tx_group_select (see GCBO)
+    h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
+    TX_GRP_SELECT        = get(hObject,'Value');
+    setappdata(h_GUI_CandlesCommSim, 'TX_GRP_SELECT', TX_GRP_SELECT);
+    set_values(); % Set the values and update axes
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,6 +165,7 @@ function set_values()
     RESULTS_PRX          = getappdata(h_GUI_CandlesCommSim,'RESULTS_PRX');
     RESULTS_H            = getappdata(h_GUI_CandlesCommSim,'RESULTS_H');
     RX_SELECT            = getappdata(h_GUI_CandlesCommSim,'RX_SELECT');
+    TX_GRP_SELECT        = getappdata(h_GUI_CandlesCommSim,'TX_GRP_SELECT');
     handles              = guidata(h_GUI_CandlesCommSim);
     
     % Display room with selected Plane
@@ -172,15 +179,19 @@ function set_values()
     else
         my_ax = handles.axes_results;
         if (RX_SELECT == 0)
-            my_results = RESULTS_H;
+            my_results = reshape(RESULTS_H(TX_GRP_SELECT,:,:),size(RESULTS_H,2),size(RESULTS_H,3));
         else
-            my_results = RESULTS_H(RX_SELECT,:);
+            my_results = reshape(RESULTS_H(TX_GRP_SELECT,RX_SELECT,:),1,size(RESULTS_H,3));
         end
         CommSimEnv.plotCommImpulse(my_results,my_ax);
     end
 
     % Set Selection Boxes
-    set(handles.popup_rx_select,'String',{STR.MSG31; 1:1:length(CommSimEnv.rxs)});
+    set(handles.popup_rx_select,'String',{STR.MSG31; 1:length(CommSimEnv.rxs)});
     set(handles.popup_rx_select,'Value',RX_SELECT+1);
     
+    set(handles.popup_tx_group_select,'String',{1:CommSimEnv.num_groups});
+    set(handles.popup_tx_group_select,'Value',TX_GRP_SELECT);
     
+
+
