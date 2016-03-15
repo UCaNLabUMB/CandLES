@@ -415,7 +415,7 @@ function set_values()
     
     if (BOX_SELECT > 0)
         % Display room with selected Box
-        SYS_display_room(handles.axes_room, boxSetEnv, 3, BOX_SELECT);
+        boxSetEnv.display_room(handles.axes_room, 3, BOX_SELECT);
         my_box = boxSetEnv.boxes(BOX_SELECT);
         max_x = boxSetEnv.rm.length - my_box.length;
         max_y = boxSetEnv.rm.width  - my_box.width;
@@ -497,7 +497,7 @@ function set_values()
         set(handles.popup_box_select,'Value',BOX_SELECT);
     else
         % Display room with selected Box
-        SYS_display_room(handles.axes_room, boxSetEnv, 0);
+        boxSetEnv.display_room(handles.axes_room, 0);
         
         % NOTE: Set default slider values this way to avoid errors when a
         % box is added and then removed such that Max < 1.

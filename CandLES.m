@@ -207,7 +207,7 @@ function pushbutton_disp_room_Callback(~, ~, ~)
     h_GUI_CandlesMain = getappdata(0,'h_GUI_CandlesMain');
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
     figure();
-    SYS_display_room(axes(), mainEnv)
+    mainEnv.display_room(axes());
 
 
 % Room Size ----------------------------------------------------------
@@ -347,7 +347,7 @@ function set_values()
     mainEnv           = getappdata(h_GUI_CandlesMain,'mainEnv');
     handles           = guidata(h_GUI_CandlesMain);
     
-    SYS_display_room(handles.axes_room, mainEnv)
+    mainEnv.display_room(handles.axes_room);
     
     % Room Settings
     set(handles.edit_RmLength,'string', num2str(mainEnv.rm.length));

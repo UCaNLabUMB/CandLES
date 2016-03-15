@@ -287,7 +287,7 @@ function set_values()
     handles            = guidata(h_GUI_CandlesRxSet);
     
     % Display room with selected Rx
-    SYS_display_room(handles.axes_room, rxSetEnv, 2, RX_SELECT);
+    rxSetEnv.display_room(handles.axes_room, 2, RX_SELECT);
     
     % Set Location boxes
     set(handles.edit_Rx_x,'string',num2str(rxSetEnv.rxs(RX_SELECT).x));

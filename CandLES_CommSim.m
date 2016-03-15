@@ -162,7 +162,7 @@ function set_values()
     handles              = guidata(h_GUI_CandlesCommSim);
     
     % Display room with selected Plane
-    SYS_display_room(handles.axes_room, CommSimEnv, 2, RX_SELECT);
+    CommSimEnv.display_room(handles.axes_room, 2, RX_SELECT);
     
     if (isempty(RESULTS_H))
         % Display a message on the Results Axis

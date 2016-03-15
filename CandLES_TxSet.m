@@ -460,7 +460,7 @@ function tx_values_update()
     handles            = guidata(h_GUI_CandlesTxSet);
 
     % Display room with selected Tx ---------------------------------------
-    SYS_display_room(handles.axes_room, txSetEnv, 1, TX_SELECT);
+    txSetEnv.display_room(handles.axes_room, 1, TX_SELECT);
     
     % Set Tx Selection box ------------------------------------------------
     set(handles.popup_tx_select,'String',1:1:length(txSetEnv.txs), ...
@@ -519,7 +519,7 @@ function group_values_update()
     [my_txs,tx_nums] = txSetEnv.getGroup(GROUP_SELECT);
     
     % Display room with selected Tx
-    SYS_display_room(handles.axes_room, txSetEnv, 1, tx_nums);    
+    txSetEnv.display_room(handles.axes_room, 1, tx_nums);    
 
     % Set Group Selection box (same box as Tx Select) ---------------------
     set(handles.popup_tx_select,'String',1:1:txSetEnv.num_groups, ...

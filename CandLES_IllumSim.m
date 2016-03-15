@@ -194,7 +194,7 @@ function set_values()
     handles               = guidata(h_GUI_CandlesIllumSim);
     
     % Display room with selected Plane
-    SYS_display_room(handles.axes_room, IllumSimEnv, 4, PLANE_SELECT);
+    IllumSimEnv.display_room(handles.axes_room, 4, PLANE_SELECT);
     
     % Display results
     res_view = get(get(handles.panel_display,'SelectedObject'),'String');
