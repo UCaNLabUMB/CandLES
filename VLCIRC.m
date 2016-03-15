@@ -666,6 +666,9 @@ end
 function [THE_MATRIX,M_start,M_end] = VLCIRC_allocate(NUM_ELTS,ARRAY_LEN,MAX_BOUNCE)
     global STR
     
+    THE_MATRIX = [];
+    M_start    = [];
+    M_end      = []; 
     if (MAX_BOUNCE == 1)
         try % Single bounce only. Only requires 1 reflector matrix.
             THE_MATRIX = zeros(NUM_ELTS,ARRAY_LEN,1);
