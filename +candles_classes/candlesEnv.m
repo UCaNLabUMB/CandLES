@@ -209,6 +209,24 @@ classdef candlesEnv
             my_axes.YTick = 0:50:100;
         end
 
+        
+        % -----------------------------------------------------------------
+        function plotNetGroupSPD(obj,GROUP_SELECT,my_axes)         
+            SPD = 100*obj.Sprime(GROUP_SELECT,:)./max(obj.Sprime(GROUP_SELECT,:));
+            
+            min_lam = 380;
+            max_lam = 780;
+            
+            axes(my_axes); cla(my_axes,'reset');
+            plot(obj.lambda,SPD);
+            axis([min_lam max_lam 0 105]);
+            title('Normalized Spectral Power Distribution', 'FontSize',10);
+            xlabel('Wavelength (nm)', 'FontSize',9);
+            ylabel('% of Max', 'FontSize',9);            
+            my_axes.XTick = min_lam:100:max_lam;
+            my_axes.YTick = 0:50:100;
+        end
+        
         % -----------------------------------------------------------------
         function [obj,ERR] = addNetGroup(obj)
         % Add a new Network Group
@@ -252,6 +270,18 @@ classdef candlesEnv
                     obj = obj.removeNetGroup(ng);
                 else
                     ng = ng + 1;
+                end
+            end
+        end
+        
+        % -----------------------------------------------------------------
+        function [obj] = setNetGroupSPD(obj, ng, SPD)
+        % Update the Spectral Power Distribution of the Network Group (ng)
+            % Verify that the Network Group exists
+            if ((ng > 0) && (ng <= obj.num_groups))
+                % Verify appropriate length SPD
+                if (length(SPD) == length(obj.lambda))
+                    obj.Sprime(ng,:) = SPD;
                 end
             end
         end
@@ -570,7 +600,8 @@ classdef candlesEnv
             Irrad = reshape(Irrad,[N_y,N_x]);
             
             V = SYS_eye_sensitivity(min(obj.lambda), max(obj.lambda), 1978);
-            Illum = Irrad*683*sum(obj.Sprime.*V); 
+            Illum = Irrad*683*sum(obj.Sprime(1,:).*V); 
+            % FIXME: Update illum conversion for each group
             grid = [x_locs;y_locs];
         end
         

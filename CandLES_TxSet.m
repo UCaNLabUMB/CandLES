@@ -31,7 +31,7 @@ function varargout = CandLES_TxSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_TxSet
 
-% Last Modified by GUIDE v2.5 08-Mar-2016 22:55:35
+% Last Modified by GUIDE v2.5 03-Apr-2016 16:59:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -267,6 +267,13 @@ function menu_removeTxGroup_Callback(hObject, eventdata, handles)
     setappdata(h_GUI_CandlesTxSet, 'txSetEnv', txSetEnv);
     set_values(); % Set the values and display room with selected TX
     
+% --------------------------------------------------------------------
+function menuUpdateSPD_Callback(hObject, ~, ~)
+% hObject    handle to menuUpdateSPD (see GCBO)
+    global STR
+    warndlg(STR.MSG4);
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TX SELECT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -506,6 +513,7 @@ function tx_values_update()
 
     % Display emission pattern of selected Tx -----------------------------
     txSetEnv.plotTxEmission(TX_SELECT,handles.axes_tx);
+    txSetEnv.plotNetGroupSPD(txSetEnv.txs(TX_SELECT).ng, handles.axes_tx_group);
 
 % Update the GUI values for the selected Group
 % --------------------------------------------------------------------
@@ -564,6 +572,7 @@ function group_values_update()
     else
         txSetEnv.plotTxEmission(tx_nums(1),handles.axes_tx);
     end
+    txSetEnv.plotNetGroupSPD(GROUP_SELECT, handles.axes_tx_group);
 
 % Check if all values are equivalent before updating edit box
 % --------------------------------------------------------------------
@@ -608,3 +617,6 @@ function disable_all_selections(handles)
     
     cla(handles.axes_tx,'reset')
     text(0.28, 0.5, sprintf(STR.MSG26), 'Parent', handles.axes_tx);
+
+
+
