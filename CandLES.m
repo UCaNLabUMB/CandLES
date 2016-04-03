@@ -84,20 +84,27 @@ setappdata(hObject,   'fhSetValues', @set_values );
 setappdata(hObject,  'fhUpdateMain', @update_main);
 
 % --- Executes when user attempts to close figure1.
-function figure1_CloseRequestFcn(hObject, eventdata, handles) 
+function figure1_CloseRequestFcn(hObject, ~, ~) 
 % hObject    handle to figure1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+global C
 global STR
 
 response = questdlg(STR.MSG1, '',STR.YES,STR.NO,STR.YES);
 if strcmp(response,STR.YES)
     % Remove the global constants structures, C & STR, and the handle value
     % of the main fig from root (handle 0), then delete (close) the fig.
+    GUI_WINDOWS = C.GUI_WINDOWS;
     clearvars -global C
     clearvars -global STR
-    rmappdata(0, 'h_GUI_CandlesMain');
-    delete(hObject);
+    
+    % Close all other windows
+    for window = 1:length(GUI_WINDOWS)
+        h = getappdata(0,char(GUI_WINDOWS(window)));
+        if (~isempty(h))
+            rmappdata(0,char(GUI_WINDOWS(window)));
+            delete(h);
+        end
+    end
 end
 
 % --- Outputs from this function are returned to the command line.
@@ -166,29 +173,59 @@ function menu_Print_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menu_TxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_TxSet (see GCBO)
-    CandLES_TxSet();
+    global STR
+    if (num_open_windows() > 1)
+        warndlg(STR.MSG32)
+    else
+        CandLES_TxSet();
+    end
 
 function menu_RxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_RxSet (see GCBO)
-    CandLES_RxSet();
+    global STR
+    if (num_open_windows() > 1)
+        warndlg(STR.MSG32)
+    else
+        CandLES_RxSet();
+    end
 
 function menu_BoxSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_BoxSet (see GCBO)
-    CandLES_BoxSet();
+    global STR
+    if (num_open_windows() > 1)
+        warndlg(STR.MSG32)
+    else
+        CandLES_BoxSet();
+    end
 
 function menu_SimSet_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_SimSet (see GCBO)
-    CandLES_SimSet();
+    global STR
+    if (num_open_windows() > 1)
+        warndlg(STR.MSG32)
+    else
+        CandLES_SimSet();
+    end
 
 % Results Menu -------------------------------------------------------   
 % --------------------------------------------------------------------
 function menu_IllumSim_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_IllumSim (see GCBO)
-    CandLES_IllumSim();
+    global STR
+    if (num_open_windows() > 1)
+        warndlg(STR.MSG32)
+    else
+        CandLES_IllumSim();
+    end
 
 function menu_CommSim_Callback(hObject, eventdata, handles)
 % hObject    handle to menu_CommSim (see GCBO)
-    CandLES_CommSim();
+    global STR
+    if (num_open_windows() > 1)
+        warndlg(STR.MSG32)
+    else
+        CandLES_CommSim();
+    end
 
 % Help Menu ----------------------------------------------------------    
 % --------------------------------------------------------------------
@@ -320,6 +357,19 @@ function update_ref_edit(hObject, param)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Determine the number of open CandLES windows
+% --------------------------------------------------------------------
+function num_windows = num_open_windows()
+    global C
+    num_windows = 0;
+    
+    for window = 1:length(C.GUI_WINDOWS)
+        h = getappdata(0,char(C.GUI_WINDOWS(window)));
+        if (~isempty(h))
+            num_windows = num_windows + 1;
+        end
+    end
 
 % Load Images
 % --------------------------------------------------------------------

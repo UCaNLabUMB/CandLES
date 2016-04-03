@@ -50,6 +50,7 @@ function SYS_define_strings( )
     STR.MSG30 = ['Results have not been generated \n' ...
                  '           for this configuration.'];
     STR.MSG31 = 'All Rxs';
+    STR.MSG32 = 'Please close other open CandLES windows.';
     
     
     % VLCIRC Strings

@@ -9,9 +9,9 @@
 %    NOTE: Change "h_GUI_CandlesTemplate" in the open function and close
 %    request function to represent the new page. This is the figure handle
 %    that gets stored in root so that the page can be referenced by other
-%    pages. You can also rename templateEnv - the candlesEnv variable
-%    stored within this GUI - to something that is more representative of
-%    the page.
+%    pages. This string should also be added to C.GUI_WINDOWS in the file
+%    SYS_define_constants. You can also rename templateEnv (the candlesEnv
+%    variable stored in this GUI) to something that represents the page.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Suppress unnecessary warnings
