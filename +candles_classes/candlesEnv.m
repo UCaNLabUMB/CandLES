@@ -38,9 +38,7 @@ classdef candlesEnv
 
             %Initialize the global constants in C
             global C
-            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
-                SYS_define_constants();
-            end
+            SYS_define_constants();
             
             d_rm_size = num2cell(C.D_RM_SIZE);
             d_tx_pos  = num2cell(C.D_ENV_TX_POS);

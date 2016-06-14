@@ -89,6 +89,9 @@ function figure1_CloseRequestFcn(hObject, ~, ~)
 global C
 global STR
 
+% In case C was cleared externally
+SYS_define_constants();
+
 response = questdlg(STR.MSG1, '',STR.YES,STR.NO,STR.YES);
 if strcmp(response,STR.YES)
     % Remove the global constants structures, C & STR, and the handle value

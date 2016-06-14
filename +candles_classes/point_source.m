@@ -25,9 +25,7 @@ classdef point_source
         
             %Initialize the global constants in C
             global C
-            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
-                SYS_define_constants();
-            end
+            SYS_define_constants();
             
             d_pos = C.D_PS_POS; % Default Position
             d_or  = C.D_PS_OR;  % Default Orientation (az, el)

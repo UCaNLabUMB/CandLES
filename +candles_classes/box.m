@@ -26,9 +26,7 @@ classdef box
             
             %Initialize the global constants in C
             global C
-            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
-                SYS_define_constants();
-            end
+            SYS_define_constants();
             
             d_pos  = C.D_BOX_POS;  % Default Position
             d_size = C.D_BOX_SIZE; % Default Size

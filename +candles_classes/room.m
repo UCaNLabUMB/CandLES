@@ -23,9 +23,7 @@ classdef room
         % Constructor
             %Initialize the global constants in C
             global C
-            if (~exist('C.VER','var') || (C.VER ~= SYS_version))
-                SYS_define_constants();
-            end
+            SYS_define_constants();
             
             d_size = C.D_RM_SIZE; % Default Size
             d_ref  = C.D_RM_REF;  % Default Reflectivity
