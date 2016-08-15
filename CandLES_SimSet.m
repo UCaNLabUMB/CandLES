@@ -31,7 +31,7 @@ function varargout = CandLES_SimSet(varargin)
 
 % Edit the above text to modify the response to help CandLES_SimSet
 
-% Last Modified by GUIDE v2.5 03-Mar-2016 16:33:05
+% Last Modified by GUIDE v2.5 15-Aug-2016 11:45:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -136,6 +136,10 @@ function edit_del_s_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_del_s (see GCBO)
     update_edit(hObject, 'del_s');
 
+function edit_del_p_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_del_p (see GCBO)
+    update_edit(hObject, 'del_p');
+
 function edit_max_bounce_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_max_bounce (see GCBO)
     update_edit(hObject, 'max_b');
@@ -190,10 +194,13 @@ function set_values()
     %Set Text Boxes
     set(handles.edit_del_t,      'string', num2str(simSetEnv.del_t));
     set(handles.edit_del_s,      'string', num2str(simSetEnv.del_s));
+    set(handles.edit_del_p,      'string', num2str(simSetEnv.del_p));
     set(handles.edit_max_bounce, 'string', num2str(simSetEnv.max_bounce));
     
     set(handles.checkbox_waitbar, 'value', simSetEnv.disp_wb);
     
+
+
 
 
 
