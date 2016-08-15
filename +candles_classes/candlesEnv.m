@@ -653,41 +653,6 @@ classdef candlesEnv
         end
         
         % -----------------------------------------------------------------
-        function plotIllumPlane(obj,Illum,plane,my_ax)
-        % Plot the Illumination results at a specified plane
-            x = 0:obj.del_p:obj.rm.length;
-            y = 0:obj.del_p:obj.rm.width;
-            
-            axes(my_ax);
-            if (max(max(Illum)) > 0)
-                contourf(x,y,Illum);
-                xlabel('X (m)');
-                ylabel('Y (m)');
-                title(['Surface Illumination (Lux) at ' ...
-                         num2str(plane) 'm']);
-                view([0 90]);
-                caxis([0 max(max(Illum))]);
-                colorbar;
-            else
-                cla(my_ax,'reset');
-                text(0.38, 0.5, sprintf('No Illumination'), 'Parent', my_ax);
-
-            end
-        end
-        
-        % -----------------------------------------------------------------
-        function plotIllumPlaneCDF(~,Illum,plane,my_ax)
-        % Plot the CDF of the Illumination results at a specified plane
-            axes(my_ax);
-            temp = reshape(Illum,[1,size(Illum,1)*size(Illum,2)]);
-            cdfplot(temp);
-%            xlabel('Illuminance (lux)');
-%            ylabel('CDF');
-            title(['CDF of the Surface Illumination at ' ...
-                     num2str(plane) 'm']);
-        end        
-        
-        % -----------------------------------------------------------------
         function [msg] = getErrorMessage(~,ERR)
         % Get the error message associated with error ERR
             global C
