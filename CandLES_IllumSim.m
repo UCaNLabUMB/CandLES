@@ -31,7 +31,7 @@ function varargout = CandLES_IllumSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_IllumSim
 
-% Last Modified by GUIDE v2.5 29-Feb-2016 21:58:11
+% Last Modified by GUIDE v2.5 18-Aug-2016 14:44:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -155,23 +155,51 @@ IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
 PLANE_SELECT          = getappdata(h_GUI_CandlesIllumSim,'PLANE_SELECT');
 ILLUM_RES             = getappdata(h_GUI_CandlesIllumSim,'ILLUM_RES');
 
-% Calculate the results if not already stored
-if (~ILLUM_RES.results_exist(PLANE_SELECT))
-    temp = IllumSimEnv.getIllum(PLANE_SELECT);
-    ILLUM_RES = ILLUM_RES.set_results(temp, PLANE_SELECT);
-end
+ILLUM_RES = IllumSimEnv.getIllum(PLANE_SELECT, ILLUM_RES);
 
 setappdata(h_GUI_CandlesIllumSim, 'ILLUM_RES', ILLUM_RES);
 set_values(); % Set the values and display room with selected TX
 
+% --------------------------------------------------------------------
+function pushbutton_GenRes2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_GenRes2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
+ILLUM_RES             = getappdata(h_GUI_CandlesIllumSim,'ILLUM_RES');
+
+% Get a vector input from the user
+prompt={'Enter a vector of plane values (e.g., 1,2,3) to simulate:'};
+name = 'Planes to Simulate';
+defaultans = {''};
+options.Interpreter = 'tex';
+plane_list = inputdlg(prompt,name,[1 40],defaultans,options);
+plane_list = str2num(plane_list{1});
+
+% Error check plane_list
+plane_list = plane_list(plane_list >= 0);
+plane_list = plane_list(plane_list <= IllumSimEnv.rm.height);
+
+% Generate results for the planes in plane_list
+ILLUM_RES = IllumSimEnv.getIllum(plane_list, ILLUM_RES);
+
+setappdata(h_GUI_CandlesIllumSim, 'ILLUM_RES', ILLUM_RES);
+set_values(); % Set the values and display room with selected TX
 
 % --------------------------------------------------------------------
 function radiobutton_results_Callback(hObject, eventdata, handles)
 % hObject    handle to radiobutton_cdf (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set_values()
+set_values();
 
+% --------------------------------------------------------------------
+function checkbox_colorscale_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_colorscale (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set_values();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -197,12 +225,11 @@ function set_values()
         cla(handles.axes_results,'reset')
         text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', handles.axes_results);
     else
+        scale_for_maximum = get(handles.checkbox_colorscale,'Value');
         if(strcmp(res_view,'Spatial Plane'))
-            x = 0:IllumSimEnv.del_p:IllumSimEnv.rm.length;
-            y = 0:IllumSimEnv.del_p:IllumSimEnv.rm.width;
-            ILLUM_RES.display_plane(x, y, PLANE_SELECT, handles.axes_results);
+            ILLUM_RES.display_plane(PLANE_SELECT, scale_for_maximum, handles.axes_results);
         elseif(strcmp(res_view,'CDF'))
-            ILLUM_RES.display_cdf(PLANE_SELECT, handles.axes_results);
+            ILLUM_RES.display_cdf(PLANE_SELECT, scale_for_maximum, handles.axes_results);
         end
     end
     

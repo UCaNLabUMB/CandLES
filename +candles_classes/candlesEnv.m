@@ -569,38 +569,51 @@ classdef candlesEnv
         end
         
         % -----------------------------------------------------------------
-        function [Illum, grid] = getIllum(obj,Z)
+        function [ILLUM_RES] = getIllum(obj,plane_list,ILLUM_RES)
         % Calculate Illumination at height Z
-            
-            % Setup X,Y locations
-            x = 0:obj.del_p:obj.rm.length;
-            y = 0:obj.del_p:obj.rm.width;
-            N_x = length(x);
-            N_y = length(y);
-            
-            [X, Y] = meshgrid(x, y);
-            x_locs = reshape(X,1,N_x*N_y);
-            y_locs = reshape(Y,1,N_x*N_y);
+        
+            for i = 1:length(plane_list)
+                
+                % NOTE: Limiting resolution to fix a rounding issue from
+                % the GUI when entering strings.
+                Z = round(plane_list(i),6);
+                
+                if (~ILLUM_RES.results_exist(Z))
+                    % Setup X,Y locations
+                    x = 0:obj.del_p:obj.rm.length;
+                    y = 0:obj.del_p:obj.rm.width;
+                    N_x = length(x);
+                    N_y = length(y);
 
-            temp_rx = candles_classes.rx_ps(0,0,0,0,pi/2,obj.del_p^2,pi/2,1);
-            my_rxs(1:size(x_locs,2)) = temp_rx;
-            for i = 1:size(x_locs,2)
-                my_rxs(i) = my_rxs(i).set_x(x_locs(i));
-                my_rxs(i) = my_rxs(i).set_y(y_locs(i));
-                my_rxs(i) = my_rxs(i).set_z(Z);
+                    [X, Y] = meshgrid(x, y);
+                    x_locs = reshape(X,1,N_x*N_y);
+                    y_locs = reshape(Y,1,N_x*N_y);
+
+                    temp_rx = candles_classes.rx_ps(0,0,0,0,pi/2,obj.del_p^2,pi/2,1);
+                    my_rxs(1:size(x_locs,2)) = temp_rx;
+                    for i = 1:size(x_locs,2)
+                        my_rxs(i) = my_rxs(i).set_x(x_locs(i));
+                        my_rxs(i) = my_rxs(i).set_y(y_locs(i));
+                        my_rxs(i) = my_rxs(i).set_z(Z);
+                    end
+
+                    [P_rx,~] = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
+                                      obj.getRes(), obj.disp_wb);
+
+
+                    Irrad = P_rx./(obj.del_p)^2; 
+                    Irrad = reshape(Irrad,[N_y,N_x]);
+
+                    V = SYS_eye_sensitivity(min(obj.lambda), max(obj.lambda), 1978);
+                    Illum = Irrad*683*sum(obj.Sprime(1,:).*V); 
+                    % FIXME: Update illum conversion for each group
+
+                    ILLUM_RES = ILLUM_RES.set_results(Illum, Z);
+                    ILLUM_RES = ILLUM_RES.set_grid([x_locs;y_locs]);
+                    % FIXME: Add error check to make sure grid is consistent
+                    % with the other results in ILLUM_RES.
+                end
             end
-            
-            [P_rx,~] = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
-                              obj.getRes(), obj.disp_wb);
-            
-            
-            Irrad = P_rx./(obj.del_p)^2; 
-            Irrad = reshape(Irrad,[N_y,N_x]);
-            
-            V = SYS_eye_sensitivity(min(obj.lambda), max(obj.lambda), 1978);
-            Illum = Irrad*683*sum(obj.Sprime(1,:).*V); 
-            % FIXME: Update illum conversion for each group
-            grid = [x_locs;y_locs];
         end
         
         % -----------------------------------------------------------------
