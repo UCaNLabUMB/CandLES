@@ -31,7 +31,7 @@ function varargout = CandLES_IllumSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_IllumSim
 
-% Last Modified by GUIDE v2.5 18-Aug-2016 14:44:02
+% Last Modified by GUIDE v2.5 19-Aug-2016 10:41:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -191,6 +191,18 @@ end
 set_values(); % Set the values and display room with selected TX
 
 % --------------------------------------------------------------------
+function pushbutton_GenResVideo_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_GenResVideo (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+ILLUM_RES             = getappdata(h_GUI_CandlesIllumSim,'ILLUM_RES');
+handles               = guidata(h_GUI_CandlesIllumSim);
+
+scale_for_maximum = get(handles.checkbox_colorscale,'Value');
+ILLUM_RES.display_video(scale_for_maximum);
+
+% --------------------------------------------------------------------
 function radiobutton_results_Callback(hObject, eventdata, handles)
 % hObject    handle to radiobutton_cdf (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -244,9 +256,6 @@ function set_values()
     set(handles.slider_Plane,'SliderStep',[0.1/IllumSimEnv.rm.height, ...
                                              1/IllumSimEnv.rm.height]);
     
-
-
-
 
 
 

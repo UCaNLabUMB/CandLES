@@ -72,6 +72,45 @@ classdef candlesResIllum
         end
         
         % -----------------------------------------------------------------
+        function display_video(obj, scale_for_maximum)
+        % Display a video of the available results with each frame showing
+        % results of a different plane.
+            my_fig = figure();
+            my_ax  = axes();
+            if isempty(obj.RESULTS)
+                cla(my_ax,'reset');
+                text(0.27, 0.5, sprintf('Results have not been generated.'), 'Parent', my_ax);
+            else
+                % Use this to display results video in sorted order of planes
+                [~,frame_order] = sort(obj.RES_PLANES); 
+                % Generate Video
+                F(length(obj.RES_PLANES)) = struct('cdata',[],'colormap',[]);
+                for my_frame = 1:length(obj.RES_PLANES)
+                    obj.display_plane(obj.RES_PLANES(frame_order(my_frame)), scale_for_maximum, my_ax);
+                    F(my_frame) = getframe(gcf);
+                end
+                
+                % Save movie
+                YorN = questdlg('Would you like to save the movie?','Save Movie','Yes','No','Yes');
+                if (strcmp(YorN,'Yes'))
+                    [FileName, PathName] = uiputfile('*.avi');
+                    if (FileName ~= 0)
+                        v = VideoWriter([PathName FileName]);
+                        v.FrameRate = 8;
+                        open(v);
+                        for my_frame = 1:length(F)
+                            writeVideo(v,F(my_frame));
+                        end
+                        close(v);
+                    end                    
+                end
+                
+                %Play Movie in my_fig
+                movie(my_fig,F,1);
+            end
+        end
+
+        % -----------------------------------------------------------------
         function display_cdf(obj, plane, scale_for_maximum, my_ax)
         % Display cdf of results to my_ax
             Illum = obj.RESULTS(:,:,obj.RES_PLANES == plane);
