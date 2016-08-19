@@ -572,11 +572,11 @@ classdef candlesEnv
         function [ILLUM_RES] = getIllum(obj,plane_list,ILLUM_RES)
         % Calculate Illumination at height Z
         
-            for i = 1:length(plane_list)
+            for plane_num = 1:length(plane_list)
                 
                 % NOTE: Limiting resolution to fix a rounding issue from
                 % the GUI when entering strings.
-                Z = round(plane_list(i),6);
+                Z = round(plane_list(plane_num),6);
                 
                 if (~ILLUM_RES.results_exist(Z))
                     % Setup X,Y locations
