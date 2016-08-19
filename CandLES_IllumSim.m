@@ -31,7 +31,7 @@ function varargout = CandLES_IllumSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_IllumSim
 
-% Last Modified by GUIDE v2.5 19-Aug-2016 10:41:12
+% Last Modified by GUIDE v2.5 19-Aug-2016 14:30:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -203,6 +203,21 @@ scale_for_maximum = get(handles.checkbox_colorscale,'Value');
 ILLUM_RES.display_video(scale_for_maximum);
 
 % --------------------------------------------------------------------
+function pushbutton_DispRes_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_DispRes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
+PLANE_SELECT          = getappdata(h_GUI_CandlesIllumSim,'PLANE_SELECT');
+ILLUM_RES             = getappdata(h_GUI_CandlesIllumSim,'ILLUM_RES');
+handles               = guidata(h_GUI_CandlesIllumSim);
+
+% Display the results on the GUI results axes
+figure();
+my_ax = axes();
+display_results(ILLUM_RES, PLANE_SELECT, handles, my_ax);
+
+% --------------------------------------------------------------------
 function radiobutton_results_Callback(hObject, eventdata, handles)
 % hObject    handle to radiobutton_cdf (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -216,14 +231,42 @@ function checkbox_colorscale_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set_values();
 
+% --------------------------------------------------------------------
+function checkbox_cdfAll_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_cdfAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set_values();
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Display results on my_ax axes
+% --------------------------------------------------------------------
+function display_results(ILLUM_RES, PLANE_SELECT, handles, my_ax)
+    global STR
+
+    % Display results
+    res_view = get(get(handles.panel_display,'SelectedObject'),'String');
+    if (~ILLUM_RES.results_exist(PLANE_SELECT))
+        % Display a message on the Results Axis
+        cla(my_ax,'reset')
+        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', my_ax);
+    else
+        scale_for_maximum = get(handles.checkbox_colorscale,'Value');
+        if(strcmp(res_view,'Spatial Plane'))
+            ILLUM_RES.display_plane(PLANE_SELECT, scale_for_maximum, my_ax);
+        elseif(strcmp(res_view,'CDF'))
+            cdf_all = get(handles.checkbox_cdfAll,'Value');
+            ILLUM_RES.display_cdf(PLANE_SELECT, scale_for_maximum, cdf_all, my_ax);
+        end
+    end
+    
+
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
-    global STR
     h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
     IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
     PLANE_SELECT          = getappdata(h_GUI_CandlesIllumSim,'PLANE_SELECT');
@@ -233,20 +276,8 @@ function set_values()
     % Display room with selected Plane
     IllumSimEnv.display_room(handles.axes_room, 4, PLANE_SELECT);
     
-    % Display results
-    res_view = get(get(handles.panel_display,'SelectedObject'),'String');
-    if (~ILLUM_RES.results_exist(PLANE_SELECT))
-        % Display a message on the Results Axis
-        cla(handles.axes_results,'reset')
-        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', handles.axes_results);
-    else
-        scale_for_maximum = get(handles.checkbox_colorscale,'Value');
-        if(strcmp(res_view,'Spatial Plane'))
-            ILLUM_RES.display_plane(PLANE_SELECT, scale_for_maximum, handles.axes_results);
-        elseif(strcmp(res_view,'CDF'))
-            ILLUM_RES.display_cdf(PLANE_SELECT, scale_for_maximum, handles.axes_results);
-        end
-    end
+    % Display the results on the GUI results axes
+    display_results(ILLUM_RES, PLANE_SELECT, handles, handles.axes_results);
     
     % Set Selection Boxes
     set(handles.edit_Plane,'String',num2str(PLANE_SELECT));
@@ -256,7 +287,5 @@ function set_values()
     set(handles.slider_Plane,'SliderStep',[0.1/IllumSimEnv.rm.height, ...
                                              1/IllumSimEnv.rm.height]);
     
-
-
 
 

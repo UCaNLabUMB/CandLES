@@ -44,9 +44,10 @@ classdef candlesResIllum
         % -----------------------------------------------------------------
         function display_plane(obj, plane, scale_for_maximum, my_ax)
         % Display illumination results of the specified plane to my_ax
-            Illum = obj.RESULTS(:,:,obj.RES_PLANES == plane);
-            
             axes(my_ax);
+            cla(my_ax,'reset');
+
+            Illum = obj.RESULTS(:,:,obj.RES_PLANES == plane);
             if (max(max(Illum)) > 0)
                 if (isempty(obj.GRID))
                     contourf(Illum);
@@ -111,21 +112,34 @@ classdef candlesResIllum
         end
 
         % -----------------------------------------------------------------
-        function display_cdf(obj, plane, scale_for_maximum, my_ax)
+        function display_cdf(obj, plane, scale_for_maximum, cdf_all, my_ax)
         % Display cdf of results to my_ax
-            Illum = obj.RESULTS(:,:,obj.RES_PLANES == plane);
-
             axes(my_ax);
-            temp = reshape(Illum,[1,size(Illum,1)*size(Illum,2)]);
-            cdfplot(temp);
+            cla(my_ax,'reset');
+
+            if (cdf_all)
+                % Use this to display results in sorted order of planes
+                [~,plane_order] = sort(obj.RES_PLANES); 
+                for my_plane = 1:length(obj.RES_PLANES)
+                    Illum = obj.RESULTS(:,:,plane_order(my_plane));
+                    temp = reshape(Illum,[1,size(Illum,1)*size(Illum,2)]);
+                    cdfplot(temp);
+                    hold on
+                end
+                title('CDF of the Surface Illumination at Z m');
+            else
+                Illum = obj.RESULTS(:,:,obj.RES_PLANES == plane);
+                temp = reshape(Illum,[1,size(Illum,1)*size(Illum,2)]);
+                cdfplot(temp);
+                title(['CDF of the Surface Illumination at ' ...
+                         num2str(plane) 'm']);
+            end
             xlabel('x (lux)');
-%            ylabel('CDF');
-            title(['CDF of the Surface Illumination at ' ...
-                     num2str(plane) 'm']);
-            if (scale_for_maximum)
+
+            if (scale_for_maximum || cdf_all)
                 xlim([0, max(max(max(obj.RESULTS)))]);
             else
-                xlim([0, max(max(Illum))]);
+                xlim([0, max(max(max(Illum)),1)]);
             end
         end
     end
