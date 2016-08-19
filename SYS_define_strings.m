@@ -51,7 +51,9 @@ function SYS_define_strings( )
                  '           for this configuration.'];
     STR.MSG31 = 'All Rxs';
     STR.MSG32 = 'Please close other open CandLES windows.';
-    
+    STR.MSG33 = ['Enter a Matlab formatted vector of plane values to ' ...
+                 'simulate (e.g., 1:0.5:3 or 1,1.5,2,2.5).'];
+    STR.MSG34 = 'Planes to Simulate';
     
     % VLCIRC Strings
     STR.IRC_MSG1 = 'Insufficient Memory to run simulation.';

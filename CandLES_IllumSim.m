@@ -168,23 +168,26 @@ function pushbutton_GenRes2_Callback(hObject, eventdata, handles)
 h_GUI_CandlesIllumSim = getappdata(0,'h_GUI_CandlesIllumSim');
 IllumSimEnv           = getappdata(h_GUI_CandlesIllumSim,'IllumSimEnv');
 ILLUM_RES             = getappdata(h_GUI_CandlesIllumSim,'ILLUM_RES');
+global STR
 
 % Get a vector input from the user
-prompt={'Enter a vector of plane values (e.g., 1,2,3) to simulate:'};
-name = 'Planes to Simulate';
+prompt={STR.MSG33};
+name = STR.MSG34;
 defaultans = {''};
 options.Interpreter = 'tex';
 plane_list = inputdlg(prompt,name,[1 40],defaultans,options);
-plane_list = str2num(plane_list{1});
+if ~isempty(plane_list)
+    plane_list = str2num(plane_list{1}); %#ok<ST2NM>
 
-% Error check plane_list
-plane_list = plane_list(plane_list >= 0);
-plane_list = plane_list(plane_list <= IllumSimEnv.rm.height);
+    % Error check plane_list
+    plane_list = plane_list(plane_list >= 0);
+    plane_list = plane_list(plane_list <= IllumSimEnv.rm.height);
 
-% Generate results for the planes in plane_list
-ILLUM_RES = IllumSimEnv.getIllum(plane_list, ILLUM_RES);
+    % Generate results for the planes in plane_list
+    ILLUM_RES = IllumSimEnv.getIllum(plane_list, ILLUM_RES);
 
-setappdata(h_GUI_CandlesIllumSim, 'ILLUM_RES', ILLUM_RES);
+    setappdata(h_GUI_CandlesIllumSim, 'ILLUM_RES', ILLUM_RES);
+end
 set_values(); % Set the values and display room with selected TX
 
 % --------------------------------------------------------------------
