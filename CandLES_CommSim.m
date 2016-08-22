@@ -76,14 +76,12 @@ setappdata(0, 'h_GUI_CandlesCommSim', hObject);
 
 % Generate a temporary CandLES environment and store in the GUI handle so
 % that it can be edited without modifying the main environment until saved.
-mainEnv   = getappdata(h_GUI_CandlesMain,'mainEnv');
-CommSimEnv = mainEnv;
-RESULTS_PRX  = [];
-RESULTS_H    = [];
-RX_SELECT    = 0;
+mainEnv       = getappdata(h_GUI_CandlesMain,'mainEnv');
+CommSimEnv    = mainEnv;
+COMM_RES_RX   = candles_classes.candlesResCommRx();
+RX_SELECT     = 0;
 TX_GRP_SELECT = 1;
-setappdata(hObject, 'RESULTS_PRX', RESULTS_PRX);
-setappdata(hObject, 'RESULTS_H', RESULTS_H);
+setappdata(hObject, 'COMM_RES_RX', COMM_RES_RX);
 setappdata(hObject, 'RX_SELECT', RX_SELECT);
 setappdata(hObject, 'TX_GRP_SELECT', TX_GRP_SELECT);
 setappdata(hObject, 'CommSimEnv', CommSimEnv);
@@ -127,17 +125,18 @@ function pushbutton_GenRes_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_GenRes (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    h_GUI_CandlesCommSim    = getappdata(0,'h_GUI_CandlesCommSim');
-    CommSimEnv              = getappdata(h_GUI_CandlesCommSim,'CommSimEnv');
-    [RESULTS_PRX,RESULTS_H] = CommSimEnv.run();
-    setappdata(h_GUI_CandlesCommSim, 'RESULTS_PRX', RESULTS_PRX);
-    setappdata(h_GUI_CandlesCommSim, 'RESULTS_H', RESULTS_H);
+    h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
+    CommSimEnv           = getappdata(h_GUI_CandlesCommSim,'CommSimEnv');
+    COMM_RES_RX          = getappdata(h_GUI_CandlesCommSim,'COMM_RES_RX');    
+    COMM_RES_RX          = CommSimEnv.run(COMM_RES_RX);
+    setappdata(h_GUI_CandlesCommSim, 'COMM_RES_RX', COMM_RES_RX);
     set_values(); % Set the values and update axes
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% RESULTS DISPLAY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% --------------------------------------------------------------------
 function popup_rx_select_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_rx_select (see GCBO)
     h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
@@ -145,10 +144,12 @@ function popup_rx_select_Callback(hObject, eventdata, handles)
     setappdata(h_GUI_CandlesCommSim, 'RX_SELECT', RX_SELECT);
     set_values(); % Set the values and update axes
 
-% --- Executes on selection change in popup_plane_select.
+% --------------------------------------------------------------------
 function popup_plane_select_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_plane_select (see GCBO)
+    set_values(); % Set the values and update axes
 
+% --------------------------------------------------------------------
 function popup_tx_group_select_Callback(hObject, eventdata, handles)
 % hObject    handle to popup_tx_group_select (see GCBO)
     h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
@@ -160,36 +161,45 @@ function popup_tx_group_select_Callback(hObject, eventdata, handles)
 %%%%%%%%%%%%%%%%%%%%%%%%% ADDITIONAL FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Display receiver results on my_ax axes. If RX_SELECT = 0, results of all
+% of the receivers are displayed.
+% --------------------------------------------------------------------
+function display_results_rx(COMM_RES_RX, TX_GRP, RX_SELECT, handles, my_ax)
+    global STR
+    
+    if (~COMM_RES_RX.results_exist())
+        % Display a message on the Results Axis
+        cla(my_ax,'reset')
+        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', my_ax);
+    else
+        COMM_RES_RX.display_h(TX_GRP, RX_SELECT, my_ax);
+    end
+
 % Set the values within the GUI
 % --------------------------------------------------------------------
 function set_values()
     global STR
     h_GUI_CandlesCommSim = getappdata(0,'h_GUI_CandlesCommSim');
     CommSimEnv           = getappdata(h_GUI_CandlesCommSim,'CommSimEnv');
-    RESULTS_PRX          = getappdata(h_GUI_CandlesCommSim,'RESULTS_PRX');
-    RESULTS_H            = getappdata(h_GUI_CandlesCommSim,'RESULTS_H');
+    COMM_RES_RX          = getappdata(h_GUI_CandlesCommSim,'COMM_RES_RX');
     RX_SELECT            = getappdata(h_GUI_CandlesCommSim,'RX_SELECT');
     TX_GRP_SELECT        = getappdata(h_GUI_CandlesCommSim,'TX_GRP_SELECT');
     handles              = guidata(h_GUI_CandlesCommSim);
     
-    % Display room with selected Plane
-    CommSimEnv.display_room(handles.axes_room, 2, RX_SELECT);
-    
-    if (isempty(RESULTS_H))
-        % Display a message on the Results Axis
-        cla(handles.axes_results,'reset')
-        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', handles.axes_results);
-        
+    % Display room with selected receiver
+    if (RX_SELECT == 0)
+        CommSimEnv.display_room(handles.axes_room, 2, 1:length(CommSimEnv.rxs));
     else
-        my_ax = handles.axes_results;
-        if (RX_SELECT == 0)
-            my_results = reshape(RESULTS_H(TX_GRP_SELECT,:,:),size(RESULTS_H,2),size(RESULTS_H,3));
-        else
-            my_results = reshape(RESULTS_H(TX_GRP_SELECT,RX_SELECT,:),1,size(RESULTS_H,3));
-        end
-        CommSimEnv.plotCommImpulse(my_results,my_ax);
+        CommSimEnv.display_room(handles.axes_room, 2, RX_SELECT);
     end
-
+    
+    % Display receiver results
+    display_results_rx(COMM_RES_RX, TX_GRP_SELECT, RX_SELECT, ...
+                       handles, handles.axes_results);
+    
+    % Display plane results
+    % FIXME: Add plane results class and display functionality
+    
     % Set Selection Boxes
     set(handles.popup_rx_select,'String',{STR.MSG31; 1:length(CommSimEnv.rxs)});
     set(handles.popup_rx_select,'Value',RX_SELECT+1);

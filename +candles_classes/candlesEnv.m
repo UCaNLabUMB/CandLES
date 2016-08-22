@@ -551,7 +551,7 @@ classdef candlesEnv
         % *****************************************************************
         
         % -----------------------------------------------------------------
-        function [P_rx,h_t] = run(obj)
+        function [COMM_RES_RX] = run(obj, COMM_RES_RX)
         % Calculate Impulse responses and Prx for Rxs in the environment
             for ng = 1:obj.num_groups
                 [my_txs, ~] = obj.getGroup(ng);
@@ -566,6 +566,8 @@ classdef candlesEnv
                 P_rx(ng,:)  = P;
                 h_t(ng,:,:) = h;
             end
+            
+            COMM_RES_RX = COMM_RES_RX.set_results(P_rx, h_t, obj.del_t);
         end
         
         % -----------------------------------------------------------------
@@ -651,19 +653,6 @@ classdef candlesEnv
         
         %% Display Functions
         % *****************************************************************
-        
-        % -----------------------------------------------------------------
-        function plotCommImpulse(obj,h_t,my_ax)
-        % Plot the impulse response
-            t = (0:size(h_t,2)-1)*obj.del_t;
-            
-            axes(my_ax);
-            plot(t*1e9,h_t);
-            title('Normalized Impulse Response');
-            xlabel('Time (ns)');
-            ylabel('% of Prx');
-            axis([0,max(t)*1e9,0,1]);
-        end
         
         % -----------------------------------------------------------------
         function [msg] = getErrorMessage(~,ERR)
@@ -883,13 +872,14 @@ classdef candlesEnv
         function display_receivers(obj, disp_type, arg)
         % Adds the receiver set or the spatial plane to the display.
             if (disp_type == 4)
-                %FIXME: Need to make this work
+                % Display the plane specified by arg
                 z_plane = arg;
                 xdata = [      0; obj.rm.length; obj.rm.length;            0];
                 ydata = [      0;             0;  obj.rm.width; obj.rm.width];
                 zdata = [z_plane;       z_plane;       z_plane;      z_plane];
                 patch(xdata,ydata,zdata,'w','EdgeColor', 'r', 'FaceColor', 'none');    
             else
+                % Display the set of receivers
                 rx_select = 0;
                 if (disp_type == 2); rx_select = arg; end  
 
@@ -898,7 +888,7 @@ classdef candlesEnv
                     rx_color = [1 0 0];
                     
                     rx_lw = 0.5;
-                    if (i == rx_select); rx_lw = 1.5; end
+                    if (any(i == rx_select)); rx_lw = 1.5; end
 
                     %Center of Rx
                     C_x = obj.rxs(i).x;
