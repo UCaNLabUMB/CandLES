@@ -31,7 +31,7 @@ function varargout = CandLES_CommSim(varargin)
 
 % Edit the above text to modify the response to help CandLES_CommSim
 
-% Last Modified by GUIDE v2.5 15-Aug-2016 12:40:57
+% Last Modified by GUIDE v2.5 21-Aug-2016 21:14:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -164,15 +164,21 @@ function popup_tx_group_select_Callback(hObject, eventdata, handles)
 % Display receiver results on my_ax axes. If RX_SELECT = 0, results of all
 % of the receivers are displayed.
 % --------------------------------------------------------------------
-function display_results_rx(COMM_RES_RX, TX_GRP, RX_SELECT, handles, my_ax)
+function display_results_rx(COMM_RES_RX, TX_GRP_SELECT, RX_SELECT, handles, my_ax1, my_ax2)
     global STR
     
     if (~COMM_RES_RX.results_exist())
         % Display a message on the Results Axis
-        cla(my_ax,'reset')
-        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', my_ax);
+        cla(my_ax1,'reset')
+        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', my_ax1);
+        cla(my_ax2,'reset')
+        text(0.23, 0.5, sprintf(STR.MSG30), 'Parent', my_ax2);
     else
-        COMM_RES_RX.display_h(TX_GRP, RX_SELECT, my_ax);
+        % Display the received powers or rms delay spread
+        COMM_RES_RX.display_prx(TX_GRP_SELECT, my_ax1);
+        
+        % Display the impulse response
+        COMM_RES_RX.display_h(TX_GRP_SELECT, RX_SELECT, my_ax2);
     end
 
 % Set the values within the GUI
@@ -195,7 +201,7 @@ function set_values()
     
     % Display receiver results
     display_results_rx(COMM_RES_RX, TX_GRP_SELECT, RX_SELECT, ...
-                       handles, handles.axes_results);
+                       handles, handles.axes_results1, handles.axes_results2);
     
     % Display plane results
     % FIXME: Add plane results class and display functionality

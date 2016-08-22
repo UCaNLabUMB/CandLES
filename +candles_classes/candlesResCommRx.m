@@ -37,6 +37,16 @@ classdef candlesResCommRx
         end
         
         % -----------------------------------------------------------------
+        function display_prx(obj, TX_GRP_SELECT, my_ax)
+            my_prx = obj.prx(TX_GRP_SELECT,:);
+            axes(my_ax);
+            bar(my_prx);
+            title('Received Optical Power');
+            xlabel('Receiver');
+            ylabel('Power (W)');
+        end
+            
+        % -----------------------------------------------------------------
         function display_h(obj, TX_GRP_SELECT, RX_SELECT, my_ax)
         % Display impulse response to my_ax
             if (RX_SELECT == 0)
