@@ -133,67 +133,70 @@ function [THE_MATRIX, start_prev, end_prev] = first_bounce_matrix(Txs, plane_lis
         for plane_no = 1:length(plane_list)
             wb_update(wb,(tx_no-1)/length(Txs) + ...
                         (plane_no-1)/(length(plane_list)*length(Txs)));
-            
-            % Determine the first element in the given plane along with the
-            % corresponding deltas (difference in position for each element
-            % in the plane) and the start position of the first element.
-            [element, deltas, start_pos] = ...
-                get_element(plane_list(plane_no),element, deltas, start_pos);
-            
-            %---- Z Plane ----%
-            if ((deltas.x ~= 0) && (deltas.y ~= 0))     
-                element = element.set_z(start_pos.z);
-                element = element.set_A(deltas.x*deltas.y);
-                for row = 1:plane_list(plane_no).num_div_l
-                    element = element.set_x(start_pos.x + (row - 0.5)*deltas.x);
-                    for col = 1:plane_list(plane_no).num_div_w
-                        element = element.set_y(start_pos.y + (col - 0.5)*deltas.y);
-                        element_no = element_no + 1;
-                        
-                        % Update impulse response for element in matrix
-                        [THE_MATRIX, start_prev, end_prev] = ...
-                            update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
-                                              plane_list, Txs, tx_no, ...
-                                              element, element_no);
+                    
+            % No need to update received power from this plane if ref = 0
+            if (plane_list(plane_no).ref ~= 0)             
+                % Determine the first element in the given plane along with the
+                % corresponding deltas (difference in position for each element
+                % in the plane) and the start position of the first element.
+                [element, deltas, start_pos] = ...
+                    get_element(plane_list(plane_no),element, deltas, start_pos);
+
+                %---- Z Plane ----%
+                if ((deltas.x ~= 0) && (deltas.y ~= 0))     
+                    element = element.set_z(start_pos.z);
+                    element = element.set_A(deltas.x*deltas.y);
+                    for row = 1:plane_list(plane_no).num_div_l
+                        element = element.set_x(start_pos.x + (row - 0.5)*deltas.x);
+                        for col = 1:plane_list(plane_no).num_div_w
+                            element = element.set_y(start_pos.y + (col - 0.5)*deltas.y);
+                            element_no = element_no + 1;
+
+                            % Update impulse response for element in matrix
+                            [THE_MATRIX, start_prev, end_prev] = ...
+                                update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
+                                                  plane_list, Txs, tx_no, ...
+                                                  element, element_no);
+                        end
                     end
-                end
-                
-            %---- Y Plane ----%
-            elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
-                element = element.set_y(start_pos.y);
-                element = element.set_A(deltas.x*deltas.z);
-                for row = 1:plane_list(plane_no).num_div_h
-                    element = element.set_z(start_pos.z + (row - 0.5)*deltas.z);
-                    for col = 1:plane_list(plane_no).num_div_l
-                        element = element.set_x(start_pos.x + (col - 0.5)*deltas.x);
-                        element_no = element_no + 1;
-                        
-                        % Update impulse response for element in matrix
-                        [THE_MATRIX, start_prev, end_prev] = ...
-                            update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
-                                              plane_list, Txs, tx_no, ...
-                                              element, element_no);
+
+                %---- Y Plane ----%
+                elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
+                    element = element.set_y(start_pos.y);
+                    element = element.set_A(deltas.x*deltas.z);
+                    for row = 1:plane_list(plane_no).num_div_h
+                        element = element.set_z(start_pos.z + (row - 0.5)*deltas.z);
+                        for col = 1:plane_list(plane_no).num_div_l
+                            element = element.set_x(start_pos.x + (col - 0.5)*deltas.x);
+                            element_no = element_no + 1;
+
+                            % Update impulse response for element in matrix
+                            [THE_MATRIX, start_prev, end_prev] = ...
+                                update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
+                                                  plane_list, Txs, tx_no, ...
+                                                  element, element_no);
+                        end
                     end
-                end
-                
-            %---- X Plane ----%
-            elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
-                element = element.set_x(start_pos.x);
-                element = element.set_A(deltas.y*deltas.z);
-                for row = 1:plane_list(plane_no).num_div_w
-                    element = element.set_y(start_pos.y + (row - 0.5)*deltas.y);
-                    for col = 1:plane_list(plane_no).num_div_h
-                        element = element.set_z(start_pos.z + (col - 0.5)*deltas.z);
-                        element_no = element_no + 1;
-                        
-                        % Update impulse response for element in matrix
-                        [THE_MATRIX, start_prev, end_prev] = ...
-                            update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
-                                              plane_list, Txs, tx_no, ...
-                                              element, element_no);
+
+                %---- X Plane ----%
+                elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
+                    element = element.set_x(start_pos.x);
+                    element = element.set_A(deltas.y*deltas.z);
+                    for row = 1:plane_list(plane_no).num_div_w
+                        element = element.set_y(start_pos.y + (row - 0.5)*deltas.y);
+                        for col = 1:plane_list(plane_no).num_div_h
+                            element = element.set_z(start_pos.z + (col - 0.5)*deltas.z);
+                            element_no = element_no + 1;
+
+                            % Update impulse response for element in matrix
+                            [THE_MATRIX, start_prev, end_prev] = ...
+                                update_fb_impulse(THE_MATRIX, start_prev, end_prev, Res, ...
+                                                  plane_list, Txs, tx_no, ...
+                                                  element, element_no);
+                        end
                     end
-                end
-            end % End Plane Check
+                end % End Plane Check
+            end % End Reflectivity Check
         end % End loop through planes
     end % End loop through sources
     wb_close(wb)
@@ -229,64 +232,67 @@ function [THE_MATRIX, M_start, M_end, c_M, n_M] = update_matrix(plane_list, Res,
     rx_element_no = 0;
     
     for plane_no = 1:length(plane_list)
-        % Determine the first element in the given plane along with the
-        % corresponding deltas (difference in position for each element
-        % in the plane) and the start position of the first element.
-        [rx_element, deltas, start_pos] = ...
-            get_element(plane_list(plane_no),rx_element, deltas, start_pos);
-        
-        wb_update(wb, (plane_no-1)/(length(plane_list)));
-        wb_min = (plane_no-1)/(length(plane_list));
-        wb_max = (plane_no)/(length(plane_list));
+        % No need to update received power from this plane if ref = 0
+        if (plane_list(plane_no).ref ~= 0)        
+            % Determine the first element in the given plane along with the
+            % corresponding deltas (difference in position for each element
+            % in the plane) and the start position of the first element.
+            [rx_element, deltas, start_pos] = ...
+                get_element(plane_list(plane_no),rx_element, deltas, start_pos);
 
-        %---- Z Plane ----%
-        if ((deltas.x ~= 0) && (deltas.y ~= 0))  
-            rx_element = rx_element.set_z(start_pos.z);
-            rx_element = rx_element.set_A(deltas.x*deltas.y);
-            for row = 1:plane_list(plane_no).num_div_l
-                wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_l);
+            wb_update(wb, (plane_no-1)/(length(plane_list)));
+            wb_min = (plane_no-1)/(length(plane_list));
+            wb_max = (plane_no)/(length(plane_list));
 
-                rx_element = rx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
-                for col = 1:plane_list(plane_no).num_div_w
-                    rx_element = rx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
-                    rx_element_no = rx_element_no + 1;
-                    [THE_MATRIX, M_start, M_end] = ...
-                        update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+            %---- Z Plane ----%
+            if ((deltas.x ~= 0) && (deltas.y ~= 0))  
+                rx_element = rx_element.set_z(start_pos.z);
+                rx_element = rx_element.set_A(deltas.x*deltas.y);
+                for row = 1:plane_list(plane_no).num_div_l
+                    wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_l);
+
+                    rx_element = rx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
+                    for col = 1:plane_list(plane_no).num_div_w
+                        rx_element = rx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
+                        rx_element_no = rx_element_no + 1;
+                        [THE_MATRIX, M_start, M_end] = ...
+                            update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                    end
                 end
-            end
-            
-        %---- Y Plane ----%
-        elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
-            rx_element = rx_element.set_y(start_pos.y);
-            rx_element = rx_element.set_A(deltas.x*deltas.z);
-            for row = 1:plane_list(plane_no).num_div_h
-                wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_h);
 
-                rx_element = rx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
-                for col = 1:plane_list(plane_no).num_div_l
-                    rx_element = rx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
-                    rx_element_no = rx_element_no + 1;
-                    [THE_MATRIX, M_start, M_end] = ...
-                        update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
-                end
-            end
-            
-        %---- X Plane ----%
-        elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
-            rx_element = rx_element.set_x(start_pos.x);
-            rx_element = rx_element.set_A(deltas.y*deltas.z);
-            for row = 1:plane_list(plane_no).num_div_w
-                wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_w);
+            %---- Y Plane ----%
+            elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
+                rx_element = rx_element.set_y(start_pos.y);
+                rx_element = rx_element.set_A(deltas.x*deltas.z);
+                for row = 1:plane_list(plane_no).num_div_h
+                    wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_h);
 
-                rx_element = rx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
-                for col = 1:plane_list(plane_no).num_div_h
-                    rx_element = rx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
-                    rx_element_no = rx_element_no + 1;
-                    [THE_MATRIX, M_start, M_end] = ...
-                        update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                    rx_element = rx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
+                    for col = 1:plane_list(plane_no).num_div_l
+                        rx_element = rx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
+                        rx_element_no = rx_element_no + 1;
+                        [THE_MATRIX, M_start, M_end] = ...
+                            update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                    end
                 end
-            end
-        end % End if X/Y/Z plane
+
+            %---- X Plane ----%
+            elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
+                rx_element = rx_element.set_x(start_pos.x);
+                rx_element = rx_element.set_A(deltas.y*deltas.z);
+                for row = 1:plane_list(plane_no).num_div_w
+                    wb_update(wb, wb_min + (wb_max-wb_min)*(row-1)/plane_list(plane_no).num_div_w);
+
+                    rx_element = rx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
+                    for col = 1:plane_list(plane_no).num_div_h
+                        rx_element = rx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
+                        rx_element_no = rx_element_no + 1;
+                        [THE_MATRIX, M_start, M_end] = ...
+                            update_element(rx_element, rx_element_no, plane_list, Res, THE_MATRIX, M_start, M_end, c_M, n_M);
+                    end
+                end
+            end % End if X/Y/Z plane
+        end % End reflectivity check
     end % End plane loop
     
     % Swap the pointer to the current and next matrices
@@ -304,67 +310,70 @@ function [THE_MATRIX, M_start, M_end] = update_element(rx_element, rx_element_no
     tx_element_no = 0;
 
     for plane_no = 1:length(plane_list)
-        [tx_element, deltas, start_pos] = ...
-            get_element(plane_list(plane_no),tx_element, deltas, start_pos);
+        % No need to update received power from this plane if ref = 0
+        if (plane_list(plane_no).ref ~= 0)
+            [tx_element, deltas, start_pos] = ...
+                get_element(plane_list(plane_no),tx_element, deltas, start_pos);
 
-        %---- Z Plane ----%
-        if ((deltas.x ~= 0) && (deltas.y ~= 0))  
-            tx_element = tx_element.set_z(start_pos.z);
-            for row = 1:plane_list(plane_no).num_div_l
-                tx_element = tx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
-                for col = 1:plane_list(plane_no).num_div_w
-                    tx_element = tx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
-                    tx_element_no = tx_element_no + 1;
-                    
-                    % Update rx_element in THE_MATRIX
-                    [THE_MATRIX, M_start, M_end] = ...
-                        update_element_impulse(THE_MATRIX, M_start, M_end, ...
-                                               c_M, n_M, Res, ...
-                                               plane_list, plane_no, ...
-                                               tx_element, tx_element_no, ...
-                                               rx_element, rx_element_no);
+            %---- Z Plane ----%
+            if ((deltas.x ~= 0) && (deltas.y ~= 0))  
+                tx_element = tx_element.set_z(start_pos.z);
+                for row = 1:plane_list(plane_no).num_div_l
+                    tx_element = tx_element.set_x(start_pos.x + (row - 0.5)*deltas.x);
+                    for col = 1:plane_list(plane_no).num_div_w
+                        tx_element = tx_element.set_y(start_pos.y + (col - 0.5)*deltas.y);
+                        tx_element_no = tx_element_no + 1;
+
+                        % Update rx_element in THE_MATRIX
+                        [THE_MATRIX, M_start, M_end] = ...
+                            update_element_impulse(THE_MATRIX, M_start, M_end, ...
+                                                   c_M, n_M, Res, ...
+                                                   plane_list, plane_no, ...
+                                                   tx_element, tx_element_no, ...
+                                                   rx_element, rx_element_no);
+                    end
                 end
-            end
-            
-        %---- Y Plane ----%
-        elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
-            tx_element = tx_element.set_y(start_pos.y);
-            for row = 1:plane_list(plane_no).num_div_h
-                tx_element = tx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
-                for col = 1:plane_list(plane_no).num_div_l
-                    tx_element = tx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
-                    tx_element_no = tx_element_no + 1;
-                    
-                    % Update rx_element in THE_MATRIX
-                    [THE_MATRIX, M_start, M_end] = ...
-                        update_element_impulse(THE_MATRIX, M_start, M_end, ...
-                                               c_M, n_M, Res, ...
-                                               plane_list, plane_no, ...
-                                               tx_element, tx_element_no, ...
-                                               rx_element, rx_element_no);
+
+            %---- Y Plane ----%
+            elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
+                tx_element = tx_element.set_y(start_pos.y);
+                for row = 1:plane_list(plane_no).num_div_h
+                    tx_element = tx_element.set_z(start_pos.z + (row - 0.5)*deltas.z);
+                    for col = 1:plane_list(plane_no).num_div_l
+                        tx_element = tx_element.set_x(start_pos.x + (col - 0.5)*deltas.x);
+                        tx_element_no = tx_element_no + 1;
+
+                        % Update rx_element in THE_MATRIX
+                        [THE_MATRIX, M_start, M_end] = ...
+                            update_element_impulse(THE_MATRIX, M_start, M_end, ...
+                                                   c_M, n_M, Res, ...
+                                                   plane_list, plane_no, ...
+                                                   tx_element, tx_element_no, ...
+                                                   rx_element, rx_element_no);
+                    end
                 end
-            end
-            
-        %---- X Plane ----%
-        elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
-            tx_element = tx_element.set_x(start_pos.x);
-            for row = 1:plane_list(plane_no).num_div_w
-                tx_element = tx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
-                for col = 1:plane_list(plane_no).num_div_h
-                    tx_element = tx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
-                    tx_element_no = tx_element_no + 1;
-                    
-                    % Update rx_element in THE_MATRIX
-                    [THE_MATRIX, M_start, M_end] = ...
-                        update_element_impulse(THE_MATRIX, M_start, M_end, ...
-                                               c_M, n_M, Res, ...
-                                               plane_list, plane_no, ...
-                                               tx_element, tx_element_no, ...
-                                               rx_element, rx_element_no);
+
+            %---- X Plane ----%
+            elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
+                tx_element = tx_element.set_x(start_pos.x);
+                for row = 1:plane_list(plane_no).num_div_w
+                    tx_element = tx_element.set_y(start_pos.y + (row - 0.5)*deltas.y);
+                    for col = 1:plane_list(plane_no).num_div_h
+                        tx_element = tx_element.set_z(start_pos.z + (col - 0.5)*deltas.z);
+                        tx_element_no = tx_element_no + 1;
+
+                        % Update rx_element in THE_MATRIX
+                        [THE_MATRIX, M_start, M_end] = ...
+                            update_element_impulse(THE_MATRIX, M_start, M_end, ...
+                                                   c_M, n_M, Res, ...
+                                                   plane_list, plane_no, ...
+                                                   tx_element, tx_element_no, ...
+                                                   rx_element, rx_element_no);
+                    end
                 end
-            end
-            
-        end % End if X/Y/Z plane
+
+            end % End if X/Y/Z plane
+        end % End reflectivity check
     end % End plane loop
 end
 
@@ -410,66 +419,69 @@ function [h_t, Prx] = update_Prx(h_t, Prx, Rxs, Res, plane_list, THE_MATRIX, M_s
     for rx_no = 1:length(Rxs)
         element_no = 0;
         for plane_no = 1:length(plane_list)
-            wb_update(wb, (rx_no-1)/length(Rxs) + ...
-                        (plane_no-1)/(length(plane_list)*length(Rxs)));
+            % No need to update received power from this plane if ref = 0
+            if (plane_list(plane_no).ref ~= 0)
+                wb_update(wb, (rx_no-1)/length(Rxs) + ...
+                            (plane_no-1)/(length(plane_list)*length(Rxs)));
 
-            % Determine the first element in the given plane along with the
-            % corresponding deltas (difference in position for each element
-            % in the plane) and the start position of the first element.
-            [element, deltas, start_pos] = ...
-                get_element(plane_list(plane_no),element, deltas, start_pos);
-            
-            %---- Z Plane ----%
-            if ((deltas.x ~= 0) && (deltas.y ~= 0))     
-                element = element.set_z(start_pos.z);
-                for row = 1:plane_list(plane_no).num_div_l
-                    element = element.set_x(start_pos.x + (row - 0.5)*deltas.x);
-                    for col = 1:plane_list(plane_no).num_div_w
-                        element = element.set_y(start_pos.y + (col - 0.5)*deltas.y);
-                        element_no = element_no + 1;
-                        
-                        % Update h_t for the path from the element to rx
-                        h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
-                                                plane_list, plane_no, ...
-                                                element, element_no, ...
-                                                Rxs, rx_no);
+                % Determine the first element in the given plane along with the
+                % corresponding deltas (difference in position for each element
+                % in the plane) and the start position of the first element.
+                [element, deltas, start_pos] = ...
+                    get_element(plane_list(plane_no),element, deltas, start_pos);
+
+                %---- Z Plane ----%
+                if ((deltas.x ~= 0) && (deltas.y ~= 0))     
+                    element = element.set_z(start_pos.z);
+                    for row = 1:plane_list(plane_no).num_div_l
+                        element = element.set_x(start_pos.x + (row - 0.5)*deltas.x);
+                        for col = 1:plane_list(plane_no).num_div_w
+                            element = element.set_y(start_pos.y + (col - 0.5)*deltas.y);
+                            element_no = element_no + 1;
+
+                            % Update h_t for the path from the element to rx
+                            h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
+                                                    plane_list, plane_no, ...
+                                                    element, element_no, ...
+                                                    Rxs, rx_no);
+                        end
                     end
-                end
-                
-            %---- Y Plane ----%
-            elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
-                element = element.set_y(start_pos.y);
-                for row = 1:plane_list(plane_no).num_div_h
-                    element = element.set_z(start_pos.z + (row - 0.5)*deltas.z);
-                    for col = 1:plane_list(plane_no).num_div_l
-                        element = element.set_x(start_pos.x + (col - 0.5)*deltas.x);
-                        element_no = element_no + 1;
-                        
-                        % Update h_t for the path from the element to rx
-                        h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
-                                                plane_list, plane_no, ...
-                                                element, element_no, ...
-                                                Rxs, rx_no);
+
+                %---- Y Plane ----%
+                elseif ((deltas.x ~= 0) && (deltas.z ~= 0)) 
+                    element = element.set_y(start_pos.y);
+                    for row = 1:plane_list(plane_no).num_div_h
+                        element = element.set_z(start_pos.z + (row - 0.5)*deltas.z);
+                        for col = 1:plane_list(plane_no).num_div_l
+                            element = element.set_x(start_pos.x + (col - 0.5)*deltas.x);
+                            element_no = element_no + 1;
+
+                            % Update h_t for the path from the element to rx
+                            h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
+                                                    plane_list, plane_no, ...
+                                                    element, element_no, ...
+                                                    Rxs, rx_no);
+                        end
                     end
-                end
-                
-            %---- X Plane ----%
-            elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
-                element = element.set_x(start_pos.x);
-                for row = 1:plane_list(plane_no).num_div_w
-                    element = element.set_y(start_pos.y + (row - 0.5)*deltas.y);
-                    for col = 1:plane_list(plane_no).num_div_h
-                        element = element.set_z(start_pos.z + (col - 0.5)*deltas.z);
-                        element_no = element_no + 1;
-                        
-                        % Update h_t for the path from the element to rx
-                        h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
-                                                plane_list, plane_no, ...
-                                                element, element_no, ...
-                                                Rxs, rx_no);
+
+                %---- X Plane ----%
+                elseif ((deltas.y ~= 0) && (deltas.z ~= 0)) 
+                    element = element.set_x(start_pos.x);
+                    for row = 1:plane_list(plane_no).num_div_w
+                        element = element.set_y(start_pos.y + (row - 0.5)*deltas.y);
+                        for col = 1:plane_list(plane_no).num_div_h
+                            element = element.set_z(start_pos.z + (col - 0.5)*deltas.z);
+                            element_no = element_no + 1;
+
+                            % Update h_t for the path from the element to rx
+                            h_t = update_rx_impulse(THE_MATRIX, M_start, M_end, h_t, Res, ...
+                                                    plane_list, plane_no, ...
+                                                    element, element_no, ...
+                                                    Rxs, rx_no);
+                        end
                     end
-                end
-            end % End Plane Check
+                end % End Plane Check
+            end % End reflectivity check
         end % End loop through planes
     end % End loop through receivers
     wb_close(wb);

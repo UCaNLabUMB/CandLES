@@ -598,9 +598,14 @@ classdef candlesEnv
                         my_rxs(i) = my_rxs(i).set_y(y_locs(i));
                         my_rxs(i) = my_rxs(i).set_z(Z);
                     end
-
+                    
+                    % Time resolution is not relevant since only looking at
+                    % received power for illumination results.
+                    my_resolution = obj.getRes();
+                    my_resolution.del_t = 0.1;
+                    
                     [P_rx,~] = VLCIRC(obj.txs, my_rxs, obj.boxes, obj.rm, ...
-                                      obj.getRes(), obj.disp_wb);
+                                      my_resolution, obj.disp_wb);
 
 
                     Irrad = P_rx./(obj.del_p)^2; 
