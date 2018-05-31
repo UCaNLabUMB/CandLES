@@ -383,6 +383,10 @@ function load_images(guiHandle)
     image(importdata('GUI_Images/pic_BU_logo.bmp')); axis off;
     axes(guiHandle.logo_SL);
     image(importdata('GUI_Images/pic_SL_logo.bmp')); axis off;
+    axes(guiHandle.logo_UMB);
+    image(importdata('GUI_Images/pic_UMB_logo.bmp')); axis off;
+    axes(guiHandle.logo_UCaN);
+    image(importdata('GUI_Images/pic_UCaN_logo.bmp')); axis off;
 
 % Update the main GUI with the CandLES environment newEnv
 % --------------------------------------------------------------------
